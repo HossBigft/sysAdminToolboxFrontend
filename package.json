@@ -8,21 +8,23 @@
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "server": "json-server -p3001 --watch db.json"
+    "server": "json-server -p3001 --watch db.json",
+    "generate-client": "openapi-ts --input ./openapi.json --output ./src/client --client @hey-api/client-axios"
   },
   "dependencies": {
-    "axios": "^1.4.0",
+    "@hey-api/client-fetch": "^0.4.4",
+    "axios": "1.7.4",
+    "form-data": "4.0.0",
+    "framer-motion": "10.16.16",
+    "openapi-ts": "^0.3.4",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-error-boundary": "^4.0.13",
+    "react-hook-form": "7.49.3",
+    "react-icons": "5.0.1"
   },
   "devDependencies": {
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react": "^4.0.3",
-    "eslint": "^8.45.0",
-    "eslint-plugin-react": "^7.32.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.3",
+    "@hey-api/openapi-ts": "^0.57.0",
     "json-server": "^0.17.3",
     "vite": "^4.4.5"
   }
