@@ -12,6 +12,7 @@
     "generate-client": "openapi-ts --input ./openapi.json --output ./src/client --client @hey-api/client-axios"
   },
   "dependencies": {
+    "@hey-api/client-axios": "^0.2.10",
     "@hey-api/client-fetch": "^0.4.4",
     "axios": "1.7.4",
     "form-data": "4.0.0",
