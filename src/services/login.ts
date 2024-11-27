@@ -18,22 +18,15 @@ const login = async (credentials: { username: string; password: string }) => {
     },
   };
 
-  const options = {
-    ...loginData,  // Spread the login data directly into options
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded", // Make sure the correct content type is set
-      accept: "application/json", // Expect JSON response
-    },
-  };
-
   try {
-    // Send the POST request with the formatted data and appropriate headers
-    const response = await loginAccessToken(options);
-
-    return response.data; // Return the response data, typically an access token
+    const response = await loginAccessToken(loginData);
+    return response.data;
   } catch (error) {
-    console.error("Error logging in:", error.response ? error.response.data : error.message);
-    throw error; // Propagate the error to handle it elsewhere
+    console.error(
+      "Error logging in:",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
   }
 };
 export default { login };
