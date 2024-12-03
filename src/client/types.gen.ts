@@ -87,15 +87,15 @@ export type TestTokenResponse = (UserPublic);
 
 export type TestTokenError = unknown;
 
-export type GetArecordData = {
+export type GetARecordData = {
     query: {
         domain: string;
     };
 };
 
-export type GetArecordResponse = (unknown);
+export type GetARecordResponse = (unknown);
 
-export type GetArecordError = (HTTPValidationError);
+export type GetARecordError = (HTTPValidationError);
 
 export type GetPtrRecordData = {
     query: {
