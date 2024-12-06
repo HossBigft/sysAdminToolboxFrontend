@@ -9,7 +9,7 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "server": "json-server -p3001 --watch db.json",
-    "generate-client": "openapi-ts --input ./openapi.json --output ./src/client --client @hey-api/client-axios"
+    "generate-client": "openapi-ts"
   },
   "dependencies": {
     "@chakra-ui/icons": "2.1.1",
