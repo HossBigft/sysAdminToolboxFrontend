@@ -20,7 +20,7 @@ const SidebarItems = ({ onClose }: SidebarItemsProps) => {
   const bgActive = useColorModeValue("#E2E8F0", "#4A5568")
   const currentUser = queryClient.getQueryData<UserPublic>(["currentUser"])
 
-  const finalItems = currentUser?.is_superuser
+  const finalItems = currentUser?.role?.includes("superuser")
     ? [...items, { icon: FiUsers, title: "Admin", path: "/admin" }]
     : items
 
