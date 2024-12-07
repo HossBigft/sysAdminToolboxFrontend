@@ -9,10 +9,7 @@ import type {
   LoginAccessTokenError,
 } from "../client/types.gen";
 import { loginAccessToken, registerUser } from "../client";
-import {
-  readUserMeOptions,
-  readUsersQueryKey,
-} from "../client/@tanstack/react-query.gen";
+import { readUserMeOptions } from "../client/@tanstack/react-query.gen";
 import useCustomToast from "./useCustomToast";
 
 import { AxiosError } from "axios";
