@@ -8,12 +8,9 @@ import type {
   Body_login_login_access_token,
   LoginAccessTokenError,
 } from "../client/types.gen";
-import {
-  loginAccessToken,
-  readUserMe,
-  registerUser,
-} from "../client/sdk.gen";
-import useCustomToast from "./useCustomToast"
+import { loginAccessToken, registerUser } from "../client";
+import { readUserMeOptions } from "../client/@tanstack/react-query.gen";
+import useCustomToast from "./useCustomToast";
 
 import { AxiosError } from "axios";
 
@@ -23,13 +20,12 @@ const isLoggedIn = () => {
 
 const useAuth = () => {
   const [error, setError] = useState<string | null>(null);
-  const showToast = useCustomToast()
+  const showToast = useCustomToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: user, isLoading } = useQuery<UserPublic | null, Error>({
-    queryKey: ["currentUser"],
-    queryFn: readUserMe,
+  const { data: user, isLoading } = useQuery<UserPublic>({
+    ...readUserMeOptions(),
     enabled: isLoggedIn(),
   });
 
@@ -109,5 +105,5 @@ const useAuth = () => {
     resetError: () => setError(null),
   };
 };
-export { isLoggedIn }
-export default useAuth
+export { isLoggedIn };
+export default useAuth;
