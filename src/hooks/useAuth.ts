@@ -9,7 +9,10 @@ import type {
   LoginAccessTokenError,
 } from "../client/types.gen";
 import { loginAccessToken, registerUser } from "../client";
-import { readUserMeOptions } from "../client/@tanstack/react-query.gen";
+import {
+  readUserMeOptions,
+  readUsersQueryKey,
+} from "../client/@tanstack/react-query.gen";
 import useCustomToast from "./useCustomToast";
 
 import { AxiosError } from "axios";
@@ -23,12 +26,11 @@ const useAuth = () => {
   const showToast = useCustomToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
   const { data: user, isLoading } = useQuery<UserPublic>({
     ...readUserMeOptions(),
+    queryKey: ["currentUser"],
     enabled: isLoggedIn(),
   });
-
   const signUpMutation = useMutation({
     mutationFn: (data: UserRegister) => registerUser({ body: data }),
 
