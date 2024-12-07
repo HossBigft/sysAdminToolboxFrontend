@@ -4,4 +4,10 @@ export default defineConfig({
   client: '@hey-api/client-axios',
   input: './openapi.json',
   output: './src/client',
-});
+  plugins: [
+    {
+      name: '@tanstack/react-query',
+    },
+  ],
+}
+);
