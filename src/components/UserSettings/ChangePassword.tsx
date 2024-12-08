@@ -8,21 +8,22 @@ import {
   Heading,
   Input,
   useColorModeValue,
-} from "@chakra-ui/react"
-import { useMutation } from "@tanstack/react-query"
-import { type SubmitHandler, useForm } from "react-hook-form"
+} from "@chakra-ui/react";
+import { useMutation } from "@tanstack/react-query";
+import { type SubmitHandler, useForm } from "react-hook-form";
 
-import { type UpdatePasswordMeError, type UpdatePassword, updatePasswordMe } from "../../client"
-import useCustomToast from "../../hooks/useCustomToast"
-import { confirmPasswordRules, handleError, passwordRules } from "../../utils"
+import { type UpdatePassword } from "../../client";
+import useCustomToast from "../../hooks/useCustomToast";
+import { confirmPasswordRules, handleError, passwordRules } from "../../utils";
+import { updatePasswordMeMutation } from "../../client/@tanstack/react-query.gen";
 
 interface UpdatePasswordForm extends UpdatePassword {
-  confirm_password: string
+  confirm_password: string;
 }
 
 const ChangePassword = () => {
-  const color = useColorModeValue("inherit", "ui.light")
-  const showToast = useCustomToast()
+  const color = useColorModeValue("inherit", "ui.light");
+  const showToast = useCustomToast();
   const {
     register,
     handleSubmit,
@@ -32,23 +33,22 @@ const ChangePassword = () => {
   } = useForm<UpdatePasswordForm>({
     mode: "onBlur",
     criteriaMode: "all",
-  })
+  });
 
   const mutation = useMutation({
-    mutationFn: (data: UpdatePassword) =>
-      updatePasswordMe({ requestBody: data }),
+    ...updatePasswordMeMutation(),
     onSuccess: () => {
-      showToast("Success!", "Password updated successfully.", "success")
-      reset()
+      showToast("Success!", "Password updated successfully.", "success");
+      reset();
     },
-    onError: (err: UpdatePasswordMeError) => {
-      handleError(err, showToast)
+    onError: (err) => {
+      handleError(err, showToast);
     },
-  })
+  });
 
   const onSubmit: SubmitHandler<UpdatePasswordForm> = async (data) => {
-    mutation.mutate(data)
-  }
+    mutation.mutate({ body: data });
+  };
 
   return (
     <>
@@ -117,6 +117,6 @@ const ChangePassword = () => {
         </Box>
       </Container>
     </>
-  )
-}
-export default ChangePassword
+  );
+};
+export default ChangePassword;
