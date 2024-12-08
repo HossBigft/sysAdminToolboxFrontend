@@ -29,6 +29,8 @@ interface AddUserProps {
 
 interface UserCreateForm extends UserCreate {
   confirm_password: string;
+  is_superuser: boolean;
+  is_admin: boolean;
 }
 
 const AddUser = ({ isOpen, onClose }: AddUserProps) => {
@@ -69,6 +71,11 @@ const AddUser = ({ isOpen, onClose }: AddUserProps) => {
   });
 
   const onSubmit: SubmitHandler<UserCreateForm> = (data: UserCreateForm) => {
+    if (data.is_superuser) {
+      data.role = "superuser";
+    } else if (data.is_admin) {
+      data.role = "admin";
+    }
     mutation.mutate({ body: data });
   };
 
@@ -163,6 +170,11 @@ const AddUser = ({ isOpen, onClose }: AddUserProps) => {
                 <Checkbox {...register("is_active")} colorScheme="teal">
                   Is active?
                 </Checkbox>
+                <FormControl>
+                  <Checkbox {...register("is_admin")} colorScheme="teal">
+                    Is admin?
+                  </Checkbox>
+                </FormControl>
               </FormControl>
             </Flex>
           </ModalBody>
