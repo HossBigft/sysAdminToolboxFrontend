@@ -18,7 +18,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { z } from "zod";
 
-import { type UserPublic} from "../../client";
+import { type UserPublic } from "../../client";
 import AddUser from "../../components/Admin/AddUser";
 import ActionsMenu from "../../components/Common/ActionsMenu";
 import Navbar from "../../components/Common/Navbar";
@@ -115,7 +115,11 @@ function UsersTable() {
                     {user.email}
                   </Td>
                   <Td>
-                    {user?.role?.includes("superuser") ? "Superuser" : "User"}
+                    {user?.role?.includes("superuser")
+                      ? "Superuser"
+                      : user?.role?.includes("admin")
+                        ? "Admin"
+                        : "User"}
                   </Td>
                   <Td>
                     <Flex gap={2}>
