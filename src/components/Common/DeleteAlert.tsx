@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 
 import { deleteUser } from "../../client";
 import useCustomToast from "../../hooks/useCustomToast";
+import { deleteUserMutation } from "../../client/@tanstack/react-query.gen";
 
 interface DeleteProps {
   type: string;
@@ -39,7 +40,7 @@ const Delete = ({ type, id, isOpen, onClose }: DeleteProps) => {
   };
 
   const mutation = useMutation({
-    mutationFn: deleteEntity,
+    ...deleteUserMutation(),
     onSuccess: () => {
       showToast(
         "Success",
@@ -63,7 +64,7 @@ const Delete = ({ type, id, isOpen, onClose }: DeleteProps) => {
   });
 
   const onSubmit = async () => {
-    mutation.mutate(id);
+    mutation.mutate({ path: { user_id: id } });
   };
 
   return (
