@@ -18,13 +18,12 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { z } from "zod";
 
-import { type UserPublic, readUsers } from "../../client";
+import { type UserPublic} from "../../client";
 import AddUser from "../../components/Admin/AddUser";
 import ActionsMenu from "../../components/Common/ActionsMenu";
 import Navbar from "../../components/Common/Navbar";
 import { PaginationFooter } from "../../components/Common/PaginationFooter.tsx";
-import {readUsersOptions} from "../../client/@tanstack/react-query.gen";
-
+import { readUsersOptions } from "../../client/@tanstack/react-query.gen";
 
 const usersSearchSchema = z.object({
   page: z.number().catch(1),
@@ -39,7 +38,9 @@ const PER_PAGE = 5;
 
 function getUsersQueryOptions({ page }: { page: number }) {
   return {
-    queryFn: () => readUsers({ skip: (page - 1) * PER_PAGE, limit: PER_PAGE }),
+    ...readUsersOptions({
+      query: { skip: (page - 1) * PER_PAGE, limit: PER_PAGE },
+    }),
     queryKey: ["users", { page }],
   };
 }
@@ -59,7 +60,7 @@ function UsersTable() {
     isPending,
     isPlaceholderData,
   } = useQuery({
-    ...readUsersOptions({ page }),
+    ...getUsersQueryOptions({ page }),
     placeholderData: (prevData) => prevData,
   });
   const hasNextPage = !isPlaceholderData && users?.data.length === PER_PAGE;
@@ -113,7 +114,9 @@ function UsersTable() {
                   <Td isTruncated maxWidth="150px">
                     {user.email}
                   </Td>
-                  <Td>{user?.role?.includes("superuser") ? "Superuser" : "User"}</Td>
+                  <Td>
+                    {user?.role?.includes("superuser") ? "Superuser" : "User"}
+                  </Td>
                   <Td>
                     <Flex gap={2}>
                       <Box
