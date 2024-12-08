@@ -31,6 +31,7 @@ interface EditUserProps {
 interface UserUpdateForm extends UserUpdate {
   confirm_password: string;
   is_superuser: boolean;
+  is_admin: boolean;
 }
 
 const EditUser = ({ user, isOpen, onClose }: EditUserProps) => {
@@ -69,9 +70,11 @@ const EditUser = ({ user, isOpen, onClose }: EditUserProps) => {
     }
 
     if (data.is_superuser) {
-      if (!data?.role?.includes("superuser")) {
-        data.role = "superuser";
-      }
+      data.role = "superuser";
+    } else if (data.is_admin) {
+      data.role = "admin";
+    } else {
+      data.role = "user";
     }
     mutation.mutate({ body: data, path: { user_id: user.id } });
   };
@@ -157,6 +160,11 @@ const EditUser = ({ user, isOpen, onClose }: EditUserProps) => {
               <FormControl mt={4}>
                 <Checkbox {...register("is_active")} colorScheme="teal">
                   Is active?
+                </Checkbox>
+              </FormControl>
+              <FormControl mt={4}>
+                <Checkbox {...register("is_admin")} colorScheme="teal">
+                  Is admin?
                 </Checkbox>
               </FormControl>
             </Flex>
