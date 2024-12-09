@@ -18,9 +18,9 @@ import { Route as LayoutImport } from "./routes/_layout";
 import { Route as LayoutIndexImport } from "./routes/_layout/index";
 import { Route as LayoutSettingsImport } from "./routes/_layout/settings";
 import { Route as LayoutAdminImport } from "./routes/_layout/admin";
+import { Route as LayoutPleskImport } from "./routes/_layout/plesk";
 
 // Create/Update Routes
-
 const SignupRoute = SignupImport.update({
   path: "/signup",
   getParentRoute: () => rootRoute,
@@ -51,6 +51,10 @@ const LayoutAdminRoute = LayoutAdminImport.update({
   getParentRoute: () => LayoutRoute,
 } as any);
 
+const LayoutPleskRoute = LayoutPleskImport.update({
+  path: "/plesk",
+  getParentRoute: () => LayoutRoute,
+} as any);
 // Populate the FileRoutesByPath interface
 
 declare module "@tanstack/react-router" {
@@ -79,6 +83,10 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof LayoutIndexImport;
       parentRoute: typeof LayoutImport;
     };
+    "/_layout/plesk": {
+      preLoaderRoute: typeof LayoutPleskImport;
+      parentRoute: typeof LayoutImport;
+    };
   }
 }
 
@@ -89,6 +97,7 @@ export const routeTree = rootRoute.addChildren([
     LayoutAdminRoute,
     LayoutSettingsRoute,
     LayoutIndexRoute,
+    LayoutPleskRoute,
   ]),
   LoginRoute,
   SignupRoute,
