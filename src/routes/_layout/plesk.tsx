@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ChakraProvider,
   Box,
@@ -15,17 +15,16 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
+import { useQuery } from "@tanstack/react-query";
+import { findPleskSubscriptionByDomainOptions } from "../../client/@tanstack/react-query.gen";
 import useAuth from "../../hooks/useAuth";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { type FindPleskSubscriptionByDomainResponse } from "../client";
-
 export const Route = createFileRoute("/_layout/")({
   component: App,
 });
-import { findPleskSubscriptionByDomainOptions } from "../../client/@tanstack/react-query.gen";
 
 const data = [
+  // Mock data, you might fetch from your API instead
   {
     host: "TEST_HOSTS[0]",
     id: "1184",
@@ -58,6 +57,29 @@ const data = [
 function App() {
   const [expanded, setExpanded] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
+  const [triggerSearch, setTriggerSearch] = useState(false); // State to trigger the query when Enter is pressed
+
+  const {
+    data: subscriptionData,
+    error,
+    isLoading,
+  } = useQuery({
+    ...findPleskSubscriptionByDomainOptions({ query: { domain: searchTerm } }), // queryFn as part of the object
+    enabled: triggerSearch && !!searchTerm, // Run only when triggerSearch is true and searchTerm is not empt
+  });
+  
+  useEffect(() => {
+    if (subscriptionData) {
+      setTriggerSearch(false); // Reset triggerSearch after successful data fetch
+    }
+  }, [subscriptionData]);
+
+
+  useEffect(() => {
+    console.log("triggerSearch has changed:", triggerSearch);
+  }, [triggerSearch]);
+
+  const filteredData = subscriptionData;
 
   const handleToggle = (index) => {
     setExpanded((prevState) => ({
@@ -66,32 +88,24 @@ function App() {
     }));
   };
 
-  const filteredData = useMemo(() => {
-    return data.filter((item) =>
-      Object.values(item).some(
-        (value) =>
-          String(value).toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.domains.some((domain) =>
-            domain.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-      )
-    );
-  }, [searchTerm]);
-
-  const queryClient = useQueryClient();
-  const { data: subscriptionsList, isLoading } =
-    useQuery<FindPleskSubscriptionByDomainResponse>({
-      ...findPleskSubscriptionByDomainOptions(),
-    });
+  // Handle the Enter key press
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && searchTerm.trim()) {
+      setTriggerSearch(true); // Trigger search when Enter is pressed
+    }
+  };
   return (
     <ChakraProvider>
       <VStack spacing={4} width="100%" margin="50px auto" maxWidth="1200px">
         <Input
           placeholder="Search subscriptions..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => setSearchTerm(e.target.value)} // Update search term on change
+          onKeyPress={handleKeyPress} // Trigger search when Enter is pressed
           width="100%"
         />
+        {isLoading && <Text>Loading...</Text>}
+        {error && <Text>Error: {error.message}</Text>}
         <Box overflowX="auto" width="100%">
           <Table variant="simple">
             <Thead>
@@ -106,7 +120,7 @@ function App() {
               </Tr>
             </Thead>
             <Tbody>
-              {filteredData.map((item, index) => (
+              {filteredData?.map((item, index) => (
                 <React.Fragment key={index}>
                   <Tr>
                     <Td>{item.host}</Td>
@@ -115,10 +129,10 @@ function App() {
                     <Td>{item.username}</Td>
                     <Td>{item.userlogin}</Td>
                     <Td>
-                      {item.domains.slice(0, 2).map((domain, idx) => (
+                      {item.domains.slice(0, 3).map((domain, idx) => (
                         <Text key={idx}>{domain}</Text>
                       ))}
-                      {item.domains.length > 2 && <Text>...</Text>}
+                      {item.domains.length > 3 && <Text>...</Text>}
                     </Td>
                     <Td
                       onClick={() => handleToggle(index)}
@@ -156,3 +170,5 @@ function App() {
     </ChakraProvider>
   );
 }
+
+export default App;
