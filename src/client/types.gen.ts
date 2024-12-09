@@ -17,6 +17,17 @@ export type Message = {
     message: string;
 };
 
+export type SubscriptionInfoModel = {
+    host: string;
+    id: string;
+    name: string;
+    username: string;
+    userlogin: string;
+    domains: Array<(string)>;
+};
+
+export type SubscriptionInfoResponseModel = Array<SubscriptionInfoModel>;
+
 export type Token = {
     access_token: string;
     token_type?: string;
@@ -235,7 +246,7 @@ export type FindPleskSubscriptionByDomainData = {
     };
 };
 
-export type FindPleskSubscriptionByDomainResponse = (unknown);
+export type FindPleskSubscriptionByDomainResponse = (SubscriptionInfoResponseModel);
 
 export type FindPleskSubscriptionByDomainError = (HTTPValidationError);
 

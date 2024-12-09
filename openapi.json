@@ -802,7 +802,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionInfoResponseModel"
+                }
               }
             }
           },
@@ -926,6 +928,54 @@
           "message"
         ],
         "title": "Message"
+      },
+      "SubscriptionInfoModel": {
+        "properties": {
+          "host": {
+            "type": "string",
+            "title": "Host"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "userlogin": {
+            "type": "string",
+            "title": "Userlogin"
+          },
+          "domains": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Domains"
+          }
+        },
+        "type": "object",
+        "required": [
+          "host",
+          "id",
+          "name",
+          "username",
+          "userlogin",
+          "domains"
+        ],
+        "title": "SubscriptionInfoModel"
+      },
+      "SubscriptionInfoResponseModel": {
+        "items": {
+          "$ref": "#/components/schemas/SubscriptionInfoModel"
+        },
+        "type": "array",
+        "title": "SubscriptionInfoResponseModel"
       },
       "Token": {
         "properties": {
