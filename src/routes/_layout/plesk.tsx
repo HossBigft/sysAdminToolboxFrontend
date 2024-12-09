@@ -1,5 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   ChakraProvider,
   Box,
@@ -9,18 +8,22 @@ import {
   Tr,
   Th,
   Td,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
-  TableContainer,
+  Collapse,
+  Input,
+  VStack,
+  Text,
+  Icon,
 } from "@chakra-ui/react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import useAuth from "../../hooks/useAuth";
+import { createFileRoute } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { type FindPleskSubscriptionByDomainResponse } from "../client";
 
 export const Route = createFileRoute("/_layout/")({
-  component: Dashboard,
+  component: App,
 });
+import { findPleskSubscriptionByDomainOptions } from "../../client/@tanstack/react-query.gen";
 
 const data = [
   {
@@ -50,11 +53,11 @@ const data = [
     userlogin: "j-567890",
     domains: ["example.com", "blog.example.com", "shop.example.com"],
   },
-  // Add more objects as needed
 ];
 
-function Dashboard() {
+function App() {
   const [expanded, setExpanded] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleToggle = (index) => {
     setExpanded((prevState) => ({
@@ -62,50 +65,94 @@ function Dashboard() {
       [index]: !prevState[index],
     }));
   };
+
+  const filteredData = useMemo(() => {
+    return data.filter((item) =>
+      Object.values(item).some(
+        (value) =>
+          String(value).toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.domains.some((domain) =>
+            domain.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+      )
+    );
+  }, [searchTerm]);
+
+  const queryClient = useQueryClient();
+  const { data: subscriptionsList, isLoading } =
+    useQuery<FindPleskSubscriptionByDomainResponse>({
+      ...findPleskSubscriptionByDomainOptions(),
+    });
   return (
-      <TableContainer>
-        <Accordion allowMultiple>
-            <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>Host</Th>
-                  <Th>ID</Th>
-                  <Th>Name</Th>
-                  <Th>Username</Th>
-                  <Th>User Login</Th>
-                  <Th>Domains</Th>
-                </Tr>
-              </Thead>
-            </Table>
-          {data.map((item, index) => (
-            <AccordionItem key={index}>
-              <AccordionButton>
-                  <Table variant="simple">
-                    <Tbody>
-                      <Tr>
-                        <Td>{item.host}</Td>
-                        <Td>{item.id}</Td>
-                        <Td>{item.name}</Td>
-                        <Td>{item.username}</Td>
-                        <Td>{item.userlogin}</Td>
-                        <Td>{item.domains.slice(0, 2).join(", ")}</Td>
-                      </Tr>
-                    </Tbody>
-                  </Table>
-                <AccordionIcon />
-              </AccordionButton>
-              <AccordionPanel pb={4}>
-                <Box>
-                  <ul>
-                    {item.domains.map((domain, idx) => (
-                      <li key={idx}>{domain}</li>
-                    ))}
-                  </ul>
-                </Box>
-              </AccordionPanel>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </TableContainer>
+    <ChakraProvider>
+      <VStack spacing={4} width="100%" margin="50px auto" maxWidth="1200px">
+        <Input
+          placeholder="Search subscriptions..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          width="100%"
+        />
+        <Box overflowX="auto" width="100%">
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th>Host</Th>
+                <Th>ID</Th>
+                <Th>Name</Th>
+                <Th>Username</Th>
+                <Th>User Login</Th>
+                <Th>Domains</Th>
+                <Th width="50px"></Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {filteredData.map((item, index) => (
+                <React.Fragment key={index}>
+                  <Tr>
+                    <Td>{item.host}</Td>
+                    <Td>{item.id}</Td>
+                    <Td>{item.name}</Td>
+                    <Td>{item.username}</Td>
+                    <Td>{item.userlogin}</Td>
+                    <Td>
+                      {item.domains.slice(0, 2).map((domain, idx) => (
+                        <Text key={idx}>{domain}</Text>
+                      ))}
+                      {item.domains.length > 2 && <Text>...</Text>}
+                    </Td>
+                    <Td
+                      onClick={() => handleToggle(index)}
+                      style={{ cursor: "pointer", textAlign: "center" }}
+                    >
+                      <Icon
+                        as={ChevronDownIcon}
+                        transform={
+                          expanded[index] ? "rotate(180deg)" : "rotate(0deg)"
+                        }
+                        transition="transform 0.2s"
+                      />
+                    </Td>
+                  </Tr>
+                  <Tr>
+                    <Td colSpan="7" p={0}>
+                      <Collapse in={expanded[index]}>
+                        <Box p={4} bg="gray.50">
+                          <Text fontWeight="bold">All Domains:</Text>
+                          <ul>
+                            {item.domains.map((domain, idx) => (
+                              <li key={idx}>{domain}</li>
+                            ))}
+                          </ul>
+                        </Box>
+                      </Collapse>
+                    </Td>
+                  </Tr>
+                </React.Fragment>
+              ))}
+            </Tbody>
+          </Table>
+        </Box>
+      </VStack>
+    </ChakraProvider>
   );
 }
