@@ -58,28 +58,30 @@ function App() {
   const [expanded, setExpanded] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [triggerSearch, setTriggerSearch] = useState(false); // State to trigger the query when Enter is pressed
-
+  const [lastValidData, setLastValidData] = useState([]);
+  
   const {
     data: subscriptionData,
     error,
     isLoading,
+    isFetching,
   } = useQuery({
     ...findPleskSubscriptionByDomainOptions({ query: { domain: searchTerm } }), // queryFn as part of the object
+    queryKey: ["subscriptionSearch"],
     enabled: triggerSearch && !!searchTerm, // Run only when triggerSearch is true and searchTerm is not empt
+    retry: 0, // Prevent automatic retries
+    refetchOnWindowFocus: false,
   });
-  
-  useEffect(() => {
-    if (subscriptionData) {
-      setTriggerSearch(false); // Reset triggerSearch after successful data fetch
-    }
-  }, [subscriptionData]);
 
+  useEffect(() => {
+    if (subscriptionData || error) {
+      setTriggerSearch(false); // Reset triggerSearch on both successful data and error
+    }
+  }, [subscriptionData, error]);
 
   useEffect(() => {
     console.log("triggerSearch has changed:", triggerSearch);
   }, [triggerSearch]);
-
-  const filteredData = subscriptionData;
 
   const handleToggle = (index) => {
     setExpanded((prevState) => ({
@@ -90,19 +92,30 @@ function App() {
 
   // Handle the Enter key press
   const handleKeyPress = (e) => {
-    if (e.key === "Enter" && searchTerm.trim()) {
-      setTriggerSearch(true); // Trigger search when Enter is pressed
+    if (e.key === "Enter" && searchTerm.trim() && !isLoading && !isFetching) {
+      setTriggerSearch(true);
     }
   };
+
+
+
+  useEffect(() => {
+    if (subscriptionData?.length) {
+      setLastValidData(subscriptionData);
+    }
+  }, [subscriptionData]);
+
+  const tableData = subscriptionData?.length ? subscriptionData : lastValidData;
   return (
     <ChakraProvider>
       <VStack spacing={4} width="100%" margin="50px auto" maxWidth="1200px">
         <Input
           placeholder="Search subscriptions..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)} // Update search term on change
-          onKeyPress={handleKeyPress} // Trigger search when Enter is pressed
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyPress={handleKeyPress}
           width="100%"
+          isDisabled={isLoading} // Disable input during loading
         />
         {isLoading && <Text>Loading...</Text>}
         {error && <Text>Error: {error.message}</Text>}
@@ -120,7 +133,7 @@ function App() {
               </Tr>
             </Thead>
             <Tbody>
-              {filteredData?.map((item, index) => (
+              {tableData?.map((item, index) => (
                 <React.Fragment key={index}>
                   <Tr>
                     <Td>{item.host}</Td>
@@ -170,5 +183,3 @@ function App() {
     </ChakraProvider>
   );
 }
-
-export default App;
