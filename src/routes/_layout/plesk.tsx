@@ -23,36 +23,6 @@ export const Route = createFileRoute("/_layout/")({
   component: App,
 });
 
-const data = [
-  {
-    host: "TEST_HOSTS[0]",
-    id: "1184",
-    name: "gruzo.kz",
-    username: "FIO",
-    userlogin: "p-2342343",
-    domains: [
-      "gruzo.kz",
-      "sdfsd.gruzo.kz",
-      "pomogite.gruzo.kz",
-      "nodejs.gruzo.kz",
-      "virtualizor.gruzo.kz",
-      "wp.gruzo.kz",
-      "onebula.gruzo.kz",
-      "mxtest.gruzo.kz",
-      "zone.gruzo.kz",
-      "zless.gruzo.kz",
-    ],
-  },
-  {
-    host: "TEST_HOSTS[1]",
-    id: "1185",
-    name: "example.com",
-    username: "JohnDoe",
-    userlogin: "j-567890",
-    domains: ["example.com", "blog.example.com", "shop.example.com"],
-  },
-];
-
 function App() {
   const [expanded, setExpanded] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
