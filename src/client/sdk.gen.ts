@@ -38,7 +38,7 @@ export const testToken = <ThrowOnError extends boolean = false>(options?: Option
 export const getARecord = <ThrowOnError extends boolean = false>(options: OptionsLegacyParser<GetARecordData, ThrowOnError>) => {
     return (options?.client ?? client).get<GetARecordResponse, GetARecordError, ThrowOnError>({
         ...options,
-        url: '/api/v1/dns/hoster/resolve/a/'
+        url: '/api/v1/dns/internal/resolve/a/'
     });
 };
 
@@ -58,7 +58,7 @@ export const getPtrRecord = <ThrowOnError extends boolean = false>(options: Opti
 export const getZoneMasterFromDnsServers = <ThrowOnError extends boolean = false>(options: OptionsLegacyParser<GetZoneMasterFromDnsServersData, ThrowOnError>) => {
     return (options?.client ?? client).get<GetZoneMasterFromDnsServersResponse, GetZoneMasterFromDnsServersError, ThrowOnError>({
         ...options,
-        url: '/api/v1/dns/hoster/get/zonemaster/'
+        url: '/api/v1/dns/internal/get/zonemaster/'
     });
 };
 
@@ -68,7 +68,7 @@ export const getZoneMasterFromDnsServers = <ThrowOnError extends boolean = false
 export const getMxRecord = <ThrowOnError extends boolean = false>(options: OptionsLegacyParser<GetMxRecordData, ThrowOnError>) => {
     return (options?.client ?? client).get<GetMxRecordResponse, GetMxRecordError, ThrowOnError>({
         ...options,
-        url: '/api/v1/dns/hoster/resolve/mx/'
+        url: '/api/v1/dns/internal/resolve/mx/'
     });
 };
 
