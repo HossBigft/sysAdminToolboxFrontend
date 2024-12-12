@@ -8,7 +8,7 @@ import type {
   Body_login_login_access_token,
   LoginAccessTokenError,
 } from "../client/types.gen";
-import { loginAccessToken, registerUser } from "../client";
+import { loginAccessToken, readUserMe, registerUser } from "../client";
 import { readUserMeOptions } from "../client/@tanstack/react-query.gen";
 import useCustomToast from "./useCustomToast";
 
@@ -26,7 +26,7 @@ const useAuth = () => {
   const { data: user, isLoading } = useQuery<UserPublic>({
     ...readUserMeOptions(),
     queryKey: ["currentUser"],
-    enabled: isLoggedIn(),
+    enabled: isLoggedIn,
   });
   const signUpMutation = useMutation({
     mutationFn: (data: UserRegister) => registerUser({ body: data }),
