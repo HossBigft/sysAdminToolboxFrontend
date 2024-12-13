@@ -25,7 +25,7 @@ const useAuth = () => {
   const { data: user, isLoading } = useQuery<UserPublic>({
     ...readUserMeOptions(),
     queryKey: ["currentUser"],
-    enabled: isLoggedIn,
+    enabled: isLoggedIn(),
   });
   const signUpMutation = useMutation({
     mutationFn: (data: UserRegister) => registerUser({ body: data }),
