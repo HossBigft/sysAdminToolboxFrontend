@@ -28,8 +28,8 @@ const useAuth = () => {
     enabled: isLoggedIn(),
   });
   const signUpMutation = useMutation({
-    mutationFn: (data: UserRegister) => registerUser({ body: data }),
-
+    mutationFn: (data: UserRegister) =>
+      registerUser({ body: data, throwOnError: true }),
     onSuccess: () => {
       navigate({ to: "/login" });
       showToast(
@@ -38,12 +38,8 @@ const useAuth = () => {
         "success"
       );
     },
-    onError: (err: RegisterUserError) => {
-      let errDetail = (err.detail as any)?.detail;
-
-      if (err instanceof AxiosError) {
-        errDetail = err.message;
-      }
+    onError: (err: AxiosError) => {
+      let errDetail = JSON.parse((err.request as any)?.response).detail;
 
       showToast("Something went wrong.", errDetail, "error");
     },
@@ -70,7 +66,6 @@ const useAuth = () => {
       if (Array.isArray(errDetail)) {
         errDetail = "Something went wrong";
       }
-
       setError(errDetail);
     },
   });
