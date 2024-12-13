@@ -8,19 +8,17 @@ import { StrictMode } from "react";
 import { client } from "./client";
 import theme from "./theme";
 
-async function getAccessToken() {
-  const token = await localStorage.getItem("access_token");
-  return token || "";
-}
-
-const accessToken = await getAccessToken();
 client.setConfig({
   // set default base url for requests
   baseURL: import.meta.env.VITE_API_URL,
-  // set default headers for requests
-  headers: {
-    Authorization: "Bearer " + accessToken,
-  },
+});
+
+client.instance.interceptors.request.use((config) => {
+  config.headers.set(
+    "Authorization",
+    `Bearer ${localStorage.getItem("access_token")}`
+  );
+  return config;
 });
 
 const queryClient = new QueryClient();
