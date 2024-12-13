@@ -16,7 +16,12 @@ import {
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { useQuery } from "@tanstack/react-query";
-import { findPleskSubscriptionByDomainOptions } from "../../client/@tanstack/react-query.gen";
+import {
+  findPleskSubscriptionByDomainOptions,
+  getARecordOptions,
+  getPtrRecordOptions,
+  getMxRecordOptions,
+} from "../../client/@tanstack/react-query.gen";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_layout/")({
@@ -42,6 +47,50 @@ function App() {
     retry: 0,
     refetchOnWindowFocus: false,
   });
+
+  const { data: aRecordRequest } = useQuery({
+    ...getARecordOptions({ query: { domain: searchTerm } }),
+    enabled: triggerSearch && !!searchTerm,
+    retry: 0,
+    refetchOnWindowFocus: false,
+  });
+  console.log(aRecordRequest);
+
+  const aRecord=aRecordRequest?.records[0]
+
+  const { data: aRecordPtr } = useQuery({
+    ...getPtrRecordOptions({ query: { ip: aRecord } }),
+    enabled: !!aRecord && aRecordRequest.records.length == 1,
+    refetchOnWindowFocus: false,
+  });
+
+
+  console.log(aRecordPtr);
+
+  const { data: mxRecordRequest } = useQuery({
+    ...getMxRecordOptions({ query: { domain: searchTerm } }),
+    enabled: triggerSearch && !!searchTerm,
+    refetchOnWindowFocus: false,
+  });
+  console.log(mxRecordRequest);
+
+  const mxRecord = mxRecordRequest?.records[0]
+  const { data: aRecordOfMxRecordRequest } = useQuery({
+    ...getARecordOptions({ query: { domain: mxRecord } }),
+    enabled: !!mxRecord && mxRecordRequest.records.length == 1,
+    refetchOnWindowFocus: false,
+  });
+  console.log(aRecordOfMxRecordRequest);
+
+  const aOfMxRecord = aRecordOfMxRecordRequest?.records[0]
+
+  const { data: mxRecordPtr } = useQuery({
+    ...getPtrRecordOptions({ query: { ip: aOfMxRecord } }),
+    enabled: !!aOfMxRecord  && aRecordOfMxRecordRequest.records.length == 1,
+    refetchOnWindowFocus: false,
+  });
+
+  console.log(mxRecordPtr);
 
   useEffect(() => {
     if (subscriptionData || error) {
