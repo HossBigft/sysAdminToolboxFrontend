@@ -6,9 +6,8 @@ import type {
   UserRegister,
   RegisterUserError,
   Body_login_login_access_token,
-  LoginAccessTokenError,
 } from "../client/types.gen";
-import { loginAccessToken, readUserMe, registerUser } from "../client";
+import { loginAccessToken, registerUser } from "../client";
 import { readUserMeOptions } from "../client/@tanstack/react-query.gen";
 import useCustomToast from "./useCustomToast";
 
@@ -54,20 +53,11 @@ const useAuth = () => {
   });
 
   const login = async (credentials: Body_login_login_access_token) => {
-    try {
-      const response = await loginAccessToken({ body: credentials });
-      if (response.data) {
-        localStorage.setItem("access_token", response.data.access_token);
-      } else {
-        throw new Error("No data returned in response");
-      }
-    } catch (error) {
-      console.error(
-        "Error logging in:",
-        error.response ? error.response.data : error.message
-      );
-      throw error;
-    }
+    const response = await loginAccessToken({
+      body: credentials,
+      throwOnError: true,
+    });
+    localStorage.setItem("access_token", response.data.access_token);
   };
 
   const loginMutation = useMutation({
@@ -75,13 +65,8 @@ const useAuth = () => {
     onSuccess: () => {
       navigate({ to: "/" });
     },
-    onError: (err: LoginAccessTokenError) => {
-      let errDetail = (err.detail as any)?.detail;
-
-      if (err instanceof AxiosError) {
-        errDetail = err.message;
-      }
-
+    onError: (err: AxiosError) => {
+      let errDetail = JSON.parse((err.request as any)?.response).detail;
       if (Array.isArray(errDetail)) {
         errDetail = "Something went wrong";
       }
