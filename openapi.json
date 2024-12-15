@@ -89,8 +89,8 @@
             "schema": {
               "type": "string",
               "minLength": 3,
-              "maxLength": 63,
-              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}$",
+              "maxLength": 253,
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
               "title": "Domain"
             }
           }
@@ -100,7 +100,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/DomainARecordResponse"
+                }
               }
             }
           },
@@ -178,8 +180,8 @@
             "schema": {
               "type": "string",
               "minLength": 3,
-              "maxLength": 63,
-              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}$",
+              "maxLength": 253,
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
               "title": "Domain"
             }
           }
@@ -221,8 +223,8 @@
             "schema": {
               "type": "string",
               "minLength": 3,
-              "maxLength": 63,
-              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}$",
+              "maxLength": 253,
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
               "title": "Domain"
             }
           }
@@ -232,7 +234,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/DomainMxRecordResponse"
+                }
               }
             }
           },
@@ -264,8 +268,8 @@
             "schema": {
               "type": "string",
               "minLength": 3,
-              "maxLength": 63,
-              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}$",
+              "maxLength": 253,
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
               "title": "Domain"
             }
           }
@@ -275,7 +279,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/DomainNsRecordResponse"
+                }
               }
             }
           },
@@ -791,8 +797,8 @@
             "schema": {
               "type": "string",
               "minLength": 3,
-              "maxLength": 63,
-              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}$",
+              "maxLength": 253,
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
               "title": "Domain"
             }
           }
@@ -803,7 +809,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SubscriptionInfoResponseModel"
+                  "$ref": "#/components/schemas/SubscriptionListResponseModel"
                 }
               }
             }
@@ -903,6 +909,85 @@
         ],
         "title": "Body_login-login_access_token"
       },
+      "DomainARecordResponse": {
+        "properties": {
+          "domain": {
+            "$ref": "#/components/schemas/DomainName"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/IPv4Address"
+            },
+            "type": "array",
+            "title": "Records"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain",
+          "records"
+        ],
+        "title": "DomainARecordResponse"
+      },
+      "DomainMxRecordResponse": {
+        "properties": {
+          "domain": {
+            "$ref": "#/components/schemas/DomainName"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/DomainName"
+            },
+            "type": "array",
+            "title": "Records"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain",
+          "records"
+        ],
+        "title": "DomainMxRecordResponse"
+      },
+      "DomainName": {
+        "properties": {
+          "domain": {
+            "type": "string",
+            "maxLength": 253,
+            "minLength": 3,
+            "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
+            "title": "Domain"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain"
+        ],
+        "title": "DomainName",
+        "examples": [
+          "example.com."
+        ]
+      },
+      "DomainNsRecordResponse": {
+        "properties": {
+          "domain": {
+            "$ref": "#/components/schemas/DomainName"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/DomainName"
+            },
+            "type": "array",
+            "title": "Records"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain",
+          "records"
+        ],
+        "title": "DomainNsRecordResponse"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -915,6 +1000,23 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "IPv4Address": {
+        "properties": {
+          "ip": {
+            "type": "string",
+            "format": "ipvanyaddress",
+            "title": "Ip"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ip"
+        ],
+        "title": "IPv4Address",
+        "examples": [
+          "249.44.166.171"
+        ]
       },
       "Message": {
         "properties": {
@@ -929,11 +1031,10 @@
         ],
         "title": "Message"
       },
-      "SubscriptionInfoModel": {
+      "SubscriptionDetailsModel": {
         "properties": {
           "host": {
-            "type": "string",
-            "title": "Host"
+            "$ref": "#/components/schemas/DomainName"
           },
           "id": {
             "type": "string",
@@ -953,7 +1054,7 @@
           },
           "domains": {
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/DomainName"
             },
             "type": "array",
             "title": "Domains"
@@ -968,14 +1069,14 @@
           "userlogin",
           "domains"
         ],
-        "title": "SubscriptionInfoModel"
+        "title": "SubscriptionDetailsModel"
       },
-      "SubscriptionInfoResponseModel": {
+      "SubscriptionListResponseModel": {
         "items": {
-          "$ref": "#/components/schemas/SubscriptionInfoModel"
+          "$ref": "#/components/schemas/SubscriptionDetailsModel"
         },
         "type": "array",
-        "title": "SubscriptionInfoResponseModel"
+        "title": "SubscriptionListResponseModel"
       },
       "Token": {
         "properties": {

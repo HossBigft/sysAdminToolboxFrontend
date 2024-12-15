@@ -9,24 +9,47 @@ export type Body_login_login_access_token = {
     client_secret?: (string | null);
 };
 
+export type DomainARecordResponse = {
+    domain: DomainName;
+    records: Array<IPv4Address>;
+};
+
+export type DomainMxRecordResponse = {
+    domain: DomainName;
+    records: Array<DomainName>;
+};
+
+export type DomainName = {
+    domain: string;
+};
+
+export type DomainNsRecordResponse = {
+    domain: DomainName;
+    records: Array<DomainName>;
+};
+
 export type HTTPValidationError = {
     detail?: Array<ValidationError>;
+};
+
+export type IPv4Address = {
+    ip: string;
 };
 
 export type Message = {
     message: string;
 };
 
-export type SubscriptionInfoModel = {
-    host: string;
+export type SubscriptionDetailsModel = {
+    host: DomainName;
     id: string;
     name: string;
     username: string;
     userlogin: string;
-    domains: Array<(string)>;
+    domains: Array<DomainName>;
 };
 
-export type SubscriptionInfoResponseModel = Array<SubscriptionInfoModel>;
+export type SubscriptionListResponseModel = Array<SubscriptionDetailsModel>;
 
 export type Token = {
     access_token: string;
@@ -104,7 +127,7 @@ export type GetARecordData = {
     };
 };
 
-export type GetARecordResponse = (unknown);
+export type GetARecordResponse = (DomainARecordResponse);
 
 export type GetARecordError = (HTTPValidationError);
 
@@ -134,7 +157,7 @@ export type GetMxRecordData = {
     };
 };
 
-export type GetMxRecordResponse = (unknown);
+export type GetMxRecordResponse = (DomainMxRecordResponse);
 
 export type GetMxRecordError = (HTTPValidationError);
 
@@ -144,7 +167,7 @@ export type GetNsRecordsData = {
     };
 };
 
-export type GetNsRecordsResponse = (unknown);
+export type GetNsRecordsResponse = (DomainNsRecordResponse);
 
 export type GetNsRecordsError = (HTTPValidationError);
 
@@ -246,7 +269,7 @@ export type FindPleskSubscriptionByDomainData = {
     };
 };
 
-export type FindPleskSubscriptionByDomainResponse = (SubscriptionInfoResponseModel);
+export type FindPleskSubscriptionByDomainResponse = (SubscriptionListResponseModel);
 
 export type FindPleskSubscriptionByDomainError = (HTTPValidationError);
 
