@@ -13,8 +13,9 @@ import {
   VStack,
   Text,
   Icon,
+  Tooltip,
 } from "@chakra-ui/react";
-import { ChevronDownIcon, EmailIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon, EmailIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import { useQuery } from "@tanstack/react-query";
 import {
   findPleskSubscriptionByDomainOptions,
@@ -156,8 +157,25 @@ function App() {
                   <Tr>
                     <Td>
                       {item.host}{" "}
+                      {item.host === aRecordPtr?.records[0] && (
+                        <Tooltip
+                          hasArrow
+                          label="A record of domain points to this host"
+                          bg="gray.300"
+                          color="black"
+                        >
+                          <CheckCircleIcon />
+                        </Tooltip>
+                      )}
                       {item.host === mxRecordPtr?.records[0] && (
-                        <Icon as={EmailIcon} />
+                        <Tooltip
+                          hasArrow
+                          label="MX record points to this host"
+                          bg="gray.300"
+                          color="black"
+                        >
+                          <EmailIcon />
+                        </Tooltip>
                       )}
                     </Td>
                     <Td>{item.id}</Td>
