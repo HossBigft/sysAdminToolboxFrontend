@@ -14,7 +14,7 @@ import {
   Text,
   Icon,
 } from "@chakra-ui/react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon, EmailIcon } from "@chakra-ui/icons";
 import { useQuery } from "@tanstack/react-query";
 import {
   findPleskSubscriptionByDomainOptions,
@@ -56,14 +56,13 @@ function App() {
   });
   console.log(aRecordRequest);
 
-  const aRecord=aRecordRequest?.records[0]
+  const aRecord = aRecordRequest?.records[0];
 
   const { data: aRecordPtr } = useQuery({
     ...getPtrRecordOptions({ query: { ip: aRecord } }),
     enabled: !!aRecord && aRecordRequest.records.length == 1,
     refetchOnWindowFocus: false,
   });
-
 
   console.log(aRecordPtr);
 
@@ -74,7 +73,7 @@ function App() {
   });
   console.log(mxRecordRequest);
 
-  const mxRecord = mxRecordRequest?.records[0]
+  const mxRecord = mxRecordRequest?.records[0];
   const { data: aRecordOfMxRecordRequest } = useQuery({
     ...getARecordOptions({ query: { domain: mxRecord } }),
     enabled: !!mxRecord && mxRecordRequest.records.length == 1,
@@ -82,11 +81,11 @@ function App() {
   });
   console.log(aRecordOfMxRecordRequest);
 
-  const aOfMxRecord = aRecordOfMxRecordRequest?.records[0]
+  const aOfMxRecord = aRecordOfMxRecordRequest?.records[0];
 
   const { data: mxRecordPtr } = useQuery({
     ...getPtrRecordOptions({ query: { ip: aOfMxRecord } }),
-    enabled: !!aOfMxRecord  && aRecordOfMxRecordRequest.records.length == 1,
+    enabled: !!aOfMxRecord && aRecordOfMxRecordRequest.records.length == 1,
     refetchOnWindowFocus: false,
   });
 
@@ -155,7 +154,12 @@ function App() {
               {tableData?.map((item, index) => (
                 <React.Fragment key={index}>
                   <Tr>
-                    <Td>{item.host}</Td>
+                    <Td>
+                      {item.host}{" "}
+                      {item.host === mxRecordPtr?.records[0] && (
+                        <Icon as={EmailIcon} />
+                      )}
+                    </Td>
                     <Td>{item.id}</Td>
                     <Td>{item.name}</Td>
                     <Td>{item.username}</Td>
