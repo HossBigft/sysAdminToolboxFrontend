@@ -22,8 +22,10 @@ import {
   getARecordOptions,
   getPtrRecordOptions,
   getMxRecordOptions,
+  getZoneMasterFromDnsServersOptions,
 } from "../../client/@tanstack/react-query.gen";
 import { createFileRoute } from "@tanstack/react-router";
+import { FiStar } from "react-icons/fi";
 
 export const Route = createFileRoute("/_layout/")({
   component: App,
@@ -55,7 +57,6 @@ function App() {
     retry: 0,
     refetchOnWindowFocus: false,
   });
-  console.log(aRecordRequest);
 
   const aRecord = aRecordRequest?.records[0];
 
@@ -65,22 +66,19 @@ function App() {
     refetchOnWindowFocus: false,
   });
 
-  console.log(aRecordPtr);
-
   const { data: mxRecordRequest } = useQuery({
     ...getMxRecordOptions({ query: { domain: searchTerm } }),
     enabled: triggerSearch && !!searchTerm,
     refetchOnWindowFocus: false,
   });
-  console.log(mxRecordRequest);
 
   const mxRecord = mxRecordRequest?.records[0];
+
   const { data: aRecordOfMxRecordRequest } = useQuery({
     ...getARecordOptions({ query: { domain: mxRecord } }),
     enabled: !!mxRecord && mxRecordRequest.records.length == 1,
     refetchOnWindowFocus: false,
   });
-  console.log(aRecordOfMxRecordRequest);
 
   const aOfMxRecord = aRecordOfMxRecordRequest?.records[0];
 
@@ -90,7 +88,23 @@ function App() {
     refetchOnWindowFocus: false,
   });
 
-  console.log(mxRecordPtr);
+  const { data: zoneMasterInfo } = useQuery({
+    ...getZoneMasterFromDnsServersOptions({ query: { domain: searchTerm } }),
+    enabled: triggerSearch && !!searchTerm,
+    retry: 0,
+    refetchOnWindowFocus: false,
+  });
+
+  const zoneMasterIp =
+    [
+      ...new Set(zoneMasterInfo?.answers?.map((answer) => answer.zone_master)),
+    ] || [];
+
+  const { data: zoneMasterPtr } = useQuery({
+    ...getPtrRecordOptions({ query: { ip: zoneMasterIp[0] } }),
+    enabled: !!zoneMasterIp && zoneMasterIp.length === 1,
+    refetchOnWindowFocus: false,
+  });
 
   useEffect(() => {
     if (subscriptionData || error) {
@@ -157,6 +171,18 @@ function App() {
                   <Tr>
                     <Td>
                       {item.host}{" "}
+                      {item.host === zoneMasterPtr?.records[0] && (
+                        <Tooltip
+                          hasArrow
+                          label={`DNS zone master [${zoneMasterIp}]`}
+                          bg="gray.300"
+                          color="black"
+                        >
+                          <span>
+                            <FiStar />
+                          </span>
+                        </Tooltip>
+                      )}
                       {item.host === aRecordPtr?.records[0] && (
                         <Tooltip
                           hasArrow
