@@ -97,6 +97,33 @@ const EditUser = ({ user, isOpen, onClose }: EditUserProps) => {
           <ModalHeader>Edit User</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
+            <FormControl mt={4}>
+              <FormLabel htmlFor="ssh_username">
+                SSH username on Plesk Servers
+              </FormLabel>
+              <Input
+                id="ssh_username"
+                {...register("ssh_username")}
+                type="text"
+              />
+            </FormControl>
+            <FormControl mt={4} isInvalid={!!errors.password}>
+              <FormLabel htmlFor="password">Set Password</FormLabel>
+              <Input
+                id="password"
+                {...register("password", {
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters",
+                  },
+                })}
+                placeholder="Password"
+                type="password"
+              />
+              {errors.password && (
+                <FormErrorMessage>{errors.password.message}</FormErrorMessage>
+              )}
+            </FormControl>
             <FormControl isInvalid={!!errors.email}>
               <FormLabel htmlFor="email">Email</FormLabel>
               <Input
