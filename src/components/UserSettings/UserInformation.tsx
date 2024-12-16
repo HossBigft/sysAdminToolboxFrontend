@@ -39,6 +39,7 @@ const UserInformation = () => {
     defaultValues: {
       full_name: currentUser?.full_name,
       email: currentUser?.email,
+      ssh_username: currentUser?.ssh_username
     },
   });
 
@@ -79,6 +80,30 @@ const UserInformation = () => {
           as="form"
           onSubmit={handleSubmit(onSubmit)}
         >
+          <FormControl>
+            <FormLabel color={color} htmlFor="ssh_username">
+              SSH username on Plesk Servers
+            </FormLabel>
+            {editMode ? (
+              <Input
+                id="ssh_username"
+                {...register("ssh_username", { maxLength: 30 })}
+                type="text"
+                size="md"
+                w="auto"
+              />
+            ) : (
+              <Text
+                size="md"
+                py={2}
+                color={!currentUser?.ssh_username ? "ui.dim" : "inherit"}
+                isTruncated
+                maxWidth="250px"
+              >
+                {currentUser?.ssh_username || "N/A"}
+              </Text>
+            )}
+          </FormControl>
           <FormControl>
             <FormLabel color={color} htmlFor="name">
               Full name
@@ -125,30 +150,6 @@ const UserInformation = () => {
             )}
             {errors.email && (
               <FormErrorMessage>{errors.email.message}</FormErrorMessage>
-            )}
-          </FormControl>
-          <FormControl>
-            <FormLabel color={color} htmlFor="name">
-              SSH username on Plesk Servers
-            </FormLabel>
-            {editMode ? (
-              <Input
-                id="name"
-                {...register("ssh_username", { maxLength: 30 })}
-                type="text"
-                size="md"
-                w="auto"
-              />
-            ) : (
-              <Text
-                size="md"
-                py={2}
-                color={!currentUser?.ssh_username ? "ui.dim" : "inherit"}
-                isTruncated
-                maxWidth="250px"
-              >
-                {currentUser?.ssh_username || "N/A"}
-              </Text>
             )}
           </FormControl>
           <Flex mt={4} gap={3}>
