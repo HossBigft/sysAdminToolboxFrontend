@@ -51,6 +51,11 @@ export type SubscriptionDetailsModel = {
 
 export type SubscriptionListResponseModel = Array<SubscriptionDetailsModel>;
 
+export type SubscriptionLoginLinkInput = {
+    host: string;
+    subscription_id: number;
+};
+
 export type Token = {
     access_token: string;
     token_type?: string;
@@ -66,6 +71,7 @@ export type UserCreate = {
     is_active?: boolean;
     full_name?: (string | null);
     role?: UserRoles;
+    ssh_username?: (string | null);
     password: string;
 };
 
@@ -74,6 +80,7 @@ export type UserPublic = {
     is_active?: boolean;
     full_name?: (string | null);
     role?: UserRoles;
+    ssh_username?: (string | null);
     id: string;
 };
 
@@ -95,12 +102,14 @@ export type UserUpdate = {
     is_active?: boolean;
     full_name?: (string | null);
     role?: UserRoles;
+    ssh_username?: (string | null);
     password?: (string | null);
 };
 
 export type UserUpdateMe = {
     full_name?: (string | null);
     email?: (string | null);
+    ssh_username?: (string | null);
 };
 
 export type ValidationError = {
@@ -272,6 +281,14 @@ export type FindPleskSubscriptionByDomainData = {
 export type FindPleskSubscriptionByDomainResponse = (SubscriptionListResponseModel);
 
 export type FindPleskSubscriptionByDomainError = (HTTPValidationError);
+
+export type GetSubscriptionLoginLinkData = {
+    body: SubscriptionLoginLinkInput;
+};
+
+export type GetSubscriptionLoginLinkResponse = (unknown);
+
+export type GetSubscriptionLoginLinkError = (HTTPValidationError);
 
 export type HealthCheckResponse = (boolean);
 

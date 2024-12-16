@@ -827,6 +827,50 @@
         }
       }
     },
+    "/api/v1/plesk/subscription/login-link": {
+      "post": {
+        "tags": [
+          "plesk"
+        ],
+        "summary": "Get Subscription Login Link",
+        "operationId": "get_subscription_login_link",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscriptionLoginLinkInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/utils/health-check/": {
       "get": {
         "tags": [
@@ -1078,6 +1122,33 @@
         "type": "array",
         "title": "SubscriptionListResponseModel"
       },
+      "SubscriptionLoginLinkInput": {
+        "properties": {
+          "host": {
+            "type": "string",
+            "maxLength": 253,
+            "minLength": 3,
+            "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
+            "title": "Host"
+          },
+          "subscription_id": {
+            "type": "integer",
+            "title": "Subscription Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "host",
+          "subscription_id"
+        ],
+        "title": "SubscriptionLoginLinkInput",
+        "examples": [
+          {
+            "host": "pkztest.hoster.kz.",
+            "subscription_id": 1124
+          }
+        ]
+      },
       "Token": {
         "properties": {
           "access_token": {
@@ -1147,6 +1218,18 @@
             "$ref": "#/components/schemas/UserRoles",
             "default": "user"
           },
+          "ssh_username": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 33
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ssh Username"
+          },
           "password": {
             "type": "string",
             "maxLength": 40,
@@ -1189,6 +1272,18 @@
           "role": {
             "$ref": "#/components/schemas/UserRoles",
             "default": "user"
+          },
+          "ssh_username": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 33
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ssh Username"
           },
           "id": {
             "type": "string",
@@ -1282,6 +1377,18 @@
             "$ref": "#/components/schemas/UserRoles",
             "default": "user"
           },
+          "ssh_username": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 33
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ssh Username"
+          },
           "password": {
             "anyOf": [
               {
@@ -1325,6 +1432,18 @@
               }
             ],
             "title": "Email"
+          },
+          "ssh_username": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 33
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ssh Username"
           }
         },
         "type": "object",

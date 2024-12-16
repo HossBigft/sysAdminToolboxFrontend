@@ -2,9 +2,9 @@
 
 import type { OptionsLegacyParser } from '@hey-api/client-axios';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
-import type { LoginAccessTokenData, LoginAccessTokenError, LoginAccessTokenResponse, TestTokenError, TestTokenResponse, GetARecordData, GetPtrRecordData, GetZoneMasterFromDnsServersData, GetMxRecordData, GetNsRecordsData, ReadUsersData, CreateUserData, CreateUserError, CreateUserResponse, DeleteUserMeError, DeleteUserMeResponse, UpdateUserMeData, UpdateUserMeError, UpdateUserMeResponse, UpdatePasswordMeData, UpdatePasswordMeError, UpdatePasswordMeResponse, RegisterUserData, RegisterUserError, RegisterUserResponse, ReadUserByIdData, UpdateUserData, UpdateUserError, UpdateUserResponse, DeleteUserData, DeleteUserError, DeleteUserResponse, GetUserActionsData, FindPleskSubscriptionByDomainData } from '../types.gen';
+import type { LoginAccessTokenData, LoginAccessTokenError, LoginAccessTokenResponse, TestTokenError, TestTokenResponse, GetARecordData, GetPtrRecordData, GetZoneMasterFromDnsServersData, GetMxRecordData, GetNsRecordsData, ReadUsersData, CreateUserData, CreateUserError, CreateUserResponse, DeleteUserMeError, DeleteUserMeResponse, UpdateUserMeData, UpdateUserMeError, UpdateUserMeResponse, UpdatePasswordMeData, UpdatePasswordMeError, UpdatePasswordMeResponse, RegisterUserData, RegisterUserError, RegisterUserResponse, ReadUserByIdData, UpdateUserData, UpdateUserError, UpdateUserResponse, DeleteUserData, DeleteUserError, DeleteUserResponse, GetUserActionsData, FindPleskSubscriptionByDomainData, GetSubscriptionLoginLinkData, GetSubscriptionLoginLinkError, GetSubscriptionLoginLinkResponse } from '../types.gen';
 import type { AxiosError } from 'axios';
-import { client, loginAccessToken, testToken, getARecord, getPtrRecord, getZoneMasterFromDnsServers, getMxRecord, getNsRecords, readUsers, createUser, readUserMe, deleteUserMe, updateUserMe, updatePasswordMe, registerUser, readUserById, updateUser, deleteUser, getUserActions, findPleskSubscriptionByDomain, healthCheck } from '../sdk.gen';
+import { client, loginAccessToken, testToken, getARecord, getPtrRecord, getZoneMasterFromDnsServers, getMxRecord, getNsRecords, readUsers, createUser, readUserMe, deleteUserMe, updateUserMe, updatePasswordMe, registerUser, readUserById, updateUser, deleteUser, getUserActions, findPleskSubscriptionByDomain, getSubscriptionLoginLink, healthCheck } from '../sdk.gen';
 
 type QueryKey<TOptions extends OptionsLegacyParser> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -423,6 +423,39 @@ export const findPleskSubscriptionByDomainOptions = (options: OptionsLegacyParse
         },
         queryKey: findPleskSubscriptionByDomainQueryKey(options)
     });
+};
+
+export const getSubscriptionLoginLinkQueryKey = (options: OptionsLegacyParser<GetSubscriptionLoginLinkData>) => [
+    createQueryKey('getSubscriptionLoginLink', options)
+];
+
+export const getSubscriptionLoginLinkOptions = (options: OptionsLegacyParser<GetSubscriptionLoginLinkData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await getSubscriptionLoginLink({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getSubscriptionLoginLinkQueryKey(options)
+    });
+};
+
+export const getSubscriptionLoginLinkMutation = (options?: Partial<OptionsLegacyParser<GetSubscriptionLoginLinkData>>) => {
+    const mutationOptions: UseMutationOptions<GetSubscriptionLoginLinkResponse, AxiosError<GetSubscriptionLoginLinkError>, OptionsLegacyParser<GetSubscriptionLoginLinkData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await getSubscriptionLoginLink({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
 };
 
 export const healthCheckQueryKey = (options?: OptionsLegacyParser) => [
