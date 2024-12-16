@@ -127,6 +127,30 @@ const UserInformation = () => {
               <FormErrorMessage>{errors.email.message}</FormErrorMessage>
             )}
           </FormControl>
+          <FormControl>
+            <FormLabel color={color} htmlFor="name">
+              SSH username on Plesk Servers
+            </FormLabel>
+            {editMode ? (
+              <Input
+                id="name"
+                {...register("ssh_username", { maxLength: 30 })}
+                type="text"
+                size="md"
+                w="auto"
+              />
+            ) : (
+              <Text
+                size="md"
+                py={2}
+                color={!currentUser?.ssh_username ? "ui.dim" : "inherit"}
+                isTruncated
+                maxWidth="250px"
+              >
+                {currentUser?.ssh_username || "N/A"}
+              </Text>
+            )}
+          </FormControl>
           <Flex mt={4} gap={3}>
             <Button
               variant="primary"
