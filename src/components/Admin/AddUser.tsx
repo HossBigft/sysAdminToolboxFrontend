@@ -46,6 +46,7 @@ const AddUser = ({ isOpen, onClose }: AddUserProps) => {
     mode: "onBlur",
     criteriaMode: "all",
     defaultValues: {
+      ssh_username: "",
       email: "",
       full_name: "",
       password: "",
@@ -92,6 +93,18 @@ const AddUser = ({ isOpen, onClose }: AddUserProps) => {
           <ModalHeader>Add User</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
+          <FormControl mt={4} isInvalid={!!errors.full_name}>
+              <FormLabel htmlFor="ssh_username">SSH username on Plesk Servers</FormLabel>
+              <Input
+                id="ssh_username"
+                {...register("ssh_username")}
+                placeholder="SSH username on Plesk Servers"
+                type="text"
+              />
+              {errors.full_name && (
+                <FormErrorMessage>{errors.full_name.message}</FormErrorMessage>
+              )}
+            </FormControl>
             <FormControl isRequired isInvalid={!!errors.email}>
               <FormLabel htmlFor="email">Email</FormLabel>
               <Input
