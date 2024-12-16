@@ -14,6 +14,7 @@ import {
   Text,
   Icon,
   Tooltip,
+  Button,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, EmailIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import { useQuery } from "@tanstack/react-query";
@@ -23,6 +24,7 @@ import {
   getPtrRecordOptions,
   getMxRecordOptions,
   getZoneMasterFromDnsServersOptions,
+  getSubscriptionLoginLinkOptions,
 } from "../../client/@tanstack/react-query.gen";
 import { createFileRoute } from "@tanstack/react-router";
 import { FiStar } from "react-icons/fi";
@@ -36,6 +38,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [triggerSearch, setTriggerSearch] = useState(false); // State to trigger the query when Enter is pressed
   const [lastValidData, setLastValidData] = useState([]); // Keep track of last valid data
+  const [clickedItem, setClickedItem] = useState(null);
 
   // Query for fetching data based on search term
   const {
@@ -106,6 +109,14 @@ function App() {
     refetchOnWindowFocus: false,
   });
 
+  const { data: subscriptionLoginLink, refetch } = useQuery({
+    ...getSubscriptionLoginLinkOptions({
+      body: { host: clickedItem?.host, subscription_id: clickedItem?.id },
+    }),
+    enabled: false, // Do not auto-fetch; we will manually trigger it
+    refetchOnWindowFocus: false,
+  });
+
   useEffect(() => {
     if (subscriptionData || error) {
       setTriggerSearch(false); // Reset triggerSearch when data or error is received
@@ -139,6 +150,10 @@ function App() {
       ? []
       : subscriptionData || lastValidData;
 
+  const handleLoginLinkClick = (item) => {
+    setClickedItem(item); // Set the clicked item
+    refetch(); // Trigger the query to fetch subscription login link
+  };
   return (
     <ChakraProvider>
       <VStack spacing={4} width="100%" margin="50px auto" maxWidth="1200px">
@@ -225,6 +240,15 @@ function App() {
                         }
                         transition="transform 0.2s"
                       />
+                    </Td>
+                    <Td>
+                      <Button
+                        colorScheme="blue"
+                        size="sm"
+                        onClick={() => handleLoginLinkClick(item)}
+                      >
+                        Get Login Link
+                      </Button>
                     </Td>
                   </Tr>
                   <Tr>
