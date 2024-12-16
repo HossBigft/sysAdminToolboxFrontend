@@ -78,8 +78,9 @@ function UsersTable() {
         <Table size={{ base: "sm", md: "md" }}>
           <Thead>
             <Tr>
-              <Th width="20%">Full name</Th>
-              <Th width="50%">Email</Th>
+            <Th width="20%">SSH name</Th>
+              <Th width="10%">Full name</Th>
+              <Th width="40%">Email</Th>
               <Th width="10%">Role</Th>
               <Th width="10%">Status</Th>
               <Th width="10%">Actions</Th>
@@ -99,17 +100,24 @@ function UsersTable() {
             <Tbody>
               {users?.data.map((user) => (
                 <Tr key={user.id}>
+                 <Td
+                    color={!user.ssh_username ? "ui.dim" : "inherit"}
+                    isTruncated
+                    maxWidth="150px"
+                  >
+                    {user.ssh_username || "N/A"}
+                    {currentUser?.id === user.id && (
+                      <Badge ml="1" colorScheme="teal">
+                        You
+                      </Badge>
+                    )}
+                  </Td>
                   <Td
                     color={!user.full_name ? "ui.dim" : "inherit"}
                     isTruncated
                     maxWidth="150px"
                   >
                     {user.full_name || "N/A"}
-                    {currentUser?.id === user.id && (
-                      <Badge ml="1" colorScheme="teal">
-                        You
-                      </Badge>
-                    )}
                   </Td>
                   <Td isTruncated maxWidth="150px">
                     {user.email}
