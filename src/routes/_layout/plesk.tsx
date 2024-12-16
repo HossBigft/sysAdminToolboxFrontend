@@ -15,9 +15,10 @@ import {
   Icon,
   Tooltip,
   Button,
+  useToast,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, EmailIcon, CheckCircleIcon } from "@chakra-ui/icons";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   findPleskSubscriptionByDomainOptions,
   getARecordOptions,
@@ -39,7 +40,8 @@ function App() {
   const [triggerSearch, setTriggerSearch] = useState(false); // State to trigger the query when Enter is pressed
   const [lastValidData, setLastValidData] = useState([]); // Keep track of last valid data
   const [clickedItem, setClickedItem] = useState(null);
-
+  const queryClient = useQueryClient();
+  const toast = useToast();
   // Query for fetching data based on search term
   const {
     data: subscriptionData,
@@ -109,13 +111,50 @@ function App() {
     refetchOnWindowFocus: false,
   });
 
-  const { data: subscriptionLoginLink, refetch } = useQuery({
+  const { data, refetch, isSuccess, isError, errorLogin } = useQuery({
     ...getSubscriptionLoginLinkOptions({
       body: { host: clickedItem?.host, subscription_id: clickedItem?.id },
     }),
-    enabled: false, // Do not auto-fetch; we will manually trigger it
+    queryKey: ["subscriptionLoginLink"],
+    enabled: false,
     refetchOnWindowFocus: false,
   });
+
+  useEffect(() => {
+    if (isSuccess && data) {
+      console.log("success");
+      const toastId = toast({
+        title: "Login link is ready",
+        description: (
+          <div>
+            <a
+              href={data}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => toast.close(toastId)}
+              style={{ color: "blue", textDecoration: "underline" }}
+            >
+              Click me
+            </a>
+          </div>
+        ),
+        status: "success",
+        duration: null,
+        isClosable: true,
+      });
+    }
+  }, [isSuccess, data, refetch]);
+
+  useEffect(() => {
+    if (isError) {
+      console.error("Error fetching login link:", errorLogin);
+      toast({
+        title: "Error",
+        description: `Failed to fetch login link: ${errorLogin.message}`,
+        status: "error",
+      });
+    }
+  }, [isError, error]);
 
   useEffect(() => {
     if (subscriptionData || error) {
@@ -151,9 +190,11 @@ function App() {
       : subscriptionData || lastValidData;
 
   const handleLoginLinkClick = (item) => {
-    setClickedItem(item); // Set the clicked item
-    refetch(); // Trigger the query to fetch subscription login link
+    setClickedItem(item);
+    queryClient.removeQueries(["subscriptionLoginLink"]);
+    refetch();
   };
+
   return (
     <ChakraProvider>
       <VStack spacing={4} width="100%" margin="50px auto" maxWidth="1200px">
@@ -229,6 +270,15 @@ function App() {
                       ))}
                       {item.domains.length > 3 && <Text>...</Text>}
                     </Td>
+                    <Td>
+                      <Button
+                        colorScheme="blue"
+                        size="sm"
+                        onClick={() => handleLoginLinkClick(item)}
+                      >
+                        Get Login Link
+                      </Button>
+                    </Td>
                     <Td
                       onClick={() => handleToggle(index)}
                       style={{ cursor: "pointer", textAlign: "center" }}
@@ -240,15 +290,6 @@ function App() {
                         }
                         transition="transform 0.2s"
                       />
-                    </Td>
-                    <Td>
-                      <Button
-                        colorScheme="blue"
-                        size="sm"
-                        onClick={() => handleLoginLinkClick(item)}
-                      >
-                        Get Login Link
-                      </Button>
                     </Td>
                   </Tr>
                   <Tr>
