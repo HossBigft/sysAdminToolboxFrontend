@@ -115,7 +115,7 @@ function App() {
     ...getSubscriptionLoginLinkOptions({
       body: { host: clickedItem?.host, subscription_id: clickedItem?.id },
     }),
-    queryKey: ["subscriptionLoginLink"],
+    queryKey: ["subscriptionLoginLink", clickedItem?.id],
     enabled: false,
     refetchOnWindowFocus: false,
   });
@@ -190,11 +190,22 @@ function App() {
       : subscriptionData || lastValidData;
 
   const handleLoginLinkClick = (item) => {
-    setClickedItem(item);
     queryClient.removeQueries(["subscriptionLoginLink"]);
+    setClickedItem(item);
     refetch();
   };
 
+  useEffect(() => {
+    if (clickedItem) {
+      refetch({
+        queryKey: ["subscriptionLoginLink"],
+        body: {
+          host: clickedItem?.host,
+          subscription_id: clickedItem?.id,
+        },
+      });
+    }
+  }, [clickedItem, refetch]);
   return (
     <ChakraProvider>
       <VStack spacing={4} width="100%" margin="50px auto" maxWidth="1200px">
