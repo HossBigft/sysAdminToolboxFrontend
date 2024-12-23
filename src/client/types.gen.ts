@@ -40,13 +40,18 @@ export type Message = {
     message: string;
 };
 
+export type NewPassword = {
+    token: string;
+    new_password: string;
+};
+
 export type SubscriptionDetailsModel = {
     host: DomainName;
     id: string;
     name: string;
     username: string;
     userlogin: string;
-    domains: Array<DomainName>;
+    domains: Array<SubscriptionName>;
 };
 
 export type SubscriptionListResponseModel = Array<SubscriptionDetailsModel>;
@@ -54,6 +59,10 @@ export type SubscriptionListResponseModel = Array<SubscriptionDetailsModel>;
 export type SubscriptionLoginLinkInput = {
     host: string;
     subscription_id: number;
+};
+
+export type SubscriptionName = {
+    domain: string;
 };
 
 export type Token = {
@@ -293,3 +302,31 @@ export type GetSubscriptionLoginLinkError = (HTTPValidationError);
 export type HealthCheckResponse = (boolean);
 
 export type HealthCheckError = unknown;
+
+export type RecoverPasswordData = {
+    path: {
+        email: string;
+    };
+};
+
+export type RecoverPasswordResponse = (Message);
+
+export type RecoverPasswordError = (HTTPValidationError);
+
+export type ResetPasswordData = {
+    body: NewPassword;
+};
+
+export type ResetPasswordResponse = (Message);
+
+export type ResetPasswordError = (HTTPValidationError);
+
+export type RecoverPasswordHtmlContentData = {
+    path: {
+        email: string;
+    };
+};
+
+export type RecoverPasswordHtmlContentResponse = (string);
+
+export type RecoverPasswordHtmlContentError = (HTTPValidationError);
