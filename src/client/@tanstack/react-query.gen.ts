@@ -2,9 +2,9 @@
 
 import type { OptionsLegacyParser } from '@hey-api/client-axios';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
-import type { LoginAccessTokenData, LoginAccessTokenError, LoginAccessTokenResponse, TestTokenError, TestTokenResponse, GetARecordData, GetPtrRecordData, GetZoneMasterFromDnsServersData, GetMxRecordData, GetNsRecordsData, ReadUsersData, CreateUserData, CreateUserError, CreateUserResponse, DeleteUserMeError, DeleteUserMeResponse, UpdateUserMeData, UpdateUserMeError, UpdateUserMeResponse, UpdatePasswordMeData, UpdatePasswordMeError, UpdatePasswordMeResponse, RegisterUserData, RegisterUserError, RegisterUserResponse, ReadUserByIdData, UpdateUserData, UpdateUserError, UpdateUserResponse, DeleteUserData, DeleteUserError, DeleteUserResponse, GetUserActionsData, FindPleskSubscriptionByDomainData, GetSubscriptionLoginLinkData, GetSubscriptionLoginLinkError, GetSubscriptionLoginLinkResponse, RecoverPasswordData, RecoverPasswordError, RecoverPasswordResponse, ResetPasswordData, ResetPasswordError, ResetPasswordResponse, RecoverPasswordHtmlContentData, RecoverPasswordHtmlContentError, RecoverPasswordHtmlContentResponse } from '../types.gen';
+import type { LoginAccessTokenData, LoginAccessTokenError, LoginAccessTokenResponse, TestTokenError, TestTokenResponse, GetARecordData, GetPtrRecordData, GetZoneMasterFromDnsServersData, DeleteZoneFileForDomainData, DeleteZoneFileForDomainError, DeleteZoneFileForDomainResponse, GetMxRecordData, GetNsRecordsData, ReadUsersData, CreateUserData, CreateUserError, CreateUserResponse, DeleteUserMeError, DeleteUserMeResponse, UpdateUserMeData, UpdateUserMeError, UpdateUserMeResponse, UpdatePasswordMeData, UpdatePasswordMeError, UpdatePasswordMeResponse, RegisterUserData, RegisterUserError, RegisterUserResponse, ReadUserByIdData, UpdateUserData, UpdateUserError, UpdateUserResponse, DeleteUserData, DeleteUserError, DeleteUserResponse, GetUserActionsData, FindPleskSubscriptionByDomainData, GetSubscriptionLoginLinkData, GetSubscriptionLoginLinkError, GetSubscriptionLoginLinkResponse, SetZonemasterData, SetZonemasterError, SetZonemasterResponse, RecoverPasswordData, RecoverPasswordError, RecoverPasswordResponse, ResetPasswordData, ResetPasswordError, ResetPasswordResponse, RecoverPasswordHtmlContentData, RecoverPasswordHtmlContentError, RecoverPasswordHtmlContentResponse } from '../types.gen';
 import type { AxiosError } from 'axios';
-import { client, loginAccessToken, testToken, getARecord, getPtrRecord, getZoneMasterFromDnsServers, getMxRecord, getNsRecords, readUsers, createUser, readUserMe, deleteUserMe, updateUserMe, updatePasswordMe, registerUser, readUserById, updateUser, deleteUser, getUserActions, findPleskSubscriptionByDomain, getSubscriptionLoginLink, healthCheck, recoverPassword, resetPassword, recoverPasswordHtmlContent } from '../sdk.gen';
+import { client, loginAccessToken, testToken, getARecord, getPtrRecord, getZoneMasterFromDnsServers, deleteZoneFileForDomain, getMxRecord, getNsRecords, readUsers, createUser, readUserMe, deleteUserMe, updateUserMe, updatePasswordMe, registerUser, readUserById, updateUser, deleteUser, getUserActions, findPleskSubscriptionByDomain, getSubscriptionLoginLink, setZonemaster, healthCheck, recoverPassword, resetPassword, recoverPasswordHtmlContent } from '../sdk.gen';
 
 type QueryKey<TOptions extends OptionsLegacyParser> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -154,6 +154,20 @@ export const getZoneMasterFromDnsServersOptions = (options: OptionsLegacyParser<
         },
         queryKey: getZoneMasterFromDnsServersQueryKey(options)
     });
+};
+
+export const deleteZoneFileForDomainMutation = (options?: Partial<OptionsLegacyParser<DeleteZoneFileForDomainData>>) => {
+    const mutationOptions: UseMutationOptions<DeleteZoneFileForDomainResponse, AxiosError<DeleteZoneFileForDomainError>, OptionsLegacyParser<DeleteZoneFileForDomainData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await deleteZoneFileForDomain({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
 };
 
 export const getMxRecordQueryKey = (options: OptionsLegacyParser<GetMxRecordData>) => [
@@ -448,6 +462,39 @@ export const getSubscriptionLoginLinkMutation = (options?: Partial<OptionsLegacy
     const mutationOptions: UseMutationOptions<GetSubscriptionLoginLinkResponse, AxiosError<GetSubscriptionLoginLinkError>, OptionsLegacyParser<GetSubscriptionLoginLinkData>> = {
         mutationFn: async (localOptions) => {
             const { data } = await getSubscriptionLoginLink({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const setZonemasterQueryKey = (options: OptionsLegacyParser<SetZonemasterData>) => [
+    createQueryKey('setZonemaster', options)
+];
+
+export const setZonemasterOptions = (options: OptionsLegacyParser<SetZonemasterData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await setZonemaster({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: setZonemasterQueryKey(options)
+    });
+};
+
+export const setZonemasterMutation = (options?: Partial<OptionsLegacyParser<SetZonemasterData>>) => {
+    const mutationOptions: UseMutationOptions<SetZonemasterResponse, AxiosError<SetZonemasterError>, OptionsLegacyParser<SetZonemasterData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await setZonemaster({
                 ...options,
                 ...localOptions,
                 throwOnError: true

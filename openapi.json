@@ -143,7 +143,6 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "ipvanyaddress",
               "title": "Ip"
             }
           }
@@ -191,7 +190,53 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 253,
-              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,8}$",
+              "title": "Domain"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "dns"
+        ],
+        "summary": "Delete Zone File For Domain",
+        "operationId": "delete_zone_file_for_domain",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 253,
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,8}$",
               "title": "Domain"
             }
           }
@@ -891,6 +936,52 @@
         ]
       }
     },
+    "/api/v1/plesk/zonemaster/set": {
+      "post": {
+        "tags": [
+          "plesk"
+        ],
+        "summary": "Set Zonemaster",
+        "operationId": "set_zonemaster",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetZonemasterInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/utils/health-check/": {
       "get": {
         "tags": [
@@ -1199,21 +1290,8 @@
         "title": "HTTPValidationError"
       },
       "IPv4Address": {
-        "properties": {
-          "ip": {
-            "type": "string",
-            "format": "ipvanyaddress",
-            "title": "Ip"
-          }
-        },
-        "type": "object",
-        "required": [
-          "ip"
-        ],
-        "title": "IPv4Address",
-        "examples": [
-          "249.44.166.171"
-        ]
+        "type": "string",
+        "title": "IPv4Address"
       },
       "Message": {
         "properties": {
@@ -1247,6 +1325,36 @@
           "new_password"
         ],
         "title": "NewPassword"
+      },
+      "SetZonemasterInput": {
+        "properties": {
+          "target_plesk_server": {
+            "type": "string",
+            "maxLength": 253,
+            "minLength": 3,
+            "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
+            "title": "Target Plesk Server"
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 253,
+            "minLength": 3,
+            "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,8}$",
+            "title": "Domain"
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_plesk_server",
+          "domain"
+        ],
+        "title": "SetZonemasterInput",
+        "examples": [
+          {
+            "domain": "domain.kz",
+            "target_plesk_server": "pkztest.hoster.kz."
+          }
+        ]
       },
       "SubscriptionDetailsModel": {
         "properties": {
@@ -1414,7 +1522,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 33
+                "maxLength": 32
               },
               {
                 "type": "null"
@@ -1469,7 +1577,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 33
+                "maxLength": 32
               },
               {
                 "type": "null"
@@ -1573,7 +1681,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 33
+                "maxLength": 32
               },
               {
                 "type": "null"

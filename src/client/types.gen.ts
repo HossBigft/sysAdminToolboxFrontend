@@ -32,9 +32,7 @@ export type HTTPValidationError = {
     detail?: Array<ValidationError>;
 };
 
-export type IPv4Address = {
-    ip: string;
-};
+export type IPv4Address = string;
 
 export type Message = {
     message: string;
@@ -43,6 +41,11 @@ export type Message = {
 export type NewPassword = {
     token: string;
     new_password: string;
+};
+
+export type SetZonemasterInput = {
+    target_plesk_server: string;
+    domain: string;
 };
 
 export type SubscriptionDetailsModel = {
@@ -168,6 +171,16 @@ export type GetZoneMasterFromDnsServersData = {
 export type GetZoneMasterFromDnsServersResponse = (unknown);
 
 export type GetZoneMasterFromDnsServersError = (HTTPValidationError);
+
+export type DeleteZoneFileForDomainData = {
+    query: {
+        domain: string;
+    };
+};
+
+export type DeleteZoneFileForDomainResponse = (unknown);
+
+export type DeleteZoneFileForDomainError = (HTTPValidationError);
 
 export type GetMxRecordData = {
     query: {
@@ -298,6 +311,14 @@ export type GetSubscriptionLoginLinkData = {
 export type GetSubscriptionLoginLinkResponse = (unknown);
 
 export type GetSubscriptionLoginLinkError = (HTTPValidationError);
+
+export type SetZonemasterData = {
+    body: SetZonemasterInput;
+};
+
+export type SetZonemasterResponse = (Message);
+
+export type SetZonemasterError = (HTTPValidationError);
 
 export type HealthCheckResponse = (boolean);
 
