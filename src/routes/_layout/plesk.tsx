@@ -15,17 +15,14 @@ import {
   Icon,
   Tooltip,
   Button,
-  useToast,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, EmailIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  findPleskSubscriptionByDomainOptions,
-  getSubscriptionLoginLinkOptions,
-} from "../../client/@tanstack/react-query.gen";
+import { findPleskSubscriptionByDomainOptions } from "../../client/@tanstack/react-query.gen";
 import { createFileRoute } from "@tanstack/react-router";
 import { FiStar } from "react-icons/fi";
 import { useDnsRecords } from "../../hooks/dns/useDnsRecords";
+import useSubscriptionLoginLink from "../../hooks/plesk/useSubscriptionLoginLink";
 
 export const Route = createFileRoute("/_layout/")({
   component: App,
@@ -38,7 +35,7 @@ function App() {
   const [lastValidData, setLastValidData] = useState([]); // Keep track of last valid data
   const [clickedItem, setClickedItem] = useState(null);
   const queryClient = useQueryClient();
-  const toast = useToast();
+
   // Query for fetching data based on search term
   const {
     data: subscriptionData,
@@ -58,62 +55,7 @@ function App() {
     triggerSearch
   );
 
-  const { data, refetch, isSuccess, isError, errorLogin } = useQuery({
-    ...getSubscriptionLoginLinkOptions({
-      body: { host: clickedItem?.host, subscription_id: clickedItem?.id },
-    }),
-    queryKey: ["subscriptionLoginLink", clickedItem?.id],
-    enabled: false,
-    refetchOnWindowFocus: false,
-  });
-
-  useEffect(() => {
-    if (isSuccess && data) {
-      console.log("success");
-      const toastId = toast({
-        title: "Login link is ready",
-        description: (
-          <div>
-            <a
-              href={data}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => toast.close(toastId)}
-              style={{ color: "blue", textDecoration: "underline" }}
-            >
-              Click me
-            </a>
-          </div>
-        ),
-        status: "success",
-        duration: null,
-        isClosable: true,
-      });
-    }
-  }, [isSuccess, data, refetch]);
-
-  useEffect(() => {
-    if (isError) {
-      console.error("Error fetching login link:", errorLogin);
-      toast({
-        title: "Error",
-        description: `Failed to fetch login link: ${errorLogin.message}`,
-        status: "error",
-      });
-    }
-  }, [isError, error]);
-
-  useEffect(() => {
-    if (subscriptionData || error) {
-      setTriggerSearch(false); // Reset triggerSearch when data or error is received
-    }
-  }, [subscriptionData, error]);
-
-  useEffect(() => {
-    if (subscriptionData?.length) {
-      setLastValidData(subscriptionData); // Store valid data after successful fetch
-    }
-  }, [subscriptionData]);
+  const { refetch } = useSubscriptionLoginLink(clickedItem);
 
   const handleToggle = (index) => {
     setExpanded((prevState) => ({
