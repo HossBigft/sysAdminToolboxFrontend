@@ -21,14 +21,11 @@ import { ChevronDownIcon, EmailIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   findPleskSubscriptionByDomainOptions,
-  getARecordOptions,
-  getPtrRecordOptions,
-  getMxRecordOptions,
-  getZoneMasterFromDnsServersOptions,
   getSubscriptionLoginLinkOptions,
 } from "../../client/@tanstack/react-query.gen";
 import { createFileRoute } from "@tanstack/react-router";
 import { FiStar } from "react-icons/fi";
+import { useDnsRecords } from "../../hooks/dns/useDnsRecords";
 
 export const Route = createFileRoute("/_layout/")({
   component: App,
@@ -56,60 +53,10 @@ function App() {
     refetchOnWindowFocus: false,
   });
 
-  const { data: aRecordRequest } = useQuery({
-    ...getARecordOptions({ query: { domain: searchTerm } }),
-    enabled: triggerSearch && !!searchTerm,
-    retry: 0,
-    refetchOnWindowFocus: false,
-  });
-
-  const aRecord = aRecordRequest?.records[0];
-
-  const { data: aRecordPtr } = useQuery({
-    ...getPtrRecordOptions({ query: { ip: aRecord } }),
-    enabled: !!aRecord && aRecordRequest.records.length == 1,
-    refetchOnWindowFocus: false,
-  });
-
-  const { data: mxRecordRequest } = useQuery({
-    ...getMxRecordOptions({ query: { domain: searchTerm } }),
-    enabled: triggerSearch && !!searchTerm,
-    refetchOnWindowFocus: false,
-  });
-
-  const mxRecord = mxRecordRequest?.records[0];
-
-  const { data: aRecordOfMxRecordRequest } = useQuery({
-    ...getARecordOptions({ query: { domain: mxRecord } }),
-    enabled: !!mxRecord && mxRecordRequest.records.length == 1,
-    refetchOnWindowFocus: false,
-  });
-
-  const aOfMxRecord = aRecordOfMxRecordRequest?.records[0];
-
-  const { data: mxRecordPtr } = useQuery({
-    ...getPtrRecordOptions({ query: { ip: aOfMxRecord } }),
-    enabled: !!aOfMxRecord && aRecordOfMxRecordRequest.records.length == 1,
-    refetchOnWindowFocus: false,
-  });
-
-  const { data: zoneMasterInfo } = useQuery({
-    ...getZoneMasterFromDnsServersOptions({ query: { domain: searchTerm } }),
-    enabled: triggerSearch && !!searchTerm,
-    retry: 0,
-    refetchOnWindowFocus: false,
-  });
-
-  const zoneMasterIp =
-    [
-      ...new Set(zoneMasterInfo?.answers?.map((answer) => answer.zone_master)),
-    ] || [];
-
-  const { data: zoneMasterPtr } = useQuery({
-    ...getPtrRecordOptions({ query: { ip: zoneMasterIp[0] } }),
-    enabled: !!zoneMasterIp && zoneMasterIp.length === 1,
-    refetchOnWindowFocus: false,
-  });
+  const { aRecord, mxRecord, zoneMaster } = useDnsRecords(
+    searchTerm,
+    triggerSearch
+  );
 
   const { data, refetch, isSuccess, isError, errorLogin } = useQuery({
     ...getSubscriptionLoginLinkOptions({
@@ -238,10 +185,10 @@ function App() {
                   <Tr>
                     <Td>
                       {item.host}{" "}
-                      {item.host === zoneMasterPtr?.records[0] && (
+                      {item.host === zoneMaster.ptr && (
                         <Tooltip
                           hasArrow
-                          label={`DNS zone master [${zoneMasterIp}]`}
+                          label={`DNS zone master [${zoneMaster.ip}]`}
                           bg="gray.300"
                           color="black"
                         >
@@ -250,7 +197,7 @@ function App() {
                           </span>
                         </Tooltip>
                       )}
-                      {item.host === aRecordPtr?.records[0] && (
+                      {item.host === aRecord.ptr && (
                         <Tooltip
                           hasArrow
                           label="A record of domain points to this host"
@@ -260,7 +207,7 @@ function App() {
                           <CheckCircleIcon />
                         </Tooltip>
                       )}
-                      {item.host === mxRecordPtr?.records[0] && (
+                      {item.host === mxRecord.ptr && (
                         <Tooltip
                           hasArrow
                           label="MX record points to this host"
