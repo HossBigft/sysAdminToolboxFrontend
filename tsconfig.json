@@ -20,6 +20,6 @@
       "noUnusedParameters": true,
       "noFallthroughCasesInSwitch": true
     },
-    "include": ["src/**/*.ts", "tests/**/*.ts", "playwright.config.ts"],
+    "include": ["src/**/*.ts", "tests/**/*.ts", "playwright.config.ts", "src/components/SubscriptionSearch/SearchInput.tsx", "src/components/SubscriptionSearch/HostCell.tsx", "src/components/SubscriptionSearch/DomainsList.tsx"],
     "references": [{ "path": "./tsconfig.node.json" }]
 }
