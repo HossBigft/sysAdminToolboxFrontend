@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   ChakraProvider,
@@ -50,6 +50,12 @@ function SubscriptionSearchApp() {
       setTriggerSearch(true);
     }
   };
+
+  useEffect(() => {
+    if (subscriptionData || error) {
+      setTriggerSearch(false); // Reset triggerSearch when data or error is received
+    }
+  }, [subscriptionData, error]);
 
   const handleLoginLinkClick = (item) => {
     queryClient.removeQueries(["subscriptionLoginLink"]);
