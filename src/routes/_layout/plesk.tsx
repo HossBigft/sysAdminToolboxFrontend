@@ -36,12 +36,13 @@ function SubscriptionSearchApp() {
     data: subscriptionData,
     error,
     isLoading,
-    isFetching,
   } = useSubscriptionSearch(searchTerm, triggerSearch);
+
   const { aRecord, mxRecord, zoneMaster } = useDnsRecords(
     searchTerm,
     triggerSearch
   );
+
   const { refetch: refetchLoginLink } = useSubscriptionLoginLink(clickedItem);
 
   const handleSearch = (e) => {
