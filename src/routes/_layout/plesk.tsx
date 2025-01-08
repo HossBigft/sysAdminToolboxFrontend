@@ -30,6 +30,7 @@ function SubscriptionSearchApp() {
   const [triggerSearch, setTriggerSearch] = useState(false);
   const [clickedItem, setClickedItem] = useState(null);
   const queryClient = useQueryClient();
+  const currentUser = queryClient.getQueryData<UserPublic>(["currentUser"]);
 
   const {
     data: subscriptionData,
@@ -78,7 +79,9 @@ function SubscriptionSearchApp() {
                 <Th>Username</Th>
                 <Th>User Login</Th>
                 <Th>Domains</Th>
-                <Th width="100px">Actions</Th>
+                {currentUser.ssh_username !== "" && (
+                  <Th width="100px">Actions</Th>
+                )}
               </Tr>
             </Thead>
             <Tbody>
@@ -100,13 +103,15 @@ function SubscriptionSearchApp() {
                     <DomainsList domains={item.domains} />
                   </Td>
                   <Td>
-                    <Button
-                      colorScheme="blue"
-                      size="sm"
-                      onClick={() => handleLoginLinkClick(item)}
-                    >
-                      Get Login Link
-                    </Button>
+                    {currentUser.ssh_username !== "" && (
+                      <Button
+                        colorScheme="blue"
+                        size="sm"
+                        onClick={() => handleLoginLinkClick(item)}
+                      >
+                        Get Login Link
+                      </Button>
+                    )}
                   </Td>
                 </Tr>
               ))}
