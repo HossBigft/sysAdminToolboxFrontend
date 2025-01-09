@@ -12,6 +12,7 @@ import {
   VStack,
   Text,
   Button,
+  HStack,
 } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import SearchInput from "../../components/SubscriptionSearch/SearchInput";
@@ -20,7 +21,7 @@ import DomainsList from "../../components/SubscriptionSearch/DomainsList";
 import { useSubscriptionSearch } from "../../hooks/plesk/useSubscriptionSearch";
 import { useDnsRecords } from "../../hooks/dns/useDnsRecords";
 import useSubscriptionLoginLink from "../../hooks/plesk/useSubscriptionLoginLink";
-
+import useSetZoneMaster from "../../hooks/plesk/useSetZoneMaster";
 export const Route = createFileRoute("/_layout/")({
   component: SubscriptionSearchApp,
 });
@@ -44,7 +45,7 @@ function SubscriptionSearchApp() {
   );
 
   const { refetch: refetchLoginLink } = useSubscriptionLoginLink(clickedItem);
-
+  const { mutateZoneMaster } = useSetZoneMaster();
   const handleSearch = (e) => {
     if (e.key === "Enter" && searchTerm.trim()) {
       setTriggerSearch(true);
@@ -63,6 +64,12 @@ function SubscriptionSearchApp() {
     refetchLoginLink();
   };
 
+  const handleSetZoneMasterClick = (item, searchTerm) => {
+    setClickedItem(item);
+    mutateZoneMaster({
+      body: { target_plesk_server: item.host, domain: searchTerm },
+    });
+  };
   return (
     <ChakraProvider>
       <VStack spacing={4} width="100%" margin="50px auto" maxWidth="1200px">
@@ -110,15 +117,28 @@ function SubscriptionSearchApp() {
                     <DomainsList domains={item.domains} />
                   </Td>
                   <Td>
-                    {currentUser.ssh_username !== "" && (
+                    <HStack spacing={2}>
+                      {" "}
+                      {/* or Stack direction="row" */}
+                      {currentUser.ssh_username !== "" && (
+                        <Button
+                          colorScheme="blue"
+                          size="sm"
+                          onClick={() => handleLoginLinkClick(item)}
+                        >
+                          Get Login Link
+                        </Button>
+                      )}
                       <Button
                         colorScheme="blue"
                         size="sm"
-                        onClick={() => handleLoginLinkClick(item)}
+                        onClick={() =>
+                          handleSetZoneMasterClick(item, searchTerm)
+                        }
                       >
-                        Get Login Link
+                        Set as zoneMaster
                       </Button>
-                    )}
+                    </HStack>
                   </Td>
                 </Tr>
               ))}
