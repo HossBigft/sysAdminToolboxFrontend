@@ -32,7 +32,6 @@ function SubscriptionSearchApp() {
   const [clickedItem, setClickedItem] = useState(null);
   const queryClient = useQueryClient();
   const currentUser = queryClient.getQueryData<UserPublic>(["currentUser"]);
-
   const {
     data: subscriptionData,
     error,
@@ -93,7 +92,7 @@ function SubscriptionSearchApp() {
                 <Th>Username</Th>
                 <Th>User Login</Th>
                 <Th>Domains</Th>
-                {currentUser.ssh_username !== "" && (
+                {currentUser?.ssh_username !== "" && (
                   <Th width="100px">Actions</Th>
                 )}
               </Tr>
@@ -120,7 +119,7 @@ function SubscriptionSearchApp() {
                     <HStack spacing={2}>
                       {" "}
                       {/* or Stack direction="row" */}
-                      {currentUser.ssh_username !== "" && (
+                      {currentUser?.ssh_username !== "" && (
                         <Button
                           colorScheme="blue"
                           size="sm"
