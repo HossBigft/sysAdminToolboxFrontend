@@ -30,13 +30,15 @@ function SubscriptionSearchApp() {
   const [searchTerm, setSearchTerm] = useState("");
   const [triggerSearch, setTriggerSearch] = useState(false);
   const [clickedItem, setClickedItem] = useState(null);
+  const [finalSearchTerm, setFinalSearchTerm] = useState("");
+
   const queryClient = useQueryClient();
   const currentUser = queryClient.getQueryData<UserPublic>(["currentUser"]);
   const {
     data: subscriptionData,
     error,
     isLoading,
-  } = useSubscriptionSearch(searchTerm, triggerSearch);
+  } = useSubscriptionSearch(finalSearchTerm);
 
   const { aRecord, mxRecord, zoneMaster } = useDnsRecords(
     searchTerm,
@@ -47,7 +49,7 @@ function SubscriptionSearchApp() {
   const { mutateZoneMaster } = useSetZoneMaster();
   const handleSearch = (e) => {
     if (e.key === "Enter" && searchTerm.trim()) {
-      setTriggerSearch(true);
+      setFinalSearchTerm(searchTerm.trim()); // Trigger the search with current input
     }
   };
 
