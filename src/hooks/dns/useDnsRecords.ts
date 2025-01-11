@@ -3,13 +3,13 @@ import { useARecord } from "./useARecord";
 import { useMxRecord } from "./useMxRecord";
 import { useZoneMaster } from "./useZoneMaster";
 
-export const useDnsRecords = (searchTerm, triggerSearch) => {
-  const enabled = triggerSearch && !!searchTerm;
-  
+export const useDnsRecords = (searchTerm) => {
+
+
   return {
-    aRecord: useARecord(searchTerm, enabled),
-    mxRecord: useMxRecord(searchTerm, enabled),
-    zoneMaster: useZoneMaster(searchTerm, enabled),
+    aRecord: useARecord(searchTerm),
+    mxRecord: useMxRecord(searchTerm),
+    zoneMaster: useZoneMaster(searchTerm),
   };
 };
 

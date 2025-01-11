@@ -28,7 +28,6 @@ export const Route = createFileRoute("/_layout/")({
 
 function SubscriptionSearchApp() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [triggerSearch, setTriggerSearch] = useState(false);
   const [clickedItem, setClickedItem] = useState(null);
   const [finalSearchTerm, setFinalSearchTerm] = useState("");
 
@@ -41,8 +40,7 @@ function SubscriptionSearchApp() {
   } = useSubscriptionSearch(finalSearchTerm);
 
   const { aRecord, mxRecord, zoneMaster } = useDnsRecords(
-    searchTerm,
-    triggerSearch
+    finalSearchTerm
   );
 
   const { refetch: refetchLoginLink } = useSubscriptionLoginLink(clickedItem);
@@ -53,11 +51,6 @@ function SubscriptionSearchApp() {
     }
   };
 
-  useEffect(() => {
-    if (subscriptionData || error) {
-      setTriggerSearch(false); // Reset triggerSearch when data or error is received
-    }
-  }, [subscriptionData, error]);
 
   const handleLoginLinkClick = (item) => {
     queryClient.removeQueries(["subscriptionLoginLink"]);
