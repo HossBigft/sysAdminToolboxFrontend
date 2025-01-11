@@ -18,6 +18,7 @@ const useSubscriptionLoginLink = (clickedItem) => {
     queryKey: ["subscriptionLoginLink", clickedItem?.id],
     enabled: false,
     refetchOnWindowFocus: false,
+    retry: 0,
   });
   const toast = useToast();
 
