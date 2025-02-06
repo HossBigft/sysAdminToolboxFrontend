@@ -3,13 +3,12 @@ export const BASE_OPTIONS = {
   refetchOnWindowFocus: false,
 };
 
-export const createQuery = (options, enabled = true) => ({
+export const createQuery = (options) => ({
   ...options,
   ...BASE_OPTIONS,
-  enabled,
+  enabled: true,
 });
 
 export const getFirstRecord = (data) => data?.records?.[0];
 
 export const hasExactlyOneRecord = (data) => data?.records?.length === 1;
-

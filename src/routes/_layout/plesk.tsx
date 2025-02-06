@@ -39,7 +39,7 @@ function SubscriptionSearchApp() {
     isLoading,
   } = useSubscriptionSearch(finalSearchTerm);
 
-  const { aRecord, mxRecord, zoneMaster } = useDnsRecords(
+  const { aRecord, mxRecord, zoneMaster, refetchDnsRecords } = useDnsRecords(
     finalSearchTerm
   );
 
@@ -47,7 +47,8 @@ function SubscriptionSearchApp() {
   const { mutateZoneMaster } = useSetZoneMaster();
   const handleSearch = (e) => {
     if (e.key === "Enter" && searchTerm.trim()) {
-      setFinalSearchTerm(searchTerm.trim()); // Trigger the search with current input
+      setFinalSearchTerm(searchTerm.trim());
+      refetchDnsRecords()
     }
   };
 

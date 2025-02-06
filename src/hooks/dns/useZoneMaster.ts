@@ -29,5 +29,6 @@ export const useZoneMaster = (domain, enabled = true) => {
     ptr: ptrQuery.data?.records?.[0],
     isLoading: zoneMasterQuery.isLoading || ptrQuery.isLoading,
     error: zoneMasterQuery.error || ptrQuery.error,
+    refetch: zoneMasterQuery.refetch
   };
 };

@@ -37,5 +37,6 @@ export const useMxRecord = (domain, enabled = true) => {
     isLoading:
       mxRecordQuery.isLoading || aRecordQuery.isLoading || ptrQuery.isLoading,
     error: mxRecordQuery.error || aRecordQuery.error || ptrQuery.error,
+    refetch: mxRecordQuery.refetch
   };
 };
