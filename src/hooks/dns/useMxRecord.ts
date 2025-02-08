@@ -7,9 +7,9 @@ import {
 } from "../../client/@tanstack/react-query.gen";
 import { createQuery, getFirstRecord, hasExactlyOneRecord } from "./utils";
 
-export const useMxRecord = (domain, enabled = true) => {
+export const useMxRecord = (domain) => {
   const mxRecordQuery = useQuery(
-    createQuery(getMxRecordOptions({ query: { domain } }), enabled)
+    createQuery(getMxRecordOptions({ query: { domain } }))
   );
 
   const mxRecord = getFirstRecord(mxRecordQuery.data);

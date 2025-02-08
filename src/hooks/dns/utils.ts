@@ -3,10 +3,10 @@ export const BASE_OPTIONS = {
   refetchOnWindowFocus: false,
 };
 
-export const createQuery = (options) => ({
+export const createQuery = (options, enabled=false) => ({
   ...options,
   ...BASE_OPTIONS,
-  enabled: true,
+  enabled: enabled,
 });
 
 export const getFirstRecord = (data) => data?.records?.[0];

@@ -5,11 +5,10 @@ import {
 } from "../../client/@tanstack/react-query.gen";
 import { createQuery } from "./utils";
 
-export const useZoneMaster = (domain, enabled = true) => {
+export const useZoneMaster = (domain) => {
   const zoneMasterQuery = useQuery(
     createQuery(
-      getZoneMasterFromDnsServersOptions({ query: { domain } }),
-      enabled
+      getZoneMasterFromDnsServersOptions({ query: { domain } })
     )
   );
 
