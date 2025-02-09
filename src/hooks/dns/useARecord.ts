@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import {
   getARecordOptions,
   getPtrRecordOptions,
@@ -6,18 +7,32 @@ import {
 import { createQuery, getFirstRecord, hasExactlyOneRecord } from "./utils";
 
 export const useARecord = (domain) => {
-  console.log('useARecord called with domain:', domain);
-  
+  const [shouldFetch, setShouldFetch] = useState(false);
+  console.log("useARecord called with domain:", domain);
+
   const aRecordQuery = useQuery(
-    createQuery(getARecordOptions({ query: { domain } }))
+    createQuery(
+      getARecordOptions({ query: { domain } }),
+      !!domain && shouldFetch
+    )
   );
+
+  useEffect(() => {
+    if (aRecordQuery.isError || aRecordQuery.isSuccess) {
+      setShouldFetch(false);
+    }
+  }, [aRecordQuery.error, aRecordQuery.isSuccess]);
+
   
-  console.log('aRecordQuery state:', aRecordQuery.status);
-  
+  useEffect(() => {
+    console.log("Updated Fetch Status:", shouldFetch);
+  }, [shouldFetch]);
+  console.log("aRecordQuery state:", aRecordQuery.status);
+
   const aRecord = getFirstRecord(aRecordQuery.data);
 
   return {
     ip: aRecord,
-    refetch: aRecordQuery.refetch,
+    fetch: () => setShouldFetch(true),
   };
 };

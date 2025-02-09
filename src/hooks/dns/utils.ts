@@ -1,6 +1,8 @@
 export const BASE_OPTIONS = {
   retry: 0,
   refetchOnWindowFocus: false,
+  refetchOnMount: false,
+  refetchOnReconnect: false
 };
 
 export const createQuery = (options, enabled = false) => ({

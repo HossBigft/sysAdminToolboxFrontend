@@ -9,7 +9,7 @@ import { createQuery, getFirstRecord, hasExactlyOneRecord } from "./utils";
 
 export const useMxRecord = (domain) => {
   const mxRecordQuery = useQuery(
-    createQuery(getMxRecordOptions({ query: { domain } }))
+    createQuery(getMxRecordOptions({ query: { domain } }), !!domain)
   );
 
   const mxRecord = getFirstRecord(mxRecordQuery.data);
