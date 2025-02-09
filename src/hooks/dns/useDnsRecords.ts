@@ -6,13 +6,17 @@ import { useZoneMaster } from "./useZoneMaster";
 export const useDnsRecords = (searchTerm) => {
   const aRecord = useARecord(searchTerm);
   const mxRecord = useMxRecord(searchTerm);
-  const zoneMaster = useZoneMaster(searchTerm);
+  const zoneMaster = ()=>{};
+  // const mxRecord = ()=>{};
+  // const zoneMaster = ()=>{};
 
 
-  const refetch = () => {
-    aRecord.refetch();
-    mxRecord.refetch()
-    zoneMaster.refetch()
+  const refetch = async () => {
+    console.log("Global refetch triggered")
+    await aRecord.refetch()
+    console.log("arecord value in usedns hook", aRecord)
+    await mxRecord.refetch()
+    // await zoneMaster.refetch()
   }
     
 

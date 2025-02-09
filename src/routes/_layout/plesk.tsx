@@ -47,6 +47,7 @@ function SubscriptionSearchApp() {
   const { mutateZoneMaster } = useSetZoneMaster();
   const handleSearch = (e) => {
     if (e.key === "Enter" && searchTerm.trim()) {
+      console.log("search triggered")
       setFinalSearchTerm(searchTerm.trim());
       refetchDnsRecords()
     }
