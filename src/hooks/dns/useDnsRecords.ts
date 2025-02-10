@@ -15,7 +15,7 @@ export const useDnsRecords = (searchTerm) => {
     console.log("Global refetch triggered")
     aRecord.fetch()
     console.log("arecord value in usedns hook", aRecord)
-    await mxRecord.refetch()
+    mxRecord.fetch()
     // await zoneMaster.refetch()
   }
     
