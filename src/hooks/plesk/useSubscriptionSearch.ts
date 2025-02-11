@@ -1,12 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { findPleskSubscriptionByDomainOptions } from "../../client/@tanstack/react-query.gen";
 
 export const useSubscriptionSearch = (searchTerm) => {
-  return useQuery({
+  const [shouldFetch, setShouldFetch] = useState(false);
+
+  const subscriptionQuery = useQuery({
     ...findPleskSubscriptionByDomainOptions({ query: { domain: searchTerm } }),
     queryKey: ["subscriptionSearch", searchTerm],
-    enabled: !!searchTerm, 
+    enabled: shouldFetch && !!searchTerm,
     retry: 0,
     refetchOnWindowFocus: false,
   });
+
+  useEffect(() => {
+    if (subscriptionQuery.isError || subscriptionQuery.isSuccess) {
+      setShouldFetch(false);
+    }
+  }, [subscriptionQuery.error, subscriptionQuery.isSuccess]);
+
+  return {subscriptionData: subscriptionQuery.data, fetchSubscription: () => setShouldFetch(true) , isLoading: subscriptionQuery.isLoading, error: subscriptionQuery.error };
 };

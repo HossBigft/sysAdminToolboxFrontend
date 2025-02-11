@@ -34,9 +34,10 @@ function SubscriptionSearchApp() {
   const queryClient = useQueryClient();
   const currentUser = queryClient.getQueryData<UserPublic>(["currentUser"]);
   const {
-    data: subscriptionData,
-    error,
+    subscriptionData,
+    fetchSubscription,
     isLoading,
+    error,
   } = useSubscriptionSearch(finalSearchTerm);
 
   const { aRecord, mxRecord, zoneMaster, refetchDnsRecords } = useDnsRecords(
@@ -48,6 +49,7 @@ function SubscriptionSearchApp() {
   const handleSearch = (e) => {
     if (e.key === "Enter" && searchTerm.trim()) {
       setFinalSearchTerm(searchTerm.trim());
+      fetchSubscription();
       refetchDnsRecords()
     }
   };
