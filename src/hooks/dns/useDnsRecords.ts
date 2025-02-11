@@ -10,9 +10,9 @@ export const useDnsRecords = (searchTerm) => {
 
 
   const refetch = () => {
-    aRecord.refetch();
-    mxRecord.refetch()
-    zoneMaster.refetch()
+    aRecord.fetch();
+    mxRecord.fetch()
+    zoneMaster.fetch()
   }
     
 

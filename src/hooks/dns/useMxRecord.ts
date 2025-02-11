@@ -1,5 +1,5 @@
-// src/hooks/dns/useMxRecord.js
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import {
   getMxRecordOptions,
   getARecordOptions,
@@ -7,10 +7,21 @@ import {
 } from "../../client/@tanstack/react-query.gen";
 import { createQuery, getFirstRecord, hasExactlyOneRecord } from "./utils";
 
+
 export const useMxRecord = (domain) => {
+  const [shouldFetch, setShouldFetch] = useState(false);
   const mxRecordQuery = useQuery(
-    createQuery(getMxRecordOptions({ query: { domain } }))
+    createQuery(
+      getMxRecordOptions({ query: { domain } }),
+      shouldFetch && !!domain
+    )
   );
+
+  useEffect(() => {
+    if (mxRecordQuery.isError || mxRecordQuery.isSuccess) {
+      setShouldFetch(false);
+    }
+  }, [mxRecordQuery.error, mxRecordQuery.isSuccess]);
 
   const mxRecord = getFirstRecord(mxRecordQuery.data);
 
@@ -37,6 +48,6 @@ export const useMxRecord = (domain) => {
     isLoading:
       mxRecordQuery.isLoading || aRecordQuery.isLoading || ptrQuery.isLoading,
     error: mxRecordQuery.error || aRecordQuery.error || ptrQuery.error,
-    refetch: mxRecordQuery.refetch
+    fetch: () => setShouldFetch(true),
   };
 };
