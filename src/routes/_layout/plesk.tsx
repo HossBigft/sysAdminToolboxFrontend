@@ -33,30 +33,25 @@ function SubscriptionSearchApp() {
 
   const queryClient = useQueryClient();
   const currentUser = queryClient.getQueryData<UserPublic>(["currentUser"]);
-  const {
-    subscriptionData,
-    fetchSubscription,
-    isLoading,
-    error,
-  } = useSubscriptionSearch(finalSearchTerm);
+  const { subscriptionQuery, fetchSubscription } =
+    useSubscriptionSearch(finalSearchTerm);
 
-  const { aRecord, mxRecord, zoneMaster, refetchDnsRecords } = useDnsRecords(
-    finalSearchTerm
-  );
 
-  const { refetch: refetchLoginLink } = useSubscriptionLoginLink(clickedItem);
+  const { aRecord, mxRecord, zoneMaster, refetchDnsRecords } =
+    useDnsRecords(finalSearchTerm);
+
+  const { fetch: refetchLoginLink } = useSubscriptionLoginLink(clickedItem);
   const { mutateZoneMaster } = useSetZoneMaster();
+
   const handleSearch = (e) => {
     if (e.key === "Enter" && searchTerm.trim()) {
       setFinalSearchTerm(searchTerm.trim());
       fetchSubscription();
-      refetchDnsRecords()
+      refetchDnsRecords();
     }
   };
 
-
   const handleLoginLinkClick = (item) => {
-    queryClient.removeQueries(["subscriptionLoginLink"]);
     setClickedItem(item);
     refetchLoginLink();
   };
@@ -74,11 +69,13 @@ function SubscriptionSearchApp() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyPress={handleSearch}
-          isDisabled={isLoading}
+          isDisabled={subscriptionQuery.isLoading}
         />
 
-        {isLoading && <Text>Loading...</Text>}
-        {error && <Text color="red.500">Error: {error.message}</Text>}
+        {subscriptionQuery.isLoading && <Text>Loading...</Text>}
+        {subscriptionQuery.error && (
+          <Text color="red.500">Error: {subscriptionQuery.error.message}</Text>
+        )}
 
         <Box overflowX="auto" width="100%">
           <Table variant="simple">
@@ -96,7 +93,7 @@ function SubscriptionSearchApp() {
               </Tr>
             </Thead>
             <Tbody>
-              {subscriptionData?.map((item) => (
+              {subscriptionQuery.data?.map((item) => (
                 <Tr key={item.id}>
                   <Td>
                     <HostCell

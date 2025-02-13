@@ -1,13 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@chakra-ui/react";
 
 import { getSubscriptionLoginLinkOptions } from "../../client/@tanstack/react-query.gen";
 
 const useSubscriptionLoginLink = (clickedItem) => {
+  const [shouldFetch, setShouldFetch] = useState(false);
+
   const {
     data,
-    refetch,
     isSuccess,
     isError,
     error: errorLogin,
@@ -16,7 +17,7 @@ const useSubscriptionLoginLink = (clickedItem) => {
       body: { host: clickedItem?.host, subscription_id: clickedItem?.id },
     }),
     queryKey: ["subscriptionLoginLink", clickedItem?.id],
-    enabled: false,
+    enabled: shouldFetch && !!clickedItem,
     refetchOnWindowFocus: false,
     retry: 0,
   });
@@ -56,13 +57,8 @@ const useSubscriptionLoginLink = (clickedItem) => {
     }
   }, [isError, errorLogin, toast]);
 
-  useEffect(() => {
-    if (clickedItem) {
-      refetch();
-    }
-  }, [clickedItem, refetch]);
 
-  return { refetch };
+  return { fetch: () => setShouldFetch(true) };
 };
 
 export default useSubscriptionLoginLink;

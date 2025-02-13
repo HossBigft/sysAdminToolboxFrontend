@@ -19,5 +19,5 @@ export const useSubscriptionSearch = (searchTerm) => {
     }
   }, [subscriptionQuery.error, subscriptionQuery.isSuccess]);
 
-  return {subscriptionData: subscriptionQuery.data, fetchSubscription: () => setShouldFetch(true) , isLoading: subscriptionQuery.isLoading, error: subscriptionQuery.error };
+  return {subscriptionQuery, fetchSubscription: () => setShouldFetch(true)};
 };
