@@ -36,7 +36,6 @@ function SubscriptionSearchApp() {
   const { subscriptionQuery, fetchSubscription } =
     useSubscriptionSearch(finalSearchTerm);
 
-
   const { aRecord, mxRecord, zoneMaster, refetchDnsRecords } =
     useDnsRecords(finalSearchTerm);
 
@@ -53,6 +52,7 @@ function SubscriptionSearchApp() {
 
   const handleLoginLinkClick = (item) => {
     setClickedItem(item);
+    queryClient.invalidateQueries({ queryKey: ["subscriptionLoginLink"] });
     refetchLoginLink();
   };
 

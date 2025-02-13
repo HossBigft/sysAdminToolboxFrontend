@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@chakra-ui/react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { getSubscriptionLoginLinkOptions } from "../../client/@tanstack/react-query.gen";
 
 const useSubscriptionLoginLink = (clickedItem) => {
+  const queryClient = useQueryClient();
   const [shouldFetch, setShouldFetch] = useState(false);
 
   const {
@@ -20,6 +22,7 @@ const useSubscriptionLoginLink = (clickedItem) => {
     enabled: shouldFetch && !!clickedItem,
     refetchOnWindowFocus: false,
     retry: 0,
+    staleTime: 5 * (60 * 1000), // 5 mins
   });
   const toast = useToast();
 
@@ -33,7 +36,9 @@ const useSubscriptionLoginLink = (clickedItem) => {
               href={data}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => toast.close(toastId)}
+              onClick={() => {
+                toast.close(toastId);
+              }}
               style={{ color: "blue", textDecoration: "underline" }}
             >
               Click me
@@ -56,7 +61,6 @@ const useSubscriptionLoginLink = (clickedItem) => {
       });
     }
   }, [isError, errorLogin, toast]);
-
 
   return { fetch: () => setShouldFetch(true) };
 };
