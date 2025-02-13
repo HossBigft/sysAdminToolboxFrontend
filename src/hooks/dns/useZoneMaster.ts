@@ -11,7 +11,12 @@ export const useZoneMaster = (domain) => {
   const [shouldFetch, setShouldFetch] = useState(false);
   const zoneMasterQuery = useQuery(
     createQuery(
-      getZoneMasterFromDnsServersOptions({ query: { domain } }), shouldFetch && !!domain
+      {
+        ...getZoneMasterFromDnsServersOptions({ query: { domain } }),
+        queryKey: ["zoneMasterQuery", domain],
+      },
+
+      shouldFetch && !!domain
     )
   );
 
@@ -27,7 +32,10 @@ export const useZoneMaster = (domain) => {
 
   const ptrQuery = useQuery(
     createQuery(
-      getPtrRecordOptions({ query: { ip: zoneMasterIp[0] } }),
+      {
+        ...getPtrRecordOptions({ query: { ip: zoneMasterIp[0] } }),
+        queryKey: ["ptrQuery", zoneMasterIp[0]],
+      },
       !!zoneMasterIp && zoneMasterIp.length === 1
     )
   );
@@ -37,6 +45,6 @@ export const useZoneMaster = (domain) => {
     ptr: ptrQuery.data?.records?.[0],
     isLoading: zoneMasterQuery.isLoading || ptrQuery.isLoading,
     error: zoneMasterQuery.error || ptrQuery.error,
-    fetch: () => setShouldFetch(true)
+    fetch: () => setShouldFetch(true),
   };
 };

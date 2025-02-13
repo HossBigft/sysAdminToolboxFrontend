@@ -7,12 +7,14 @@ import {
 } from "../../client/@tanstack/react-query.gen";
 import { createQuery, getFirstRecord, hasExactlyOneRecord } from "./utils";
 
-
 export const useMxRecord = (domain) => {
   const [shouldFetch, setShouldFetch] = useState(false);
   const mxRecordQuery = useQuery(
     createQuery(
-      getMxRecordOptions({ query: { domain } }),
+      {
+        ...getMxRecordOptions({ query: { domain } }),
+        queryKey: ["mxRecordQuery", domain],
+      },
       shouldFetch && !!domain
     )
   );
@@ -27,7 +29,10 @@ export const useMxRecord = (domain) => {
 
   const aRecordQuery = useQuery(
     createQuery(
-      getARecordOptions({ query: { domain: mxRecord } }),
+      {
+        ...getARecordOptions({ query: { domain: mxRecord } }),
+        queryKey: ["aRecordQuery", mxRecord],
+      },
       !!mxRecord && hasExactlyOneRecord(mxRecordQuery.data)
     )
   );
@@ -36,7 +41,10 @@ export const useMxRecord = (domain) => {
 
   const ptrQuery = useQuery(
     createQuery(
-      getPtrRecordOptions({ query: { ip: aRecord } }),
+      {
+        ...getPtrRecordOptions({ query: { ip: aRecord } }),
+        queryKey: ["ptrQuery", aRecord],
+      },
       !!aRecord && hasExactlyOneRecord(aRecordQuery.data)
     )
   );
