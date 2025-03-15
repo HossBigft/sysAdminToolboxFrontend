@@ -4,7 +4,6 @@ import { useState } from "react";
 import type {
   UserPublic,
   UserRegister,
-  RegisterUserError,
   Body_login_login_access_token,
 } from "../client/types.gen";
 import { loginAccessToken, registerUser } from "../client";
