@@ -12,7 +12,7 @@ export const useMxRecord = (domain) => {
   const mxRecordQuery = useQuery(
     createQuery(
       {
-        ...getMxRecordOptions({ query: { domain } }),
+        ...getMxRecordOptions({ query: { name: domain } }),
         queryKey: ["mxRecordQuery", domain],
       },
       shouldFetch && !!domain
@@ -30,7 +30,7 @@ export const useMxRecord = (domain) => {
   const aRecordQuery = useQuery(
     createQuery(
       {
-        ...getARecordOptions({ query: { domain: mxRecord } }),
+        ...getARecordOptions({ query: { name: mxRecord } }),
         queryKey: ["aRecordQuery", mxRecord],
       },
       !!mxRecord && hasExactlyOneRecord(mxRecordQuery.data)

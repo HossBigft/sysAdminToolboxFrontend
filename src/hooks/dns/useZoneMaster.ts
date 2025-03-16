@@ -12,7 +12,7 @@ export const useZoneMaster = (domain) => {
   const zoneMasterQuery = useQuery(
     createQuery(
       {
-        ...getZoneMasterFromDnsServersOptions({ query: { domain } }),
+        ...getZoneMasterFromDnsServersOptions({ query: { name: domain } }),
         queryKey: ["zoneMasterQuery", domain],
       },
 

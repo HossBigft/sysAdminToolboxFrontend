@@ -13,7 +13,7 @@ export const useARecord = (domain) => {
   const aRecordQuery = useQuery(
     createQuery(
       {
-        ...getARecordOptions({ query: { domain } }),
+        ...getARecordOptions({ query: { name: domain } }),
         queryKey: ["aRecordQuery", domain],
       },
       !!domain && shouldFetch
