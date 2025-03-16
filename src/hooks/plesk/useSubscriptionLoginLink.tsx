@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@chakra-ui/react";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { getSubscriptionLoginLinkOptions } from "../../client/@tanstack/react-query.gen";
 
 const useSubscriptionLoginLink = (clickedItem) => {
-  const queryClient = useQueryClient();
   const [shouldFetch, setShouldFetch] = useState(false);
 
   const {
