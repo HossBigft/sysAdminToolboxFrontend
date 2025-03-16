@@ -6,7 +6,7 @@ export const useSubscriptionSearch = (searchTerm) => {
   const [shouldFetch, setShouldFetch] = useState(false);
 
   const subscriptionQuery = useQuery({
-    ...findPleskSubscriptionByDomainOptions({ query: { domain: searchTerm } }),
+    ...findPleskSubscriptionByDomainOptions({ query: { name: searchTerm } }),
     queryKey: ["subscriptionSearch", searchTerm],
     enabled: shouldFetch && !!searchTerm,
     retry: 0,
@@ -19,5 +19,5 @@ export const useSubscriptionSearch = (searchTerm) => {
     }
   }, [subscriptionQuery.error, subscriptionQuery.isSuccess]);
 
-  return {subscriptionQuery, fetchSubscription: () => setShouldFetch(true)};
+  return { subscriptionQuery, fetchSubscription: () => setShouldFetch(true) };
 };
