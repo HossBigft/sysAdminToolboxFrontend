@@ -9,6 +9,16 @@ export type Body_login_login_access_token = {
     client_secret?: (string | null);
 };
 
+export type DeleteZonemasterLogSchema = {
+    ip: IPv4Address;
+    timestamp: string;
+    domain: DomainName;
+    current_zone_master: string;
+    log_type: 'DELETE_ZONE_MASTER';
+};
+
+export type log_type = 'DELETE_ZONE_MASTER';
+
 export type DomainARecordResponse = {
     domain: DomainName;
     records: Array<IPv4Address>;
@@ -20,7 +30,7 @@ export type DomainMxRecordResponse = {
 };
 
 export type DomainName = {
-    domain: string;
+    name: string;
 };
 
 export type DomainNsRecordResponse = {
@@ -28,11 +38,35 @@ export type DomainNsRecordResponse = {
     records: Array<DomainName>;
 };
 
+export type GetPleskLoginLinkLogSchema = {
+    ip: IPv4Address;
+    timestamp: string;
+    plesk_server: PleskServerDomain;
+    subscription_id: number;
+    log_type: 'GET_SUBSCRIPTION_LOGIN_LINK';
+    ssh_username: LinuxUsername;
+};
+
+export type log_type2 = 'GET_SUBSCRIPTION_LOGIN_LINK';
+
+export type GetZoneMasterLogSchema = {
+    ip: IPv4Address;
+    timestamp: string;
+    domain: DomainName;
+    log_type: 'GET_ZONE_MASTER';
+};
+
+export type log_type3 = 'GET_ZONE_MASTER';
+
 export type HTTPValidationError = {
     detail?: Array<ValidationError>;
 };
 
-export type IPv4Address = string;
+export type IPv4Address = {
+    ip: string;
+};
+
+export type LinuxUsername = string;
 
 export type Message = {
     message: string;
@@ -43,10 +77,33 @@ export type NewPassword = {
     new_password: string;
 };
 
+export type PaginatedUserLogListSchema = {
+    total_count: number;
+    page: number;
+    page_size?: number;
+    total_pages: number;
+    data: Array<UserLogPublic>;
+};
+
+export type PleskServerDomain = {
+    name: string;
+};
+
 export type SetZonemasterInput = {
     target_plesk_server: string;
     domain: string;
 };
+
+export type SetZoneMasterLogSchema = {
+    ip: IPv4Address;
+    timestamp: string;
+    domain: DomainName;
+    target_zone_master: PleskServerDomain;
+    current_zone_master: (PleskServerDomain | null);
+    log_type: 'SET_ZONE_MASTER';
+};
+
+export type log_type4 = 'SET_ZONE_MASTER';
 
 export type SubscriptionDetailsModel = {
     host: DomainName;
@@ -65,7 +122,12 @@ export type SubscriptionLoginLinkInput = {
 };
 
 export type SubscriptionName = {
-    domain: string;
+    name: string;
+};
+
+export type TestMailCredentials = {
+    login_link: string;
+    password: string;
 };
 
 export type Token = {
@@ -78,6 +140,18 @@ export type UpdatePassword = {
     new_password: string;
 };
 
+export type UserActionType = 'GET_ZONE_MASTER' | 'DELETE_ZONE_MASTER' | 'SET_ZONE_MASTER' | 'GET_SUBSCRIPTION_LOGIN_LINK' | 'PLESK_MAIL_GET_TEST_MAIL';
+
+export type UserActivityLogFilterSchema = {
+    ip?: (IPv4Address | null);
+    timestamp?: (string | null);
+    log_type?: (UserActionType | null);
+    domain?: (DomainName | null);
+    plesk_server?: (PleskServerDomain | null);
+    subscription_id?: (number | null);
+    ssh_username?: (LinuxUsername | null);
+};
+
 export type UserCreate = {
     email: string;
     is_active?: boolean;
@@ -85,6 +159,20 @@ export type UserCreate = {
     role?: UserRoles;
     ssh_username?: (string | null);
     password: string;
+};
+
+export type UserLogPublic = {
+    full_name?: (string | null);
+    role?: UserRoles;
+    ssh_username?: (string | null);
+    id: string;
+    details: (DeleteZonemasterLogSchema | SetZoneMasterLogSchema | GetZoneMasterLogSchema | GetPleskLoginLinkLogSchema);
+};
+
+export type UserLogSearchRequestSchema = {
+    page?: number;
+    page_size?: number;
+    filters: UserActivityLogFilterSchema;
 };
 
 export type UserPublic = {
@@ -130,21 +218,9 @@ export type ValidationError = {
     type: string;
 };
 
-export type LoginAccessTokenData = {
-    body: Body_login_login_access_token;
-};
-
-export type LoginAccessTokenResponse = (Token);
-
-export type LoginAccessTokenError = (HTTPValidationError);
-
-export type TestTokenResponse = (UserPublic);
-
-export type TestTokenError = unknown;
-
 export type GetARecordData = {
     query: {
-        domain: string;
+        name: string;
     };
 };
 
@@ -164,7 +240,7 @@ export type GetPtrRecordError = (HTTPValidationError);
 
 export type GetZoneMasterFromDnsServersData = {
     query: {
-        domain: string;
+        name: string;
     };
 };
 
@@ -174,7 +250,7 @@ export type GetZoneMasterFromDnsServersError = (HTTPValidationError);
 
 export type DeleteZoneFileForDomainData = {
     query: {
-        domain: string;
+        name: string;
     };
 };
 
@@ -184,7 +260,7 @@ export type DeleteZoneFileForDomainError = (HTTPValidationError);
 
 export type GetMxRecordData = {
     query: {
-        domain: string;
+        name: string;
     };
 };
 
@@ -194,7 +270,7 @@ export type GetMxRecordError = (HTTPValidationError);
 
 export type GetNsRecordsData = {
     query: {
-        domain: string;
+        name: string;
     };
 };
 
@@ -284,6 +360,14 @@ export type DeleteUserResponse = (Message);
 
 export type DeleteUserError = (HTTPValidationError);
 
+export type GetOwnActionsData = {
+    body: UserLogSearchRequestSchema;
+};
+
+export type GetOwnActionsResponse = (PaginatedUserLogListSchema);
+
+export type GetOwnActionsError = (HTTPValidationError);
+
 export type GetUserActionsData = {
     path: {
         user_id: string;
@@ -296,7 +380,7 @@ export type GetUserActionsError = (HTTPValidationError);
 
 export type FindPleskSubscriptionByDomainData = {
     query: {
-        domain: string;
+        name: string;
     };
 };
 
@@ -319,6 +403,17 @@ export type SetZonemasterData = {
 export type SetZonemasterResponse = (Message);
 
 export type SetZonemasterError = (HTTPValidationError);
+
+export type CreateTestmailForDomainData = {
+    query: {
+        maildomain: string;
+        server: string;
+    };
+};
+
+export type CreateTestmailForDomainResponse = (TestMailCredentials);
+
+export type CreateTestmailForDomainError = (HTTPValidationError);
 
 export type HealthCheckResponse = (boolean);
 
@@ -351,3 +446,15 @@ export type RecoverPasswordHtmlContentData = {
 export type RecoverPasswordHtmlContentResponse = (string);
 
 export type RecoverPasswordHtmlContentError = (HTTPValidationError);
+
+export type LoginAccessTokenData = {
+    body: Body_login_login_access_token;
+};
+
+export type LoginAccessTokenResponse = (Token);
+
+export type LoginAccessTokenError = (HTTPValidationError);
+
+export type TestTokenResponse = (UserPublic);
+
+export type TestTokenError = unknown;

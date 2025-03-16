@@ -5,75 +5,6 @@
     "version": "0.1.0"
   },
   "paths": {
-    "/api/v1/login/access-token": {
-      "post": {
-        "tags": [
-          "login"
-        ],
-        "summary": "Login Access Token",
-        "description": "OAuth2 compatible token login, get an access token for future requests",
-        "operationId": "login_access_token",
-        "requestBody": {
-          "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "$ref": "#/components/schemas/Body_login-login_access_token"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Token"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/login/test-token": {
-      "post": {
-        "tags": [
-          "login"
-        ],
-        "summary": "Test Token",
-        "description": "Test access token",
-        "operationId": "test_token",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserPublic"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      }
-    },
     "/api/v1/dns/internal/resolve/a/": {
       "get": {
         "tags": [
@@ -88,7 +19,7 @@
         ],
         "parameters": [
           {
-            "name": "domain",
+            "name": "name",
             "in": "query",
             "required": true,
             "schema": {
@@ -96,7 +27,7 @@
               "minLength": 3,
               "maxLength": 253,
               "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
-              "title": "Domain"
+              "title": "Name"
             }
           }
         ],
@@ -143,6 +74,7 @@
             "required": true,
             "schema": {
               "type": "string",
+              "format": "ipvanyaddress",
               "title": "Ip"
             }
           }
@@ -183,7 +115,7 @@
         ],
         "parameters": [
           {
-            "name": "domain",
+            "name": "name",
             "in": "query",
             "required": true,
             "schema": {
@@ -191,7 +123,7 @@
               "minLength": 3,
               "maxLength": 253,
               "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,8}$",
-              "title": "Domain"
+              "title": "Name"
             }
           }
         ],
@@ -229,15 +161,15 @@
         ],
         "parameters": [
           {
-            "name": "domain",
+            "name": "name",
             "in": "query",
             "required": true,
             "schema": {
               "type": "string",
               "minLength": 3,
               "maxLength": 253,
-              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,8}$",
-              "title": "Domain"
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
+              "title": "Name"
             }
           }
         ],
@@ -277,7 +209,7 @@
         ],
         "parameters": [
           {
-            "name": "domain",
+            "name": "name",
             "in": "query",
             "required": true,
             "schema": {
@@ -285,7 +217,7 @@
               "minLength": 3,
               "maxLength": 253,
               "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
-              "title": "Domain"
+              "title": "Name"
             }
           }
         ],
@@ -327,7 +259,7 @@
         ],
         "parameters": [
           {
-            "name": "domain",
+            "name": "name",
             "in": "query",
             "required": true,
             "schema": {
@@ -335,7 +267,7 @@
               "minLength": 3,
               "maxLength": 253,
               "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
-              "title": "Domain"
+              "title": "Name"
             }
           }
         ],
@@ -806,6 +738,52 @@
         }
       }
     },
+    "/api/v1/users/me/history": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get Own Actions",
+        "operationId": "get_own_actions",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLogSearchRequestSchema"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedUserLogListSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/users/{user_id}/history": {
       "get": {
         "tags": [
@@ -856,7 +834,7 @@
         "operationId": "find_plesk_subscription_by_domain",
         "parameters": [
           {
-            "name": "domain",
+            "name": "name",
             "in": "query",
             "required": true,
             "schema": {
@@ -864,7 +842,7 @@
               "minLength": 3,
               "maxLength": 253,
               "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,8}$",
-              "title": "Domain"
+              "title": "Name"
             }
           }
         ],
@@ -980,6 +958,68 @@
             "OAuth2PasswordBearer": []
           }
         ]
+      }
+    },
+    "/api/v1/plesk/subscription/testmail": {
+      "get": {
+        "tags": [
+          "plesk"
+        ],
+        "summary": "Create Testmail For Domain",
+        "operationId": "create_testmail_for_domain",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "maildomain",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 253,
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
+              "title": "Maildomain"
+            }
+          },
+          {
+            "name": "server",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 253,
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
+              "title": "Server"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestMailCredentials"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/utils/health-check/": {
@@ -1136,6 +1176,75 @@
           }
         }
       }
+    },
+    "/api/v1/login/access-token": {
+      "post": {
+        "tags": [
+          "login"
+        ],
+        "summary": "Login Access Token",
+        "description": "OAuth2 compatible token login, get an access token for future requests",
+        "operationId": "login_access_token",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_login-login_access_token"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/login/test-token": {
+      "post": {
+        "tags": [
+          "login"
+        ],
+        "summary": "Test Token",
+        "description": "Test access token",
+        "operationId": "test_token",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -1197,6 +1306,42 @@
         ],
         "title": "Body_login-login_access_token"
       },
+      "DeleteZonemasterLogSchema": {
+        "properties": {
+          "ip": {
+            "$ref": "#/components/schemas/IPv4Address"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "domain": {
+            "$ref": "#/components/schemas/DomainName"
+          },
+          "current_zone_master": {
+            "type": "string",
+            "title": "Current Zone Master"
+          },
+          "log_type": {
+            "type": "string",
+            "enum": [
+              "DELETE_ZONE_MASTER"
+            ],
+            "const": "DELETE_ZONE_MASTER",
+            "title": "Log Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ip",
+          "timestamp",
+          "domain",
+          "current_zone_master",
+          "log_type"
+        ],
+        "title": "DeleteZonemasterLogSchema"
+      },
       "DomainARecordResponse": {
         "properties": {
           "domain": {
@@ -1239,17 +1384,17 @@
       },
       "DomainName": {
         "properties": {
-          "domain": {
+          "name": {
             "type": "string",
             "maxLength": 253,
             "minLength": 3,
             "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
-            "title": "Domain"
+            "title": "Name"
           }
         },
         "type": "object",
         "required": [
-          "domain"
+          "name"
         ],
         "title": "DomainName",
         "examples": [
@@ -1276,6 +1421,77 @@
         ],
         "title": "DomainNsRecordResponse"
       },
+      "GetPleskLoginLinkLogSchema": {
+        "properties": {
+          "ip": {
+            "$ref": "#/components/schemas/IPv4Address"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "plesk_server": {
+            "$ref": "#/components/schemas/PleskServerDomain"
+          },
+          "subscription_id": {
+            "type": "integer",
+            "title": "Subscription Id"
+          },
+          "log_type": {
+            "type": "string",
+            "enum": [
+              "GET_SUBSCRIPTION_LOGIN_LINK"
+            ],
+            "const": "GET_SUBSCRIPTION_LOGIN_LINK",
+            "title": "Log Type"
+          },
+          "ssh_username": {
+            "$ref": "#/components/schemas/LinuxUsername"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ip",
+          "timestamp",
+          "plesk_server",
+          "subscription_id",
+          "log_type",
+          "ssh_username"
+        ],
+        "title": "GetPleskLoginLinkLogSchema"
+      },
+      "GetZoneMasterLogSchema": {
+        "properties": {
+          "ip": {
+            "$ref": "#/components/schemas/IPv4Address"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "domain": {
+            "$ref": "#/components/schemas/DomainName"
+          },
+          "log_type": {
+            "type": "string",
+            "enum": [
+              "GET_ZONE_MASTER"
+            ],
+            "const": "GET_ZONE_MASTER",
+            "title": "Log Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ip",
+          "timestamp",
+          "domain",
+          "log_type"
+        ],
+        "title": "GetZoneMasterLogSchema"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -1290,8 +1506,28 @@
         "title": "HTTPValidationError"
       },
       "IPv4Address": {
+        "properties": {
+          "ip": {
+            "type": "string",
+            "format": "ipvanyaddress",
+            "title": "Ip"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ip"
+        ],
+        "title": "IPv4Address",
+        "examples": [
+          "249.44.166.171"
+        ]
+      },
+      "LinuxUsername": {
         "type": "string",
-        "title": "IPv4Address"
+        "maxLength": 32,
+        "minLength": 3,
+        "pattern": "^[a-z_]([a-z0-9_-]{0,31}|[a-z0-9_-]{0,30}\\$)$",
+        "title": "LinuxUsername"
       },
       "Message": {
         "properties": {
@@ -1325,6 +1561,109 @@
           "new_password"
         ],
         "title": "NewPassword"
+      },
+      "PaginatedUserLogListSchema": {
+        "properties": {
+          "total_count": {
+            "type": "integer",
+            "title": "Total Count"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Page Size",
+            "default": 10
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/UserLogPublic"
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_count",
+          "page",
+          "total_pages",
+          "data"
+        ],
+        "title": "PaginatedUserLogListSchema"
+      },
+      "PleskServerDomain": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 253,
+            "minLength": 3,
+            "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "PleskServerDomain",
+        "examples": [
+          "pkztest.hoster.kz."
+        ]
+      },
+      "SetZoneMasterLogSchema": {
+        "properties": {
+          "ip": {
+            "$ref": "#/components/schemas/IPv4Address"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "domain": {
+            "$ref": "#/components/schemas/DomainName"
+          },
+          "target_zone_master": {
+            "$ref": "#/components/schemas/PleskServerDomain"
+          },
+          "current_zone_master": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PleskServerDomain"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log_type": {
+            "type": "string",
+            "enum": [
+              "SET_ZONE_MASTER"
+            ],
+            "const": "SET_ZONE_MASTER",
+            "title": "Log Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ip",
+          "timestamp",
+          "domain",
+          "target_zone_master",
+          "current_zone_master",
+          "log_type"
+        ],
+        "title": "SetZoneMasterLogSchema"
       },
       "SetZonemasterInput": {
         "properties": {
@@ -1432,22 +1771,44 @@
       },
       "SubscriptionName": {
         "properties": {
-          "domain": {
+          "name": {
             "type": "string",
             "maxLength": 253,
             "minLength": 3,
             "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,8}$",
-            "title": "Domain"
+            "title": "Name"
           }
         },
         "type": "object",
         "required": [
-          "domain"
+          "name"
         ],
         "title": "SubscriptionName",
         "examples": [
-          "v-12312.webspace"
+          "v12312.webspace"
         ]
+      },
+      "TestMailCredentials": {
+        "properties": {
+          "login_link": {
+            "type": "string",
+            "pattern": "^https:\\/\\/webmail\\.(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}\\/roundcube\\/index\\.php\\?_user=[a-zA-Z0-9._%+-]+%40(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$",
+            "title": "Login Link"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 5,
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!\"\\#\\$%\\&'\\(\\)\\*\\+,\\-\\./:;<=>\\?@\\[\\\\\\]\\^_`\\{\\|\\}\\~])[A-Za-z\\d!\"\\#\\$%\\&'\\(\\)\\*\\+,\\-\\./:;<=>\\?@\\[\\\\\\]\\^_`\\{\\|\\}\\~]*$",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "login_link",
+          "password"
+        ],
+        "title": "TestMailCredentials"
       },
       "Token": {
         "properties": {
@@ -1488,6 +1849,96 @@
           "new_password"
         ],
         "title": "UpdatePassword"
+      },
+      "UserActionType": {
+        "type": "string",
+        "enum": [
+          "GET_ZONE_MASTER",
+          "DELETE_ZONE_MASTER",
+          "SET_ZONE_MASTER",
+          "GET_SUBSCRIPTION_LOGIN_LINK",
+          "PLESK_MAIL_GET_TEST_MAIL"
+        ],
+        "title": "UserActionType"
+      },
+      "UserActivityLogFilterSchema": {
+        "properties": {
+          "ip": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IPv4Address"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp"
+          },
+          "log_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserActionType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "domain": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DomainName"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "plesk_server": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PleskServerDomain"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "subscription_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subscription Id"
+          },
+          "ssh_username": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LinuxUsername"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "UserActivityLogFilterSchema"
       },
       "UserCreate": {
         "properties": {
@@ -1543,6 +1994,99 @@
           "password"
         ],
         "title": "UserCreate"
+      },
+      "UserLogPublic": {
+        "properties": {
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRoles",
+            "default": "user"
+          },
+          "ssh_username": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ssh Username"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "details": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DeleteZonemasterLogSchema"
+              },
+              {
+                "$ref": "#/components/schemas/SetZoneMasterLogSchema"
+              },
+              {
+                "$ref": "#/components/schemas/GetZoneMasterLogSchema"
+              },
+              {
+                "$ref": "#/components/schemas/GetPleskLoginLinkLogSchema"
+              }
+            ],
+            "title": "Details",
+            "discriminator": {
+              "propertyName": "log_type",
+              "mapping": {
+                "DELETE_ZONE_MASTER": "#/components/schemas/DeleteZonemasterLogSchema",
+                "GET_SUBSCRIPTION_LOGIN_LINK": "#/components/schemas/GetPleskLoginLinkLogSchema",
+                "GET_ZONE_MASTER": "#/components/schemas/GetZoneMasterLogSchema",
+                "SET_ZONE_MASTER": "#/components/schemas/SetZoneMasterLogSchema"
+              }
+            }
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "details"
+        ],
+        "title": "UserLogPublic"
+      },
+      "UserLogSearchRequestSchema": {
+        "properties": {
+          "page": {
+            "type": "integer",
+            "title": "Page",
+            "default": 1
+          },
+          "page_size": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Page Size",
+            "default": 10
+          },
+          "filters": {
+            "$ref": "#/components/schemas/UserActivityLogFilterSchema"
+          }
+        },
+        "type": "object",
+        "required": [
+          "filters"
+        ],
+        "title": "UserLogSearchRequestSchema"
       },
       "UserPublic": {
         "properties": {
