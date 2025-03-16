@@ -21,6 +21,7 @@ import DomainsList from "../../components/SubscriptionSearch/DomainsList";
 import { useSubscriptionSearch } from "../../hooks/plesk/useSubscriptionSearch";
 import { useDnsRecords } from "../../hooks/dns/useDnsRecords";
 import useSubscriptionLoginLink from "../../hooks/plesk/useSubscriptionLoginLink";
+import useCreateTestMail from "../../hooks/plesk/useCreateTestMail";
 import useSetZoneMaster from "../../hooks/plesk/useSetZoneMaster";
 export const Route = createFileRoute("/_layout/")({
   component: SubscriptionSearchApp,
@@ -41,7 +42,10 @@ function SubscriptionSearchApp() {
 
   const { fetch: refetchLoginLink } = useSubscriptionLoginLink(clickedItem);
   const { mutateZoneMaster } = useSetZoneMaster();
-
+  const { fetch: refetchTestMailCredentials } = useCreateTestMail(
+    clickedItem,
+    searchTerm
+  );
   const handleSearch = (e) => {
     if (e.key === "Enter" && searchTerm.trim()) {
       setFinalSearchTerm(searchTerm.trim());
@@ -62,6 +66,12 @@ function SubscriptionSearchApp() {
       body: { target_plesk_server: item.host, domain: searchTerm },
     });
   };
+
+  const handleTestMailClick = (item) => {
+    setClickedItem(item);
+    refetchTestMailCredentials();
+  };
+
   return (
     <ChakraProvider>
       <VStack spacing={4} width="100%" margin="50px auto" maxWidth="1200px">
@@ -131,6 +141,13 @@ function SubscriptionSearchApp() {
                         }
                       >
                         Set as zoneMaster
+                      </Button>
+                      <Button
+                        colorScheme="blue"
+                        size="sm"
+                        onClick={() => handleTestMailClick(item)}
+                      >
+                        Get test mailbox
                       </Button>
                     </HStack>
                   </Td>
