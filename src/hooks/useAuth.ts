@@ -25,7 +25,16 @@ const useAuth = () => {
     ...readUserMeOptions(),
     queryKey: ["currentUser"],
     enabled: isLoggedIn(),
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 404 || 403)
+        if (failureCount === 2) {
+          localStorage.clear();
+          navigate({ to: "/login" });
+        }
+      return failureCount < 3;
+    },
   });
+
   const signUpMutation = useMutation({
     mutationFn: (data: UserRegister) =>
       registerUser({ body: data, throwOnError: true }),
