@@ -44,7 +44,7 @@ function SubscriptionSearchApp() {
   const { mutateZoneMaster } = useSetZoneMaster();
   const { fetch: refetchTestMailCredentials } = useCreateTestMail(
     clickedItem,
-    searchTerm
+    finalSearchTerm
   );
   const handleSearch = (e) => {
     if (e.key === "Enter" && searchTerm.trim()) {
@@ -69,6 +69,7 @@ function SubscriptionSearchApp() {
 
   const handleTestMailClick = (item) => {
     setClickedItem(item);
+    queryClient.invalidateQueries({ queryKey: ["testMailLoginLink"] });
     refetchTestMailCredentials();
   };
 
