@@ -122,7 +122,7 @@ function SubscriptionSearchApp() {
                     <DomainsList domains={item.domains} />
                   </Td>
                   <Td>
-                    <HStack spacing={2}>
+                    <VStack spacing={2}>
                       {" "}
                       {/* or Stack direction="row" */}
                       {currentUser?.ssh_username !== null && (
@@ -137,20 +137,20 @@ function SubscriptionSearchApp() {
                       <Button
                         colorScheme="blue"
                         size="sm"
+                        onClick={() => handleTestMailClick(item)}
+                      >
+                        Get test mailbox
+                      </Button>
+                      <Button
+                        colorScheme="blue"
+                        size="sm"
                         onClick={() =>
                           handleSetZoneMasterClick(item, searchTerm)
                         }
                       >
                         Set as zoneMaster
                       </Button>
-                      <Button
-                        colorScheme="blue"
-                        size="sm"
-                        onClick={() => handleTestMailClick(item)}
-                      >
-                        Get test mailbox
-                      </Button>
-                    </HStack>
+                    </VStack>
                   </Td>
                 </Tr>
               ))}
