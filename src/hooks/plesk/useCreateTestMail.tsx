@@ -16,7 +16,7 @@ const useCreateTestMail = (clickedItem, domain) => {
     ...createTestmailForDomainOptions({
       query: { server: clickedItem?.host, maildomain: domain },
     }),
-    queryKey: ["testMailLoginLink", clickedItem?.domain],
+    queryKey: ["testMailLoginLink", domain],
     enabled: shouldFetch && !!clickedItem,
     refetchOnWindowFocus: false,
     retry: 0,
@@ -61,7 +61,7 @@ const useCreateTestMail = (clickedItem, domain) => {
     }
   }, [isError, errorLogin, toast]);
 
-  return { fetch: () => setShouldFetch(true) };
+  return { fetch: () => {setShouldFetch(true);} };
 };
 
 export default useCreateTestMail;
