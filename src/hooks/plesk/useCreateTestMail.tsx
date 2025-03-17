@@ -39,7 +39,7 @@ const useCreateTestMail = (clickedItem, domain) => {
               }}
               style={{ color: "blue", textDecoration: "underline" }}
             >
-              Click me. Password is `data.password`
+              Click me. Password is {data.password}
             </a>
           </div>
         ),
