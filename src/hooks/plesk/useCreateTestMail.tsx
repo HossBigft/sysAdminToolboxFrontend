@@ -27,7 +27,7 @@ const useCreateTestMail = (clickedItem, domain) => {
   useEffect(() => {
     if (isSuccess && data) {
       const toastId = toast({
-        title: "Login link is ready",
+        title: `Mailbox is ready. Password is ${data.password}`,
         description: (
           <div>
             <a
@@ -35,11 +35,12 @@ const useCreateTestMail = (clickedItem, domain) => {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => {
+                navigator.clipboard.writeText(data.password);
                 toast.close(toastId);
               }}
               style={{ color: "blue", textDecoration: "underline" }}
             >
-              Click me. Password is {data.password}
+              Click to open webmail and copy password.
             </a>
           </div>
         ),
