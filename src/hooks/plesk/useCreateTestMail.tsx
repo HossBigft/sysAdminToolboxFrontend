@@ -4,6 +4,32 @@ import { useToast } from "@chakra-ui/react";
 
 import { createTestmailForDomainOptions } from "../../client/@tanstack/react-query.gen";
 
+async function copyToClipboard(textToCopy) {
+  // Navigator clipboard api needs a secure context (https)
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(textToCopy);
+  } else {
+    // Use the 'out of viewport hidden text area' trick
+    const textArea = document.createElement("textarea");
+    textArea.value = textToCopy;
+
+    // Move textarea out of the viewport so it's not visible
+    textArea.style.position = "absolute";
+    textArea.style.left = "-999999px";
+
+    document.body.prepend(textArea);
+    textArea.select();
+
+    try {
+      document.execCommand("copy");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      textArea.remove();
+    }
+  }
+}
+
 const useCreateTestMail = (clickedItem, domain) => {
   const [shouldFetch, setShouldFetch] = useState(false);
 
@@ -34,8 +60,8 @@ const useCreateTestMail = (clickedItem, domain) => {
               href={data.login_link}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => {
-                navigator.clipboard.writeText(data.password);
+              onClick={async () => {
+                await copyToClipboard(data.password);
                 toast.close(toastId);
               }}
               style={{ color: "blue", textDecoration: "underline" }}
@@ -61,7 +87,11 @@ const useCreateTestMail = (clickedItem, domain) => {
     }
   }, [isError, errorLogin, toast]);
 
-  return { fetch: () => {setShouldFetch(true);} };
+  return {
+    fetch: () => {
+      setShouldFetch(true);
+    },
+  };
 };
 
 export default useCreateTestMail;
