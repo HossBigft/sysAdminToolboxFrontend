@@ -32,17 +32,17 @@ export const Route = createFileRoute("/_layout/")({
 
 // Status color and display mapping
 const STATUS_COLOR_MAPPING = {
-  "online": "green",
-  "subscription_is_disabled": "yellow",
-  "domain_disabled_by_admin": "red",
-  "domain_disabled_by_client": "orange"
+  online: "green",
+  subscription_is_disabled: "yellow",
+  domain_disabled_by_admin: "red",
+  domain_disabled_by_client: "orange",
 };
 
 const STATUS_DISPLAY_MAPPING = {
-  "online": "Online",
-  "subscription_is_disabled": "Subscription Disabled",
-  "domain_disabled_by_admin": "Disabled by Admin",
-  "domain_disabled_by_client": "Disabled by Client"
+  online: "Online",
+  subscription_is_disabled: "Subscription Disabled",
+  domain_disabled_by_admin: "Disabled by Admin",
+  domain_disabled_by_client: "Disabled by Client",
 };
 
 function SubscriptionSearchApp() {
@@ -93,10 +93,10 @@ function SubscriptionSearchApp() {
 
   return (
     <ChakraProvider>
-      <VStack 
-        spacing={4} 
-        width="100%" 
-        margin="50px auto" 
+      <VStack
+        spacing={4}
+        width="100%"
+        margin="50px auto"
         maxWidth={["100%", "90%", "80%", "1600px"]}
         px={[2, 4, 6, 0]}
       >
@@ -113,21 +113,21 @@ function SubscriptionSearchApp() {
         )}
 
         <Box overflowX="auto" width="100%" maxWidth="100%">
-          <Table 
-            variant="simple" 
-            size="sm" 
-            width="100%" 
-            style={{ tableLayout: 'fixed' }}
+          <Table
+            variant="simple"
+            size="sm"
+            width="100%"
+            style={{ tableLayout: "fixed" }}
           >
             <Thead>
               <Tr>
+                <Th width={["15%"]}>Host</Th>
                 <Th width={["10%", "8%", "7%"]}>Status</Th>
-                <Th width={["15%", "12%", "10%"]}>Host</Th>
                 <Th width={["5%", "5%", "5%"]}>ID</Th>
                 <Th width={["15%", "12%", "10%"]}>Name</Th>
                 <Th width={["15%", "12%", "10%"]}>Username</Th>
                 <Th width={["15%", "12%", "10%"]}>User Login</Th>
-                <Th width={["20%", "20%", "20%"]}>Domains</Th>
+                <Th width={"10%"}>Domains</Th>
                 <Th width={["10%", "8%", "8%"]}>Subscription Size</Th>
                 <Th width={["7%", "7%", "7%"]}>Space Overused</Th>
                 {currentUser?.ssh_username !== null && (
@@ -139,18 +139,6 @@ function SubscriptionSearchApp() {
               {subscriptionQuery.data?.map((item) => (
                 <Tr key={item.id}>
                   <Td>
-                    <Tooltip 
-                      label={`Subscription Status: ${STATUS_DISPLAY_MAPPING[item.subscription_status]}`}
-                    >
-                      <Badge 
-                        colorScheme={STATUS_COLOR_MAPPING[item.subscription_status] || "gray"}
-                        variant="solid"
-                      >
-                        {STATUS_DISPLAY_MAPPING[item.subscription_status] || item.subscription_status}
-                      </Badge>
-                    </Tooltip>
-                  </Td>
-                  <Td>
                     <HostCell
                       host={item.host}
                       zoneMaster={zoneMaster}
@@ -158,14 +146,34 @@ function SubscriptionSearchApp() {
                       mxRecord={mxRecord}
                     />
                   </Td>
+                  <Td>
+                    <Tooltip
+                      label={`Subscription Status: ${STATUS_DISPLAY_MAPPING[item.subscription_status]}`}
+                    >
+                      <Badge
+                        colorScheme={
+                          STATUS_COLOR_MAPPING[item.subscription_status] ||
+                          "gray"
+                        }
+                        variant="solid"
+                      >
+                        {STATUS_DISPLAY_MAPPING[item.subscription_status] ||
+                          item.subscription_status}
+                      </Badge>
+                    </Tooltip>
+                  </Td>
                   <Td>{item.id}</Td>
                   <Td>{item.name}</Td>
                   <Td>{item.username}</Td>
                   <Td>{item.userlogin}</Td>
                   <Td>
-                    <Tooltip 
+                    <Tooltip
                       label={
-                        <VStack align="start" maxHeight="300px" overflowY="auto">
+                        <VStack
+                          align="start"
+                          maxHeight="300px"
+                          overflowY="auto"
+                        >
                           {item.domain_states.map((domainState) => (
                             <Text key={domainState.domain} fontSize="xs">
                               {domainState.domain}: {domainState.status}
@@ -186,12 +194,8 @@ function SubscriptionSearchApp() {
                     </Tooltip>
                   </Td>
                   <Td>
-                    <Badge 
-                      colorScheme={
-                        item.is_space_overused 
-                          ? "red" 
-                          : "green"
-                      }
+                    <Badge
+                      colorScheme={item.is_space_overused ? "red" : "green"}
                     >
                       {item.is_space_overused ? "Yes" : "No"}
                     </Badge>
