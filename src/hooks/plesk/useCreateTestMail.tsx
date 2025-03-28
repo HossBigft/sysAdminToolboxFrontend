@@ -5,15 +5,11 @@ import { useToast } from "@chakra-ui/react";
 import { createTestmailForDomainOptions } from "../../client/@tanstack/react-query.gen";
 
 async function copyToClipboard(textToCopy) {
-  // Navigator clipboard api needs a secure context (https)
   if (navigator.clipboard && window.isSecureContext) {
     await navigator.clipboard.writeText(textToCopy);
   } else {
-    // Use the 'out of viewport hidden text area' trick
     const textArea = document.createElement("textarea");
     textArea.value = textToCopy;
-
-    // Move textarea out of the viewport so it's not visible
     textArea.style.position = "absolute";
     textArea.style.left = "-999999px";
 
@@ -31,7 +27,7 @@ async function copyToClipboard(textToCopy) {
 }
 
 const useCreateTestMail = (clickedItem, domain) => {
-  const [shouldFetch, setShouldFetch] = useState(false);
+  const [shouldShowToast, setShouldShowToast] = useState(false);
 
   const {
     data,
@@ -43,15 +39,15 @@ const useCreateTestMail = (clickedItem, domain) => {
       query: { server: clickedItem?.host, maildomain: domain },
     }),
     queryKey: ["testMailLoginLink", domain],
-    enabled: shouldFetch && !!clickedItem,
+    enabled: !!clickedItem,
     refetchOnWindowFocus: false,
-    retry: 0,
     staleTime: 5 * (60 * 1000), // 5 mins
   });
+  
   const toast = useToast();
 
   useEffect(() => {
-    if (isSuccess && data) {
+    if (isSuccess && data && shouldShowToast) {
       const toastId = toast({
         title: `Mailbox is ready. Password is ${data.password}`,
         description: (
@@ -74,23 +70,24 @@ const useCreateTestMail = (clickedItem, domain) => {
         duration: null,
         isClosable: true,
       });
-      setShouldFetch(false);
+      setShouldShowToast(false);
     }
-  }, [isSuccess, data, toast]);
+  }, [isSuccess, data, shouldShowToast, toast]);
 
   useEffect(() => {
-    if (isError) {
+    if (isError && shouldShowToast) {
       toast({
         title: "Error",
         description: `Failed to fetch webmail login link: ${errorLogin.message}`,
         status: "error",
       });
+      setShouldShowToast(false);
     }
-  }, [isError, errorLogin, toast]);
+  }, [isError, errorLogin, shouldShowToast, toast]);
 
   return {
     fetch: () => {
-      setShouldFetch(true);
+      setShouldShowToast(true);
     },
   };
 };

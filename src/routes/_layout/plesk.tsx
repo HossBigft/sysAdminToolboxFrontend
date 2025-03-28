@@ -69,7 +69,6 @@ function SubscriptionSearchApp() {
 
   const handleTestMailClick = (item) => {
     setClickedItem(item);
-    queryClient.invalidateQueries({ queryKey: ["testMailLoginLink"] });
     refetchTestMailCredentials();
   };
 
