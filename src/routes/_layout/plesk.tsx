@@ -13,6 +13,8 @@ import {
   Text,
   Button,
   HStack,
+  Badge,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import SearchInput from "../../components/SubscriptionSearch/SearchInput";
@@ -23,6 +25,7 @@ import { useDnsRecords } from "../../hooks/dns/useDnsRecords";
 import useSubscriptionLoginLink from "../../hooks/plesk/useSubscriptionLoginLink";
 import useCreateTestMail from "../../hooks/plesk/useCreateTestMail";
 import useSetZoneMaster from "../../hooks/plesk/useSetZoneMaster";
+
 export const Route = createFileRoute("/_layout/")({
   component: SubscriptionSearchApp,
 });
@@ -46,6 +49,7 @@ function SubscriptionSearchApp() {
     clickedItem,
     finalSearchTerm
   );
+
   const handleSearch = (e) => {
     if (e.key === "Enter" && searchTerm.trim()) {
       setFinalSearchTerm(searchTerm.trim());
@@ -74,7 +78,7 @@ function SubscriptionSearchApp() {
 
   return (
     <ChakraProvider>
-      <VStack spacing={4} width="100%" margin="50px auto" maxWidth="1200px">
+      <VStack spacing={4} width="100%" margin="50px auto" maxWidth="1600px">
         <SearchInput
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -87,18 +91,26 @@ function SubscriptionSearchApp() {
           <Text color="red.500">Error: {subscriptionQuery.error.message}</Text>
         )}
 
-        <Box overflowX="auto" width="100%">
-          <Table variant="simple">
+        <Box overflowX="auto" width="100%" maxWidth="100%">
+          <Table 
+            variant="simple" 
+            size="sm" 
+            width="100%" 
+            style={{ tableLayout: 'fixed' }}
+          >
             <Thead>
               <Tr>
-                <Th>Host</Th>
-                <Th>ID</Th>
-                <Th>Name</Th>
-                <Th>Username</Th>
-                <Th>User Login</Th>
-                <Th>Domains</Th>
+                <Th width="10%">Host</Th>
+                <Th width="5%">ID</Th>
+                <Th width="10%">Name</Th>
+                <Th width="10%">Username</Th>
+                <Th width="10%">User Login</Th>
+                <Th width="20%">Domains</Th>
+                <Th width="8%">Subscription Size</Th>
+                <Th width="10%">Subscription Status</Th>
+                <Th width="7%">Space Overused</Th>
                 {currentUser?.ssh_username !== null && (
-                  <Th width="100px">Actions</Th>
+                  <Th width="10%">Actions</Th>
                 )}
               </Tr>
             </Thead>
@@ -118,16 +130,56 @@ function SubscriptionSearchApp() {
                   <Td>{item.username}</Td>
                   <Td>{item.userlogin}</Td>
                   <Td>
-                    <DomainsList domains={item.domains} />
+                    <Tooltip 
+                      label={
+                        <VStack align="start" maxHeight="300px" overflowY="auto">
+                          {item.domain_states.map((domainState) => (
+                            <Text key={domainState.domain} fontSize="xs">
+                              {domainState.domain}: {domainState.status}
+                            </Text>
+                          ))}
+                        </VStack>
+                      }
+                      aria-label="Domain States"
+                    >
+                      <DomainsList domains={item.domains} />
+                    </Tooltip>
+                  </Td>
+                  <Td>
+                    <Tooltip label={`${item.subscription_size_mb} MB`}>
+                      <Text>
+                        {(item.subscription_size_mb / 1024).toFixed(2)} GB
+                      </Text>
+                    </Tooltip>
+                  </Td>
+                  <Td>
+                    <Badge 
+                      colorScheme={
+                        item.subscription_status === "online" 
+                          ? "green" 
+                          : "red"
+                      }
+                    >
+                      {item.subscription_status}
+                    </Badge>
+                  </Td>
+                  <Td>
+                    <Badge 
+                      colorScheme={
+                        item.is_space_overused 
+                          ? "red" 
+                          : "green"
+                      }
+                    >
+                      {item.is_space_overused ? "Yes" : "No"}
+                    </Badge>
                   </Td>
                   <Td>
                     <VStack spacing={2}>
-                      {" "}
-                      {/* or Stack direction="row" */}
                       {currentUser?.ssh_username !== null && (
                         <Button
                           colorScheme="blue"
-                          size="sm"
+                          size="xs"
                           onClick={() => handleLoginLinkClick(item)}
                         >
                           Get Login Link
@@ -135,14 +187,14 @@ function SubscriptionSearchApp() {
                       )}
                       <Button
                         colorScheme="blue"
-                        size="sm"
+                        size="xs"
                         onClick={() => handleTestMailClick(item)}
                       >
                         Get test mailbox
                       </Button>
                       <Button
                         colorScheme="blue"
-                        size="sm"
+                        size="xs"
                         onClick={() =>
                           handleSetZoneMasterClick(item, searchTerm)
                         }
