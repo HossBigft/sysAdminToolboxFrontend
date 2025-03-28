@@ -74,6 +74,7 @@ const useCreateTestMail = (clickedItem, domain) => {
         duration: null,
         isClosable: true,
       });
+      setShouldFetch(false);
     }
   }, [isSuccess, data, toast]);
 
