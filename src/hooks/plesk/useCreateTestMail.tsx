@@ -27,19 +27,20 @@ async function copyToClipboard(textToCopy) {
 }
 
 const useCreateTestMail = (clickedItem, domain) => {
-  const [shouldShowToast, setShouldShowToast] = useState(false);
+  const [shouldTriggerQuery, setShouldTriggerQuery] = useState(false);
 
   const {
     data,
     isSuccess,
     isError,
     error: errorLogin,
+    refetch
   } = useQuery({
     ...createTestmailForDomainOptions({
       query: { server: clickedItem?.host, maildomain: domain },
     }),
     queryKey: ["testMailLoginLink", domain],
-    enabled: !!clickedItem,
+    enabled: shouldTriggerQuery && !!domain && !!clickedItem,
     refetchOnWindowFocus: false,
     staleTime: 5 * (60 * 1000), // 5 mins
   });
@@ -47,7 +48,7 @@ const useCreateTestMail = (clickedItem, domain) => {
   const toast = useToast();
 
   useEffect(() => {
-    if (isSuccess && data && shouldShowToast) {
+    if (isSuccess && data) {
       const toastId = toast({
         title: `Mailbox is ready. Password is ${data.password}`,
         description: (
@@ -70,24 +71,25 @@ const useCreateTestMail = (clickedItem, domain) => {
         duration: null,
         isClosable: true,
       });
-      setShouldShowToast(false);
+      setShouldTriggerQuery(false);
     }
-  }, [isSuccess, data, shouldShowToast, toast]);
+  }, [isSuccess, data, toast]);
 
   useEffect(() => {
-    if (isError && shouldShowToast) {
+    if (isError) {
       toast({
         title: "Error",
         description: `Failed to fetch webmail login link: ${errorLogin.message}`,
         status: "error",
       });
-      setShouldShowToast(false);
+      setShouldTriggerQuery(false);
     }
-  }, [isError, errorLogin, shouldShowToast, toast]);
+  }, [isError, errorLogin, toast]);
 
   return {
     fetch: () => {
-      setShouldShowToast(true);
+      setShouldTriggerQuery(true);
+      refetch();
     },
   };
 };
