@@ -30,6 +30,21 @@ export const Route = createFileRoute("/_layout/")({
   component: SubscriptionSearchApp,
 });
 
+// Status color and display mapping
+const STATUS_COLOR_MAPPING = {
+  "online": "green",
+  "subscription_is_disabled": "yellow",
+  "domain_disabled_by_admin": "red",
+  "domain_disabled_by_client": "orange"
+};
+
+const STATUS_DISPLAY_MAPPING = {
+  "online": "Online",
+  "subscription_is_disabled": "Subscription Disabled",
+  "domain_disabled_by_admin": "Disabled by Admin",
+  "domain_disabled_by_client": "Disabled by Client"
+};
+
 function SubscriptionSearchApp() {
   const [searchTerm, setSearchTerm] = useState("");
   const [clickedItem, setClickedItem] = useState(null);
@@ -78,7 +93,13 @@ function SubscriptionSearchApp() {
 
   return (
     <ChakraProvider>
-      <VStack spacing={4} width="100%" margin="50px auto" maxWidth="1600px">
+      <VStack 
+        spacing={4} 
+        width="100%" 
+        margin="50px auto" 
+        maxWidth={["100%", "90%", "80%", "1600px"]}
+        px={[2, 4, 6, 0]}
+      >
         <SearchInput
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -100,23 +121,35 @@ function SubscriptionSearchApp() {
           >
             <Thead>
               <Tr>
-                <Th width="10%">Host</Th>
-                <Th width="5%">ID</Th>
-                <Th width="10%">Name</Th>
-                <Th width="10%">Username</Th>
-                <Th width="10%">User Login</Th>
-                <Th width="20%">Domains</Th>
-                <Th width="8%">Subscription Size</Th>
-                <Th width="10%">Subscription Status</Th>
-                <Th width="7%">Space Overused</Th>
+                <Th width={["10%", "8%", "7%"]}>Status</Th>
+                <Th width={["15%", "12%", "10%"]}>Host</Th>
+                <Th width={["5%", "5%", "5%"]}>ID</Th>
+                <Th width={["15%", "12%", "10%"]}>Name</Th>
+                <Th width={["15%", "12%", "10%"]}>Username</Th>
+                <Th width={["15%", "12%", "10%"]}>User Login</Th>
+                <Th width={["20%", "20%", "20%"]}>Domains</Th>
+                <Th width={["10%", "8%", "8%"]}>Subscription Size</Th>
+                <Th width={["7%", "7%", "7%"]}>Space Overused</Th>
                 {currentUser?.ssh_username !== null && (
-                  <Th width="10%">Actions</Th>
+                  <Th width={["10%", "12%", "10%"]}>Actions</Th>
                 )}
               </Tr>
             </Thead>
             <Tbody>
               {subscriptionQuery.data?.map((item) => (
                 <Tr key={item.id}>
+                  <Td>
+                    <Tooltip 
+                      label={`Subscription Status: ${STATUS_DISPLAY_MAPPING[item.subscription_status]}`}
+                    >
+                      <Badge 
+                        colorScheme={STATUS_COLOR_MAPPING[item.subscription_status] || "gray"}
+                        variant="solid"
+                      >
+                        {STATUS_DISPLAY_MAPPING[item.subscription_status] || item.subscription_status}
+                      </Badge>
+                    </Tooltip>
+                  </Td>
                   <Td>
                     <HostCell
                       host={item.host}
@@ -151,17 +184,6 @@ function SubscriptionSearchApp() {
                         {(item.subscription_size_mb / 1024).toFixed(2)} GB
                       </Text>
                     </Tooltip>
-                  </Td>
-                  <Td>
-                    <Badge 
-                      colorScheme={
-                        item.subscription_status === "online" 
-                          ? "green" 
-                          : "red"
-                      }
-                    >
-                      {item.subscription_status}
-                    </Badge>
                   </Td>
                   <Td>
                     <Badge 
