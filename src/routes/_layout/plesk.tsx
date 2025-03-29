@@ -86,7 +86,6 @@ function SubscriptionSearchApp() {
       body: { target_plesk_server: item.host, domain: searchTerm },
     });
   };
-
   const handleTestMailClick = (item) => {
     setClickedItem(item);
     refetchTestMailCredentials();
@@ -123,11 +122,9 @@ function SubscriptionSearchApp() {
             <Thead>
               <Tr>
                 <Th width={["15%"]}>Host</Th>
-                <Th width={["10%", "8%", "7%"]}>Status</Th>
-                <Th width={["5%", "5%", "5%"]}>ID</Th>
-                <Th width={["15%", "12%", "10%"]}>Name</Th>
-                <Th width={["15%", "12%", "10%"]}>Username</Th>
-                <Th width={["15%", "12%", "10%"]}>User Login</Th>
+                <Th width={["10%", "7%", "5%"]}>Name</Th>
+                <Th width={["10%", "7%", "5%"]}>Status</Th>
+                <Th width={["10%", "7%", "5%"]}>ID</Th>
                 <Th width={"10%"}>Domains</Th>
                 <Th width={["10%", "8%", "8%"]}>Subscription Size</Th>
                 <Th width={["10%", "12%", "10%"]}>Actions</Th>
@@ -144,6 +141,7 @@ function SubscriptionSearchApp() {
                       mxRecord={mxRecord}
                     />
                   </Td>
+                  <Td>{item.name}</Td>
                   <Td>
                     <Tooltip
                       label={`Subscription Status: ${STATUS_DISPLAY_MAPPING[item.subscription_status]}`}
@@ -161,9 +159,6 @@ function SubscriptionSearchApp() {
                     </Tooltip>
                   </Td>
                   <Td>{item.id}</Td>
-                  <Td>{item.name}</Td>
-                  <Td>{item.username}</Td>
-                  <Td>{item.userlogin}</Td>
                   <Td>
                     <Tooltip
                       label={
