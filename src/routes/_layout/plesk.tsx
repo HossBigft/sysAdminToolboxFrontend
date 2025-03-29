@@ -97,7 +97,7 @@ function SubscriptionSearchApp() {
         spacing={4}
         width="100%"
         margin="50px auto"
-        maxWidth={["100%", "90%", "80%", "1600px"]}
+        maxWidth={["80%", "70%", "60%", "1200px"]}
         px={[2, 4, 6, 0]}
       >
         <SearchInput
@@ -117,7 +117,8 @@ function SubscriptionSearchApp() {
             variant="simple"
             size="sm"
             width="100%"
-            style={{ tableLayout: "fixed" }}
+            minWidth="800px" // Ensure the table doesn't get too narrow
+            style={{ tableLayout: "auto" }} // Allow columns to adjust
           >
             <Thead>
               <Tr>
@@ -125,9 +126,9 @@ function SubscriptionSearchApp() {
                 <Th width={["10%", "7%", "5%"]}>Name</Th>
                 <Th width={["10%", "7%", "5%"]}>Status</Th>
                 <Th width={["10%", "7%", "5%"]}>ID</Th>
-                <Th width={"10%"}>Domains</Th>
+                <Th width={"20%"}>Domains</Th> {/* Increased width for Domains */}
                 <Th width={["10%", "8%", "8%"]}>Subscription Size</Th>
-                <Th width={["10%", "12%", "10%"]}>Actions</Th>
+                <Th width={["15%", "18%", "15%"]} textAlign="center">Actions</Th> {/* Centered Actions */}
               </Tr>
             </Thead>
             <Tbody>
