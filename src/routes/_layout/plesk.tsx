@@ -25,6 +25,8 @@ import { useDnsRecords } from "../../hooks/dns/useDnsRecords";
 import useSubscriptionLoginLink from "../../hooks/plesk/useSubscriptionLoginLink";
 import useCreateTestMail from "../../hooks/plesk/useCreateTestMail";
 import useSetZoneMaster from "../../hooks/plesk/useSetZoneMaster";
+import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
+
 
 export const Route = createFileRoute("/_layout/")({
   component: SubscriptionSearchApp,
@@ -129,10 +131,7 @@ function SubscriptionSearchApp() {
                 <Th width={["15%", "12%", "10%"]}>User Login</Th>
                 <Th width={"10%"}>Domains</Th>
                 <Th width={["10%", "8%", "8%"]}>Subscription Size</Th>
-                <Th width={["7%", "7%", "7%"]}>Space Overused</Th>
-                {currentUser?.ssh_username !== null && (
-                  <Th width={["10%", "12%", "10%"]}>Actions</Th>
-                )}
+                <Th width={["10%", "12%", "10%"]}>Actions</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -188,17 +187,15 @@ function SubscriptionSearchApp() {
                   </Td>
                   <Td>
                     <Tooltip label={`${item.subscription_size_mb} MB`}>
-                      <Text>
-                        {(item.subscription_size_mb / 1024).toFixed(2)} GB
-                      </Text>
+                      <HStack spacing={2}>
+                        <Text>{(item.subscription_size_mb / 1024).toFixed(2)} GB</Text>
+                        {item.is_space_overused ? (
+                          <FaExclamationTriangle color="red" size="1.2em" />
+                        ) : (
+                          <FaCheckCircle color="green" size="1.2em" />
+                        )}
+                      </HStack>
                     </Tooltip>
-                  </Td>
-                  <Td>
-                    <Badge
-                      colorScheme={item.is_space_overused ? "red" : "green"}
-                    >
-                      {item.is_space_overused ? "Yes" : "No"}
-                    </Badge>
                   </Td>
                   <Td>
                     <VStack spacing={2}>
