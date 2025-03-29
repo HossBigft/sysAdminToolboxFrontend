@@ -27,7 +27,6 @@ import useCreateTestMail from "../../hooks/plesk/useCreateTestMail";
 import useSetZoneMaster from "../../hooks/plesk/useSetZoneMaster";
 import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 
-
 export const Route = createFileRoute("/_layout/")({
   component: SubscriptionSearchApp,
 });
@@ -188,11 +187,11 @@ function SubscriptionSearchApp() {
                   <Td>
                     <Tooltip label={`${item.subscription_size_mb} MB`}>
                       <HStack spacing={2}>
-                        <Text>{(item.subscription_size_mb / 1024).toFixed(2)} GB</Text>
-                        {item.is_space_overused ? (
+                        <Text>
+                          {(item.subscription_size_mb / 1024).toFixed(2)} GB
+                        </Text>
+                        {item.is_space_overused && (
                           <FaExclamationTriangle color="red" size="1.2em" />
-                        ) : (
-                          <FaCheckCircle color="green" size="1.2em" />
                         )}
                       </HStack>
                     </Tooltip>
