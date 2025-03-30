@@ -164,34 +164,7 @@ function SubscriptionSearchApp() {
                   </Td>
                   <Td>{item.id}</Td>
                   <Td>
-                    <Tooltip
-                      label={
-                        <VStack
-                          align="start"
-                          maxHeight="300px"
-                          overflowY="auto"
-                        >
-                          {item.domains.map((domain) => (
-                            <Text key={domain} fontSize="xs">
-                              {domain}
-                            </Text>
-                          ))}
-                        </VStack>
-                      }
-                      aria-label="Full domain list"
-                      isDisabled={item.domains.length <= 3}
-                    >
-                      <VStack align="start">
-                        {item.domains.slice(0, 3).map((domain, index) => (
-                          <Text key={index} fontSize="sm">
-                            {domain}
-                          </Text>
-                        ))}
-                        {item.domains.length > 3 && (
-                          <Button variant="outline" size="xs">...</Button>
-                        )}
-                      </VStack>
-                    </Tooltip>
+                  <DomainsList domains={item.domains} />
                   </Td>
                   <Td>
                     <Tooltip label={`${item.subscription_size_mb} MB`}>
