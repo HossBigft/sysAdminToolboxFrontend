@@ -126,12 +126,11 @@ function SubscriptionSearchApp() {
                 <Th width={["10%", "7%", "5%"]}>Name</Th>
                 <Th width={["10%", "7%", "5%"]}>Status</Th>
                 <Th width={["10%", "7%", "5%"]}>ID</Th>
-                <Th width={"5%"}>Domains</Th>{" "}
+                <Th width={"5%"}>Domains</Th>
                 <Th width={["10%", "8%", "8%"]}>Subscription Size</Th>
                 <Th width={["15%", "18%", "15%"]} textAlign="center">
                   Actions
-                </Th>{" "}
-                {/* Centered Actions */}
+                </Th>
               </Tr>
             </Thead>
             <Tbody>
