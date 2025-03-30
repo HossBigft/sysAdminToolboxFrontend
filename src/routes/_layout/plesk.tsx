@@ -25,7 +25,7 @@ import { useDnsRecords } from "../../hooks/dns/useDnsRecords";
 import useSubscriptionLoginLink from "../../hooks/plesk/useSubscriptionLoginLink";
 import useCreateTestMail from "../../hooks/plesk/useCreateTestMail";
 import useSetZoneMaster from "../../hooks/plesk/useSetZoneMaster";
-import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
+import {FaExclamationTriangle } from "react-icons/fa";
 
 export const Route = createFileRoute("/_layout/")({
   component: SubscriptionSearchApp,
@@ -126,9 +126,12 @@ function SubscriptionSearchApp() {
                 <Th width={["10%", "7%", "5%"]}>Name</Th>
                 <Th width={["10%", "7%", "5%"]}>Status</Th>
                 <Th width={["10%", "7%", "5%"]}>ID</Th>
-                <Th width={"20%"}>Domains</Th> {/* Increased width for Domains */}
+                <Th width={"5%"}>Domains</Th>{" "}
                 <Th width={["10%", "8%", "8%"]}>Subscription Size</Th>
-                <Th width={["15%", "18%", "15%"]} textAlign="center">Actions</Th> {/* Centered Actions */}
+                <Th width={["15%", "18%", "15%"]} textAlign="center">
+                  Actions
+                </Th>{" "}
+                {/* Centered Actions */}
               </Tr>
             </Thead>
             <Tbody>
@@ -168,16 +171,26 @@ function SubscriptionSearchApp() {
                           maxHeight="300px"
                           overflowY="auto"
                         >
-                          {item.domain_states.map((domainState) => (
-                            <Text key={domainState.domain} fontSize="xs">
-                              {domainState.domain}: {domainState.status}
+                          {item.domains.map((domain) => (
+                            <Text key={domain} fontSize="xs">
+                              {domain}
                             </Text>
                           ))}
                         </VStack>
                       }
-                      aria-label="Domain States"
+                      aria-label="Full domain list"
+                      isDisabled={item.domains.length <= 3}
                     >
-                      <DomainsList domains={item.domains} />
+                      <VStack align="start">
+                        {item.domains.slice(0, 3).map((domain, index) => (
+                          <Text key={index} fontSize="sm">
+                            {domain}
+                          </Text>
+                        ))}
+                        {item.domains.length > 3 && (
+                          <Button variant="outline" size="xs">...</Button>
+                        )}
+                      </VStack>
                     </Tooltip>
                   </Td>
                   <Td>
