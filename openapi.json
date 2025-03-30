@@ -825,6 +825,53 @@
         }
       }
     },
+    "/api/v1/users/superuser/me": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update Superuser Me",
+        "description": "Update own user.",
+        "operationId": "update_superuser_me",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SuperUserUpdateMe"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/plesk/get/subscription/": {
       "get": {
         "tags": [
@@ -1006,6 +1053,65 @@
                 "schema": {
                   "$ref": "#/components/schemas/TestMailCredentials"
                 }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plesk/publickey": {
+      "get": {
+        "tags": [
+          "plesk"
+        ],
+        "summary": "Share Public Key",
+        "operationId": "share_public_key",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plesk/token": {
+      "get": {
+        "tags": [
+          "plesk"
+        ],
+        "summary": "Get Token",
+        "operationId": "get_token",
+        "parameters": [
+          {
+            "name": "command",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Command"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           },
@@ -1722,6 +1828,28 @@
             },
             "type": "array",
             "title": "Domains"
+          },
+          "domain_states": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Domain States"
+          },
+          "is_space_overused": {
+            "type": "boolean",
+            "title": "Is Space Overused"
+          },
+          "subscription_size_mb": {
+            "type": "integer",
+            "title": "Subscription Size Mb"
+          },
+          "subscription_status": {
+            "type": "string",
+            "title": "Subscription Status"
           }
         },
         "type": "object",
@@ -1731,7 +1859,11 @@
           "name",
           "username",
           "userlogin",
-          "domains"
+          "domains",
+          "domain_states",
+          "is_space_overused",
+          "subscription_size_mb",
+          "subscription_status"
         ],
         "title": "SubscriptionDetailsModel"
       },
@@ -1787,6 +1919,49 @@
         "examples": [
           "v12312.webspace"
         ]
+      },
+      "SuperUserUpdateMe": {
+        "properties": {
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "format": "email"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "ssh_username": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 33
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ssh Username"
+          }
+        },
+        "type": "object",
+        "title": "SuperUserUpdateMe"
       },
       "TestMailCredentials": {
         "properties": {
@@ -2276,18 +2451,6 @@
               }
             ],
             "title": "Email"
-          },
-          "ssh_username": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 33
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ssh Username"
           }
         },
         "type": "object",

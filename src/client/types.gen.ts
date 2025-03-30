@@ -112,6 +112,12 @@ export type SubscriptionDetailsModel = {
     username: string;
     userlogin: string;
     domains: Array<SubscriptionName>;
+    domain_states: Array<{
+        [key: string]: (string);
+    }>;
+    is_space_overused: boolean;
+    subscription_size_mb: number;
+    subscription_status: string;
 };
 
 export type SubscriptionListResponseModel = Array<SubscriptionDetailsModel>;
@@ -123,6 +129,12 @@ export type SubscriptionLoginLinkInput = {
 
 export type SubscriptionName = {
     name: string;
+};
+
+export type SuperUserUpdateMe = {
+    full_name?: (string | null);
+    email?: (string | null);
+    ssh_username?: (string | null);
 };
 
 export type TestMailCredentials = {
@@ -209,7 +221,6 @@ export type UserUpdate = {
 export type UserUpdateMe = {
     full_name?: (string | null);
     email?: (string | null);
-    ssh_username?: (string | null);
 };
 
 export type ValidationError = {
@@ -378,6 +389,14 @@ export type GetUserActionsResponse = (unknown);
 
 export type GetUserActionsError = (HTTPValidationError);
 
+export type UpdateSuperuserMeData = {
+    body: SuperUserUpdateMe;
+};
+
+export type UpdateSuperuserMeResponse = (UserPublic);
+
+export type UpdateSuperuserMeError = (HTTPValidationError);
+
 export type FindPleskSubscriptionByDomainData = {
     query: {
         name: string;
@@ -414,6 +433,20 @@ export type CreateTestmailForDomainData = {
 export type CreateTestmailForDomainResponse = (TestMailCredentials);
 
 export type CreateTestmailForDomainError = (HTTPValidationError);
+
+export type SharePublicKeyResponse = (unknown);
+
+export type SharePublicKeyError = unknown;
+
+export type GetTokenData = {
+    query: {
+        command: string;
+    };
+};
+
+export type GetTokenResponse = (unknown);
+
+export type GetTokenError = (HTTPValidationError);
 
 export type HealthCheckResponse = (boolean);
 

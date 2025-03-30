@@ -2,8 +2,8 @@
 
 import type { OptionsLegacyParser } from '@hey-api/client-axios';
 import { queryOptions, type UseMutationOptions, infiniteQueryOptions, type InfiniteData } from '@tanstack/react-query';
-import type { GetARecordData, GetPtrRecordData, GetZoneMasterFromDnsServersData, DeleteZoneFileForDomainData, DeleteZoneFileForDomainError, DeleteZoneFileForDomainResponse, GetMxRecordData, GetNsRecordsData, ReadUsersData, CreateUserData, CreateUserError, CreateUserResponse, DeleteUserMeError, DeleteUserMeResponse, UpdateUserMeData, UpdateUserMeError, UpdateUserMeResponse, UpdatePasswordMeData, UpdatePasswordMeError, UpdatePasswordMeResponse, RegisterUserData, RegisterUserError, RegisterUserResponse, ReadUserByIdData, UpdateUserData, UpdateUserError, UpdateUserResponse, DeleteUserData, DeleteUserError, DeleteUserResponse, GetOwnActionsData, GetOwnActionsError, GetOwnActionsResponse, GetUserActionsData, FindPleskSubscriptionByDomainData, GetSubscriptionLoginLinkData, GetSubscriptionLoginLinkError, GetSubscriptionLoginLinkResponse, SetZonemasterData, SetZonemasterError, SetZonemasterResponse, CreateTestmailForDomainData, RecoverPasswordData, RecoverPasswordError, RecoverPasswordResponse, ResetPasswordData, ResetPasswordError, ResetPasswordResponse, RecoverPasswordHtmlContentData, RecoverPasswordHtmlContentError, RecoverPasswordHtmlContentResponse, LoginAccessTokenData, LoginAccessTokenError, LoginAccessTokenResponse, TestTokenError, TestTokenResponse } from '../types.gen';
-import { client, getARecord, getPtrRecord, getZoneMasterFromDnsServers, deleteZoneFileForDomain, getMxRecord, getNsRecords, readUsers, createUser, readUserMe, deleteUserMe, updateUserMe, updatePasswordMe, registerUser, readUserById, updateUser, deleteUser, getOwnActions, getUserActions, findPleskSubscriptionByDomain, getSubscriptionLoginLink, setZonemaster, createTestmailForDomain, healthCheck, recoverPassword, resetPassword, recoverPasswordHtmlContent, loginAccessToken, testToken } from '../sdk.gen';
+import type { GetARecordData, GetPtrRecordData, GetZoneMasterFromDnsServersData, DeleteZoneFileForDomainData, DeleteZoneFileForDomainError, DeleteZoneFileForDomainResponse, GetMxRecordData, GetNsRecordsData, ReadUsersData, CreateUserData, CreateUserError, CreateUserResponse, DeleteUserMeError, DeleteUserMeResponse, UpdateUserMeData, UpdateUserMeError, UpdateUserMeResponse, UpdatePasswordMeData, UpdatePasswordMeError, UpdatePasswordMeResponse, RegisterUserData, RegisterUserError, RegisterUserResponse, ReadUserByIdData, UpdateUserData, UpdateUserError, UpdateUserResponse, DeleteUserData, DeleteUserError, DeleteUserResponse, GetOwnActionsData, GetOwnActionsError, GetOwnActionsResponse, GetUserActionsData, UpdateSuperuserMeData, UpdateSuperuserMeError, UpdateSuperuserMeResponse, FindPleskSubscriptionByDomainData, GetSubscriptionLoginLinkData, GetSubscriptionLoginLinkError, GetSubscriptionLoginLinkResponse, SetZonemasterData, SetZonemasterError, SetZonemasterResponse, CreateTestmailForDomainData, GetTokenData, RecoverPasswordData, RecoverPasswordError, RecoverPasswordResponse, ResetPasswordData, ResetPasswordError, ResetPasswordResponse, RecoverPasswordHtmlContentData, RecoverPasswordHtmlContentError, RecoverPasswordHtmlContentResponse, LoginAccessTokenData, LoginAccessTokenError, LoginAccessTokenResponse, TestTokenError, TestTokenResponse } from '../types.gen';
+import { client, getARecord, getPtrRecord, getZoneMasterFromDnsServers, deleteZoneFileForDomain, getMxRecord, getNsRecords, readUsers, createUser, readUserMe, deleteUserMe, updateUserMe, updatePasswordMe, registerUser, readUserById, updateUser, deleteUser, getOwnActions, getUserActions, updateSuperuserMe, findPleskSubscriptionByDomain, getSubscriptionLoginLink, setZonemaster, createTestmailForDomain, sharePublicKey, getToken, healthCheck, recoverPassword, resetPassword, recoverPasswordHtmlContent, loginAccessToken, testToken } from '../sdk.gen';
 import type { AxiosError } from 'axios';
 
 type QueryKey<TOptions extends OptionsLegacyParser> = [
@@ -444,6 +444,20 @@ export const getUserActionsOptions = (options: OptionsLegacyParser<GetUserAction
     });
 };
 
+export const updateSuperuserMeMutation = (options?: Partial<OptionsLegacyParser<UpdateSuperuserMeData>>) => {
+    const mutationOptions: UseMutationOptions<UpdateSuperuserMeResponse, AxiosError<UpdateSuperuserMeError>, OptionsLegacyParser<UpdateSuperuserMeData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await updateSuperuserMe({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
 export const findPleskSubscriptionByDomainQueryKey = (options: OptionsLegacyParser<FindPleskSubscriptionByDomainData>) => [
     createQueryKey('findPleskSubscriptionByDomain', options)
 ];
@@ -545,6 +559,44 @@ export const createTestmailForDomainOptions = (options: OptionsLegacyParser<Crea
             return data;
         },
         queryKey: createTestmailForDomainQueryKey(options)
+    });
+};
+
+export const sharePublicKeyQueryKey = (options?: OptionsLegacyParser) => [
+    createQueryKey('sharePublicKey', options)
+];
+
+export const sharePublicKeyOptions = (options?: OptionsLegacyParser) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await sharePublicKey({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: sharePublicKeyQueryKey(options)
+    });
+};
+
+export const getTokenQueryKey = (options: OptionsLegacyParser<GetTokenData>) => [
+    createQueryKey('getToken', options)
+];
+
+export const getTokenOptions = (options: OptionsLegacyParser<GetTokenData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await getToken({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getTokenQueryKey(options)
     });
 };
 
