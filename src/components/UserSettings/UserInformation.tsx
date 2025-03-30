@@ -19,7 +19,7 @@ import { type UserPublic, type UserUpdateMe } from "../../client";
 import useAuth from "../../hooks/useAuth";
 import useCustomToast from "../../hooks/useCustomToast";
 import { emailPattern, handleError } from "../../utils";
-import { updateUserMeMutation } from "../../client/@tanstack/react-query.gen";
+import { updateUserMeMutation, updateSuperuserMeMutation } from "../../client/@tanstack/react-query.gen";
 
 const UserInformation = () => {
   const queryClient = useQueryClient();
@@ -39,7 +39,7 @@ const UserInformation = () => {
     defaultValues: {
       full_name: currentUser?.full_name,
       email: currentUser?.email,
-      ssh_username: currentUser?.ssh_username
+      ssh_username: currentUser?.ssh_username,
     },
   });
 
@@ -47,7 +47,7 @@ const UserInformation = () => {
     setEditMode(!editMode);
   };
 
-  const mutation = useMutation({
+  const mutation_regular_user = useMutation({
     ...updateUserMeMutation(),
     onSuccess: () => {
       showToast("Success!", "User updated successfully.", "success");
@@ -60,8 +60,25 @@ const UserInformation = () => {
     },
   });
 
+  const mutation_superuser = useMutation({
+    ...updateSuperuserMeMutation(),
+    onSuccess: () => {
+      showToast("Success!", "Superuser updated successfully.", "success");
+    },
+    onError: (err) => {
+      handleError(err, showToast);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries();
+    },
+  });
+
   const onSubmit: SubmitHandler<UserUpdateMe> = async (data) => {
-    mutation.mutate({ body: data });
+    if (currentUser?.role === "superuser") {
+      mutation_superuser.mutate({ body: data });
+    } else {
+      mutation_regular_user.mutate({ body: data });
+    }
   };
 
   const onCancel = () => {
@@ -70,16 +87,12 @@ const UserInformation = () => {
   };
 
   return (
-    <>
-      <Container maxW="full">
-        <Heading size="sm" py={4}>
-          User Information
-        </Heading>
-        <Box
-          w={{ sm: "full", md: "50%" }}
-          as="form"
-          onSubmit={handleSubmit(onSubmit)}
-        >
+    <Container maxW="full">
+      <Heading size="sm" py={4}>
+        User Information
+      </Heading>
+      <Box w={{ sm: "full", md: "50%" }} as="form" onSubmit={handleSubmit(onSubmit)}>
+        {currentUser?.role=="superuser" && (
           <FormControl>
             <FormLabel color={color} htmlFor="ssh_username">
               SSH username on Plesk Servers
@@ -104,73 +117,55 @@ const UserInformation = () => {
               </Text>
             )}
           </FormControl>
-          <FormControl>
-            <FormLabel color={color} htmlFor="name">
-              Full name
-            </FormLabel>
-            {editMode ? (
-              <Input
-                id="name"
-                {...register("full_name", { maxLength: 30 })}
-                type="text"
-                size="md"
-                w="auto"
-              />
-            ) : (
-              <Text
-                size="md"
-                py={2}
-                color={!currentUser?.full_name ? "ui.dim" : "inherit"}
-                isTruncated
-                maxWidth="250px"
-              >
-                {currentUser?.full_name || "N/A"}
-              </Text>
-            )}
-          </FormControl>
-          <FormControl mt={4} isInvalid={!!errors.email}>
-            <FormLabel color={color} htmlFor="email">
-              Email
-            </FormLabel>
-            {editMode ? (
-              <Input
-                id="email"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: emailPattern,
-                })}
-                type="email"
-                size="md"
-                w="auto"
-              />
-            ) : (
-              <Text size="md" py={2} isTruncated maxWidth="250px">
-                {currentUser?.email}
-              </Text>
-            )}
-            {errors.email && (
-              <FormErrorMessage>{errors.email.message}</FormErrorMessage>
-            )}
-          </FormControl>
-          <Flex mt={4} gap={3}>
-            <Button
-              variant="primary"
-              onClick={toggleEditMode}
-              type={editMode ? "button" : "submit"}
-              isLoading={editMode ? isSubmitting : false}
-              isDisabled={editMode ? !isDirty || !getValues("email") : false}
-            >
-              {editMode ? "Save" : "Edit"}
-            </Button>
-            {editMode && (
-              <Button onClick={onCancel} isDisabled={isSubmitting}>
-                Cancel
-              </Button>
-            )}
-          </Flex>
-        </Box>
-      </Container>
-    </>
+        )}
+        <FormControl>
+          <FormLabel color={color} htmlFor="name">
+            Full name
+          </FormLabel>
+          {editMode ? (
+            <Input id="name" {...register("full_name", { maxLength: 30 })} type="text" size="md" w="auto" />
+          ) : (
+            <Text size="md" py={2} color={!currentUser?.full_name ? "ui.dim" : "inherit"} isTruncated maxWidth="250px">
+              {currentUser?.full_name || "N/A"}
+            </Text>
+          )}
+        </FormControl>
+        <FormControl mt={4} isInvalid={!!errors.email}>
+          <FormLabel color={color} htmlFor="email">
+            Email
+          </FormLabel>
+          {editMode ? (
+            <Input
+              id="email"
+              {...register("email", {
+                required: "Email is required",
+                pattern: emailPattern,
+              })}
+              type="email"
+              size="md"
+              w="auto"
+            />
+          ) : (
+            <Text size="md" py={2} isTruncated maxWidth="250px">
+              {currentUser?.email}
+            </Text>
+          )}
+          {errors.email && <FormErrorMessage>{errors.email.message}</FormErrorMessage>}
+        </FormControl>
+        <Flex mt={4} gap={3}>
+          <Button
+            variant="primary"
+            onClick={toggleEditMode}
+            type={editMode ? "button" : "submit"}
+            isLoading={editMode ? isSubmitting : false}
+            isDisabled={editMode ? !isDirty || !getValues("email") : false}
+          >
+            {editMode ? "Save" : "Edit"}
+          </Button>
+          {editMode && <Button onClick={onCancel} isDisabled={isSubmitting}>Cancel</Button>}
+        </Flex>
+      </Box>
+    </Container>
   );
 };
 
