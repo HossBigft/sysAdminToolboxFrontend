@@ -1,18 +1,12 @@
-import { useEffect } from "react";
 import { Tooltip, Box, Icon } from "@chakra-ui/react";
 import { EmailIcon, CheckCircleIcon } from "@chakra-ui/icons";
-import { FiStar } from "react-icons/fi";
-import { useARecord } from "../../hooks/dns/useARecord";
+import { FaStar } from "react-icons/fa";
 
-const HostCell = ({ host, zoneMaster, aRecord, mxRecord }) => {
-  const { ip: resolvedIP, fetch } = useARecord(host);
-  useEffect(() => {
-    fetch();
-  }, [fetch]);
+const HostCell = ({ host, hostIp, zoneMaster, aRecord, mxRecord }) => {
   return (
     <Box display="flex" alignItems="center" gap="2">
       {host}{" "}
-      {resolvedIP === zoneMaster.ip[0] && (
+      {hostIp === zoneMaster.ip[0] && (
         <Tooltip
           hasArrow
           label={`DNS zone master [${zoneMaster.ip}]`}
@@ -20,11 +14,11 @@ const HostCell = ({ host, zoneMaster, aRecord, mxRecord }) => {
           color="black"
         >
           <span>
-            <Icon as={FiStar} />
+            <Icon as={FaStar} />
           </span>
         </Tooltip>
       )}
-      {resolvedIP === aRecord.ip && (
+      {hostIp === aRecord.ip && (
         <Tooltip
           hasArrow
           label="A record of domain points to this host"
@@ -34,7 +28,7 @@ const HostCell = ({ host, zoneMaster, aRecord, mxRecord }) => {
           <CheckCircleIcon />
         </Tooltip>
       )}
-      {resolvedIP === mxRecord.ip && (
+      {hostIp === mxRecord.ip && (
         <Tooltip
           hasArrow
           label="MX record points to this host"

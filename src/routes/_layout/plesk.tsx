@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   ChakraProvider,
@@ -22,6 +22,7 @@ import HostCell from "../../components/SubscriptionSearch/HostCell";
 import DomainsList from "../../components/SubscriptionSearch/DomainsList";
 import { useSubscriptionSearch } from "../../hooks/plesk/useSubscriptionSearch";
 import { useDnsRecords } from "../../hooks/dns/useDnsRecords";
+import { useBulkAResolution } from "../../hooks/dns/useBulkAResolution";
 import useSubscriptionLoginLink from "../../hooks/plesk/useSubscriptionLoginLink";
 import useCreateTestMail from "../../hooks/plesk/useCreateTestMail";
 import useSetZoneMaster from "../../hooks/plesk/useSetZoneMaster";
@@ -66,11 +67,18 @@ function SubscriptionSearchApp() {
     finalSearchTerm
   );
 
+  const hosts = useMemo(() => {
+    return subscriptionQuery.data?.map((item) => item.host) || [];
+  }, [subscriptionQuery.data]);
+
+  const { records, refetch: refetchHostRecords } = useBulkAResolution(hosts);
+
   const handleSearch = (e) => {
     if (e.key === "Enter" && searchTerm.trim()) {
       setFinalSearchTerm(searchTerm.trim());
       fetchSubscription();
       refetchDnsRecords();
+      refetchHostRecords();
     }
   };
 
@@ -139,6 +147,7 @@ function SubscriptionSearchApp() {
                   <Td>
                     <HostCell
                       host={item.host}
+                      hostIp={records[item.host]}
                       zoneMaster={zoneMaster}
                       aRecord={aRecord}
                       mxRecord={mxRecord}
