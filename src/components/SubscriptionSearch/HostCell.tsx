@@ -1,44 +1,64 @@
-import { Tooltip, Box, Icon } from "@chakra-ui/react";
+import React from "react";
+import { Tooltip, Box, HStack, Tag, Icon, VStack } from "@chakra-ui/react";
 import { EmailIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import { FaStar } from "react-icons/fa";
 
 const HostCell = ({ host, hostIp, zoneMaster, aRecord, mxRecord }) => {
+  // Determine which roles this host serves
+  const isDnsZoneMaster = hostIp === zoneMaster.ip[0];
+  const isDomainHost = hostIp === aRecord.ip;
+  const isMailServer = hostIp === mxRecord.ip;
+  
+  // Color scheme for better visual categorization
+  const tagColors = {
+    dns: "yellow",
+    domain: "green",
+    mail: "blue"
+  };
+
   return (
-    <Box display="flex" alignItems="center" gap="2">
-      {host}{" "}
-      {hostIp === zoneMaster.ip[0] && (
-        <Tooltip
-          hasArrow
-          label={`DNS zone master [${zoneMaster.ip}]`}
-          bg="gray.300"
-          color="black"
-        >
-          <span>
-            <Icon as={FaStar} />
-          </span>
-        </Tooltip>
-      )}
-      {hostIp === aRecord.ip && (
-        <Tooltip
-          hasArrow
-          label="A record of domain points to this host"
-          bg="gray.300"
-          color="black"
-        >
-          <CheckCircleIcon />
-        </Tooltip>
-      )}
-      {hostIp === mxRecord.ip && (
-        <Tooltip
-          hasArrow
-          label="MX record points to this host"
-          bg="gray.300"
-          color="black"
-        >
-          <EmailIcon />
-        </Tooltip>
-      )}
-    </Box>
+    <VStack spacing={2} align="left">
+      <Box fontWeight="medium">{host}</Box>
+      
+      <HStack spacing={2} justify="left">
+        {/* Role indicators with consistent styling */}
+        {isDnsZoneMaster && (
+          <Tooltip 
+            hasArrow 
+            label={`DNS Zone Master [${zoneMaster.ip}]`}
+            placement="bottom"
+          >
+            <Tag size="sm" colorScheme={tagColors.dns} variant="subtle">
+              <Icon as={FaStar} mr={1} /> DNS
+            </Tag>
+          </Tooltip>
+        )}
+        
+        {isDomainHost && (
+          <Tooltip 
+            hasArrow 
+            label="Domain A record points to this host"
+            placement="bottom"
+          >
+            <Tag size="sm" colorScheme={tagColors.domain} variant="subtle">
+              <CheckCircleIcon mr={1} /> Domain
+            </Tag>
+          </Tooltip>
+        )}
+        
+        {isMailServer && (
+          <Tooltip 
+            hasArrow 
+            label="MX record points to this host"
+            placement="bottom"
+          >
+            <Tag size="sm" colorScheme={tagColors.mail} variant="subtle">
+              <EmailIcon mr={1} /> Mail
+            </Tag>
+          </Tooltip>
+        )}
+      </HStack>
+    </VStack>
   );
 };
 
