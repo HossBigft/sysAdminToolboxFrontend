@@ -7,7 +7,7 @@ const DomainsList = ({ domains }) => {
   return (
     <Tooltip
       label={
-        <VStack align="start" maxHeight="300px" overflowY="auto" spacing={1} p={1}>
+        <VStack align="start"  overflowY="auto" spacing={1} p={1}>
           {domains.map((domain, idx) => (
             <Text key={idx} fontSize="xs">{domain}</Text>
           ))}
