@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   ChakraProvider,
@@ -25,7 +25,7 @@ import { useDnsRecords } from "../../hooks/dns/useDnsRecords";
 import useSubscriptionLoginLink from "../../hooks/plesk/useSubscriptionLoginLink";
 import useCreateTestMail from "../../hooks/plesk/useCreateTestMail";
 import useSetZoneMaster from "../../hooks/plesk/useSetZoneMaster";
-import {FaExclamationTriangle } from "react-icons/fa";
+import { FaExclamationTriangle } from "react-icons/fa";
 
 export const Route = createFileRoute("/_layout/")({
   component: SubscriptionSearchApp,
@@ -163,7 +163,7 @@ function SubscriptionSearchApp() {
                   </Td>
                   <Td>{item.id}</Td>
                   <Td>
-                  <DomainsList domains={item.domains} />
+                    <DomainsList domains={item.domains} />
                   </Td>
                   <Td>
                     <Tooltip label={`${item.subscription_size_mb} MB`}>

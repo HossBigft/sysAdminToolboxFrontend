@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import {
   getMxRecordOptions,
   getARecordOptions,
-  getPtrRecordOptions,
 } from "../../client/@tanstack/react-query.gen";
 import { createQuery, getFirstRecord, hasExactlyOneRecord } from "./utils";
 
@@ -39,23 +38,11 @@ export const useMxRecord = (domain) => {
 
   const aRecord = getFirstRecord(aRecordQuery.data);
 
-  const ptrQuery = useQuery(
-    createQuery(
-      {
-        ...getPtrRecordOptions({ query: { ip: aRecord } }),
-        queryKey: ["ptrQuery", aRecord],
-      },
-      !!aRecord && hasExactlyOneRecord(aRecordQuery.data)
-    )
-  );
-
   return {
     record: mxRecord,
     ip: aRecord,
-    ptr: ptrQuery?.data?.records?.[0],
-    isLoading:
-      mxRecordQuery.isLoading || aRecordQuery.isLoading || ptrQuery.isLoading,
-    error: mxRecordQuery.error || aRecordQuery.error || ptrQuery.error,
+    isLoading: mxRecordQuery.isLoading || aRecordQuery.isLoading,
+    error: mxRecordQuery.error || aRecordQuery.error,
     fetch: () => setShouldFetch(true),
   };
 };

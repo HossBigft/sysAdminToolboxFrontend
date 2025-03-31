@@ -1,4 +1,3 @@
-
 import { useARecord } from "./useARecord";
 import { useMxRecord } from "./useMxRecord";
 import { useZoneMaster } from "./useZoneMaster";
@@ -8,20 +7,17 @@ export const useDnsRecords = (searchTerm) => {
   const mxRecord = useMxRecord(searchTerm);
   const zoneMaster = useZoneMaster(searchTerm);
 
-
   const refetch = () => {
     aRecord.fetch();
-    mxRecord.fetch()
-    zoneMaster.fetch()
-  }
-    
-
+    mxRecord.fetch();
+    zoneMaster.fetch();
+  };
 
   return {
     aRecord,
     mxRecord,
     zoneMaster,
-    refetchDnsRecords: refetch
+    refetchDnsRecords: refetch,
   };
 };
 
