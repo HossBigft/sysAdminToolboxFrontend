@@ -1,8 +1,8 @@
-import { Tooltip, VStack, Text, Flex } from "@chakra-ui/react";
-
+import { Tooltip, VStack, Text, Flex, useClipboard } from "@chakra-ui/react";
 const DomainsList = ({ domains }) => {
   const initialDisplayCount = 2;
   const hasMoreDomains = domains.length > initialDisplayCount;
+  const { onCopy, hasCopied } = useClipboard(domains.join("\n")); // Copy all domains
 
   return (
     <Tooltip
@@ -12,6 +12,7 @@ const DomainsList = ({ domains }) => {
           overflowY="auto"
           spacing={1}
           p={1}
+          pointerEvents="auto"
         >
           {domains.map((domain, idx) => (
             <Text key={idx} fontSize="xs">
@@ -39,9 +40,12 @@ const DomainsList = ({ domains }) => {
             borderStyle="dashed"
             py={1}
             cursor="pointer"
+            onClick={onCopy} // Copies all domains on click
           >
             <Text fontSize="xs" color="gray.500">
-              +{domains.length - initialDisplayCount} more
+              {hasCopied
+                ? "Copied!"
+                : `+${domains.length - initialDisplayCount} more`}
             </Text>
           </Flex>
         )}
