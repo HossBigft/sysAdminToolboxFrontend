@@ -1,16 +1,63 @@
 import { useState, useMemo, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { ChakraProvider, Box, VStack, Text } from "@chakra-ui/react";
+import {
+  ChakraProvider,
+  Box,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  VStack,
+  Text,
+  Button,
+  HStack,
+  Badge,
+  Tooltip,
+} from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import SearchInput from "../../components/SubscriptionSearch/SearchInput";
+import HostCell from "../../components/SubscriptionSearch/HostCell";
+import DomainsList from "../../components/SubscriptionSearch/DomainsList";
 import { useSubscriptionSearch } from "../../hooks/plesk/useSubscriptionSearch";
 import { useDnsRecords } from "../../hooks/dns/useDnsRecords";
 import { useBulkAResolution } from "../../hooks/dns/useBulkAResolution";
-import SubscriptionTable from "../../components/SubscriptionSearch/SubscriptionTable";
+import useSubscriptionLoginLink from "../../hooks/plesk/useSubscriptionLoginLink";
+import useCreateTestMail from "../../hooks/plesk/useCreateTestMail";
+import useSetZoneMaster from "../../hooks/plesk/useSetZoneMaster";
+import { FaExclamationTriangle } from "react-icons/fa";
 
 export const Route = createFileRoute("/_layout/")({
   component: SubscriptionSearchApp,
 });
+
+// Constants extracted for better maintainability
+const STATUS_COLOR_MAPPING = {
+  online: "green",
+  subscription_is_disabled: "yellow",
+  domain_disabled_by_admin: "red",
+  domain_disabled_by_client: "orange",
+};
+
+const STATUS_DISPLAY_MAPPING = {
+  online: "Online",
+  subscription_is_disabled: "Subscription Disabled",
+  domain_disabled_by_admin: "Disabled by Admin",
+  domain_disabled_by_client: "Disabled by Client",
+};
+
+// Table columns configuration for better readability and maintenance
+const COLUMNS = [
+  { id: "host", label: "Host", width: "15%" },
+  { id: "name", label: "Name", width: ["10%", "7%", "5%"] },
+  { id: "status", label: "Status", width: ["10%", "7%", "5%"] },
+  { id: "id", label: "ID", width: ["10%", "7%", "5%"] },
+  { id: "username", label: "Username", width: ["10%", "7%", "5%"] },
+  { id: "domains", label: "Domains", width: "5%" },
+  { id: "size", label: "Size", width: ["10%", "8%", "8%"] },
+  { id: "actions", label: "Actions", width: ["15%", "18%", "15%"], align: "center" },
+];
 
 function SubscriptionSearchApp() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,21 +66,22 @@ function SubscriptionSearchApp() {
 
   const queryClient = useQueryClient();
   const currentUser = queryClient.getQueryData(["currentUser"]);
-
+  
   // API hooks
-  const { subscriptionQuery, fetchSubscription } =
-    useSubscriptionSearch(finalSearchTerm);
-  const { aRecord, mxRecord, zoneMaster, refetchDnsRecords } =
-    useDnsRecords(finalSearchTerm);
+  const { subscriptionQuery, fetchSubscription } = useSubscriptionSearch(finalSearchTerm);
+  const { aRecord, mxRecord, zoneMaster, refetchDnsRecords } = useDnsRecords(finalSearchTerm);
+  const { fetch: fetchLoginLink } = useSubscriptionLoginLink(clickedItem);
+  const { mutateZoneMaster } = useSetZoneMaster();
+  const { fetch: fetchTestMailCredentials } = useCreateTestMail(clickedItem, finalSearchTerm);
 
-  // Extract hosts from subscription data
+  // Extract hosts for bulk resolution
   const hosts = useMemo(() => {
     return subscriptionQuery.data?.map((item) => item.host) || [];
   }, [subscriptionQuery.data]);
 
   const { records, refetch: refetchHostRecords } = useBulkAResolution(hosts);
 
-  // Handle search submission
+  // Event handlers
   const handleSearch = (e) => {
     if (e.key === "Enter" && searchTerm.trim()) {
       setFinalSearchTerm(searchTerm.trim());
@@ -41,7 +89,25 @@ function SubscriptionSearchApp() {
     }
   };
 
-  // Refetch data when search term or subscription data changes
+  const handleLoginLinkClick = (item) => {
+    setClickedItem(item);
+    queryClient.invalidateQueries({ queryKey: ["subscriptionLoginLink"] });
+    fetchLoginLink();
+  };
+
+  const handleSetZoneMasterClick = (item) => {
+    setClickedItem(item);
+    mutateZoneMaster({
+      body: { target_plesk_server: item.host, domain: finalSearchTerm },
+    });
+  };
+  
+  const handleTestMailClick = (item) => {
+    setClickedItem(item);
+    fetchTestMailCredentials();
+  };
+
+  // Data refresh effects
   useEffect(() => {
     if (finalSearchTerm && subscriptionQuery.data) {
       refetchHostRecords();
@@ -49,10 +115,80 @@ function SubscriptionSearchApp() {
     }
   }, [finalSearchTerm, subscriptionQuery.data]);
 
-  // Set clicked item for action hooks
-  const handleItemAction = (item) => {
-    setClickedItem(item);
-  };
+  // Render table row
+  const renderTableRow = (item) => (
+    <Tr key={item.id}>
+      <Td>
+        <HostCell
+          host={item.host}
+          hostIp={records[item.host]}
+          zoneMaster={zoneMaster}
+          aRecord={aRecord}
+          mxRecord={mxRecord}
+        />
+      </Td>
+      <Td>{item.name}</Td>
+      <Td>
+        <Tooltip
+          label={`Subscription Status: ${STATUS_DISPLAY_MAPPING[item.subscription_status]}`}
+        >
+          <Badge
+            colorScheme={
+              STATUS_COLOR_MAPPING[item.subscription_status] ||
+              "gray"
+            }
+            variant="solid"
+          >
+            {STATUS_DISPLAY_MAPPING[item.subscription_status] ||
+              item.subscription_status}
+          </Badge>
+        </Tooltip>
+      </Td>
+      <Td>{item.id}</Td>
+      <Td>{item.username}</Td>
+      <Td>
+        <DomainsList domains={item.domains} />
+      </Td>
+      <Td>
+        <Tooltip label={`${item.subscription_size_mb} MB`}>
+          <HStack spacing={2}>
+            <Text>
+              {(item.subscription_size_mb / 1024).toFixed(2)} GB
+            </Text>
+            {item.is_space_overused && (
+              <FaExclamationTriangle color="red" size="1.2em" />
+            )}
+          </HStack>
+        </Tooltip>
+      </Td>
+      <Td>
+        <ActionButtons 
+          item={item}
+          currentUser={currentUser}
+          onLoginClick={handleLoginLinkClick}
+          onTestMailClick={handleTestMailClick}
+          onSetZoneMasterClick={handleSetZoneMasterClick}
+        />
+      </Td>
+    </Tr>
+  );
+
+  // Render table headers
+  const renderTableHeader = () => (
+    <Thead>
+      <Tr>
+        {COLUMNS.map((col) => (
+          <Th 
+            key={col.id} 
+            width={col.width} 
+            textAlign={col.align}
+          >
+            {col.label}
+          </Th>
+        ))}
+      </Tr>
+    </Thead>
+  );
 
   return (
     <ChakraProvider>
@@ -60,7 +196,7 @@ function SubscriptionSearchApp() {
         spacing={4}
         width="100%"
         margin="50px auto"
-        maxWidth={["90%", "85%", "80%", "1200px"]}
+        maxWidth={["80%", "70%", "60%", "1200px"]}
         px={[2, 4, 6, 0]}
       >
         <SearchInput
@@ -77,19 +213,60 @@ function SubscriptionSearchApp() {
 
         {subscriptionQuery.data && (
           <Box overflowX="auto" width="100%" maxWidth="100%">
-            <SubscriptionTable
-              subscriptionData={subscriptionQuery.data}
-              dnsData={{ aRecord, mxRecord, zoneMaster }}
-              hostRecords={records}
-              searchTerm={finalSearchTerm}
-              currentUser={currentUser}
-              onItemAction={handleItemAction}
-            />
+            <Table
+              variant="simple"
+              size="sm"
+              width="100%"
+              minWidth="800px"
+              style={{ tableLayout: "auto" }}
+            >
+              {renderTableHeader()}
+              <Tbody>
+                {subscriptionQuery.data.map(renderTableRow)}
+              </Tbody>
+            </Table>
           </Box>
         )}
       </VStack>
     </ChakraProvider>
   );
 }
+
+// Extract action buttons to a separate component
+const ActionButtons = ({ 
+  item, 
+  currentUser, 
+  onLoginClick, 
+  onTestMailClick, 
+  onSetZoneMasterClick 
+}) => {
+  return (
+    <VStack spacing={2}>
+      {currentUser?.ssh_username !== null && (
+        <Button
+          colorScheme="blue"
+          size="xs"
+          onClick={() => onLoginClick(item)}
+        >
+          Get Login Link
+        </Button>
+      )}
+      <Button
+        colorScheme="blue"
+        size="xs"
+        onClick={() => onTestMailClick(item)}
+      >
+        Get test mailbox
+      </Button>
+      <Button
+        colorScheme="blue"
+        size="xs"
+        onClick={() => onSetZoneMasterClick(item)}
+      >
+        Set as zoneMaster
+      </Button>
+    </VStack>
+  );
+};
 
 export default SubscriptionSearchApp;
