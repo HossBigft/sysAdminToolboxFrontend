@@ -139,8 +139,9 @@ function SubscriptionSearchApp() {
                 <Th width={["10%", "7%", "5%"]}>Name</Th>
                 <Th width={["10%", "7%", "5%"]}>Status</Th>
                 <Th width={["10%", "7%", "5%"]}>ID</Th>
+                <Th width={["10%", "7%", "5%"]}>Username</Th>
                 <Th width={"5%"}>Domains</Th>
-                <Th width={["10%", "8%", "8%"]}>Subscription Size</Th>
+                <Th width={["10%", "8%", "8%"]}>Size</Th>
                 <Th width={["15%", "18%", "15%"]} textAlign="center">
                   Actions
                 </Th>
@@ -176,6 +177,7 @@ function SubscriptionSearchApp() {
                     </Tooltip>
                   </Td>
                   <Td>{item.id}</Td>
+                  <Td>{item.username}</Td>
                   <Td>
                     <DomainsList domains={item.domains} />
                   </Td>
