@@ -11,8 +11,18 @@ import {
   HStack,
   Badge,
   Tooltip,
+  Collapse,
+  Box,
+  Divider,
+  Icon,
+  SimpleGrid,
 } from "@chakra-ui/react";
-import { FaExclamationTriangle } from "react-icons/fa";
+import {
+  FaExclamationTriangle,
+  FaChevronDown,
+  FaChevronUp,
+} from "react-icons/fa";
+import { useState } from "react";
 import HostCell from "./HostCell";
 import DomainsList from "./DomainsList";
 import useSubscriptionLoginLink from "../../hooks/plesk/useSubscriptionLoginLink";
@@ -50,6 +60,16 @@ const SubscriptionTable = ({
     null,
     searchTerm
   );
+
+  // State to track which rows are expanded
+  const [expandedRows, setExpandedRows] = useState({});
+
+  const toggleRowExpansion = (itemId) => {
+    setExpandedRows((prev) => ({
+      ...prev,
+      [itemId]: !prev[itemId],
+    }));
+  };
 
   const handleLoginLinkClick = (item) => {
     onItemAction(item);
@@ -89,20 +109,32 @@ const SubscriptionTable = ({
           <Th width={["15%", "18%", "15%"]} textAlign="center">
             Actions
           </Th>
+          <Th width="3%"></Th> {/* Column for expand/collapse button */}
         </Tr>
       </Thead>
       <Tbody>
         {subscriptionData.map((item) => (
-          <SubscriptionRow
-            key={item.id}
-            item={item}
-            dnsData={dnsData}
-            hostIp={hostRecords[item.host]}
-            currentUser={currentUser}
-            onLoginLink={() => handleLoginLinkClick(item)}
-            onTestMail={() => handleTestMailClick(item)}
-            onSetZoneMaster={() => handleSetZoneMasterClick(item)}
-          />
+          <>
+            <SubscriptionRow
+              key={item.id}
+              item={item}
+              dnsData={dnsData}
+              hostIp={hostRecords[item.host]}
+              currentUser={currentUser}
+              onLoginLink={() => handleLoginLinkClick(item)}
+              onTestMail={() => handleTestMailClick(item)}
+              onSetZoneMaster={() => handleSetZoneMasterClick(item)}
+              isExpanded={!!expandedRows[item.id]}
+              onToggleExpand={() => toggleRowExpansion(item.id)}
+            />
+            {expandedRows[item.id] && (
+              <Tr>
+                <Td colSpan={9} padding={0}>
+                  <ExpandedDetails item={item} />
+                </Td>
+              </Tr>
+            )}
+          </>
         ))}
       </Tbody>
     </Table>
@@ -118,6 +150,8 @@ const SubscriptionRow = ({
   onLoginLink,
   onTestMail,
   onSetZoneMaster,
+  isExpanded,
+  onToggleExpand,
 }) => {
   const { aRecord, mxRecord, zoneMaster } = dnsData;
 
@@ -178,7 +212,82 @@ const SubscriptionRow = ({
           </Button>
         </VStack>
       </Td>
+      <Td>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={onToggleExpand}
+          aria-label={isExpanded ? "Collapse row" : "Expand row"}
+        >
+          <Icon as={isExpanded ? FaChevronUp : FaChevronDown} />
+        </Button>
+      </Td>
     </Tr>
+  );
+};
+
+// New component for the expanded details
+const ExpandedDetails = ({ item }) => {
+  return (
+    <Box bg="gray.50" p={4} w="100%">
+      <Text fontWeight="bold" mb={2}>
+        Domain Details
+      </Text>
+      <Divider mb={3} />
+
+      <VStack align="start" spacing={2} mb={4}>
+        <HStack>
+          <Text fontWeight="semibold" width="200px">
+            User Login:
+          </Text>
+          <Text>{item.userlogin || "N/A"}</Text>
+        </HStack>
+        <HStack>
+          <Text fontWeight="semibold" width="200px">
+            Subscription Size:
+          </Text>
+          <Text>
+            {item.subscription_size_mb} MB (
+            {(item.subscription_size_mb / 1024).toFixed(2)} GB)
+          </Text>
+        </HStack>
+        <HStack>
+          <Text fontWeight="semibold" width="200px">
+            Space Overused:
+          </Text>
+          <Text>{item.is_space_overused ? "Yes" : "No"}</Text>
+        </HStack>
+      </VStack>
+
+      <Text fontWeight="bold" mt={4} mb={2}>
+        Domains Status
+      </Text>
+      <Divider mb={3} />
+
+      <SimpleGrid columns={[1, 2, 3]} spacing={4}>
+        {item.domain_states &&
+          item.domain_states.map((domainState, index) => (
+            <Box
+              key={index}
+              p={3}
+              borderWidth="1px"
+              borderRadius="md"
+              shadow="sm"
+            >
+              <Text fontWeight="medium" mb={2}>
+                {domainState.domain}
+              </Text>
+              <Badge
+                colorScheme={STATUS_COLOR_MAPPING[domainState.status] || "gray"}
+                variant="solid"
+              >
+                {STATUS_DISPLAY_MAPPING[domainState.status] ||
+                  domainState.status}
+              </Badge>
+            </Box>
+          ))}
+      </SimpleGrid>
+    </Box>
   );
 };
 
