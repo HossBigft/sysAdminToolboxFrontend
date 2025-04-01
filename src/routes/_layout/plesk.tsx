@@ -56,7 +56,12 @@ const COLUMNS = [
   { id: "username", label: "Username", width: ["10%", "7%", "5%"] },
   { id: "domains", label: "Domains", width: "5%" },
   { id: "size", label: "Size", width: ["10%", "8%", "8%"] },
-  { id: "actions", label: "Actions", width: ["15%", "18%", "15%"], align: "center" },
+  {
+    id: "actions",
+    label: "Actions",
+    width: ["15%", "18%", "15%"],
+    align: "center",
+  },
 ];
 
 function SubscriptionSearchApp() {
@@ -66,13 +71,18 @@ function SubscriptionSearchApp() {
 
   const queryClient = useQueryClient();
   const currentUser = queryClient.getQueryData(["currentUser"]);
-  
+
   // API hooks
-  const { subscriptionQuery, fetchSubscription } = useSubscriptionSearch(finalSearchTerm);
-  const { aRecord, mxRecord, zoneMaster, refetchDnsRecords } = useDnsRecords(finalSearchTerm);
+  const { subscriptionQuery, fetchSubscription } =
+    useSubscriptionSearch(finalSearchTerm);
+  const { aRecord, mxRecord, zoneMaster, refetchDnsRecords } =
+    useDnsRecords(finalSearchTerm);
   const { fetch: fetchLoginLink } = useSubscriptionLoginLink(clickedItem);
   const { mutateZoneMaster } = useSetZoneMaster();
-  const { fetch: fetchTestMailCredentials } = useCreateTestMail(clickedItem, finalSearchTerm);
+  const { fetch: fetchTestMailCredentials } = useCreateTestMail(
+    clickedItem,
+    finalSearchTerm
+  );
 
   // Extract hosts for bulk resolution
   const hosts = useMemo(() => {
@@ -101,7 +111,7 @@ function SubscriptionSearchApp() {
       body: { target_plesk_server: item.host, domain: finalSearchTerm },
     });
   };
-  
+
   const handleTestMailClick = (item) => {
     setClickedItem(item);
     fetchTestMailCredentials();
@@ -134,8 +144,7 @@ function SubscriptionSearchApp() {
         >
           <Badge
             colorScheme={
-              STATUS_COLOR_MAPPING[item.subscription_status] ||
-              "gray"
+              STATUS_COLOR_MAPPING[item.subscription_status] || "gray"
             }
             variant="solid"
           >
@@ -152,9 +161,7 @@ function SubscriptionSearchApp() {
       <Td>
         <Tooltip label={`${item.subscription_size_mb} MB`}>
           <HStack spacing={2}>
-            <Text>
-              {(item.subscription_size_mb / 1024).toFixed(2)} GB
-            </Text>
+            <Text>{(item.subscription_size_mb / 1024).toFixed(2)} GB</Text>
             {item.is_space_overused && (
               <FaExclamationTriangle color="red" size="1.2em" />
             )}
@@ -162,7 +169,7 @@ function SubscriptionSearchApp() {
         </Tooltip>
       </Td>
       <Td>
-        <ActionButtons 
+        <ActionButtons
           item={item}
           currentUser={currentUser}
           onLoginClick={handleLoginLinkClick}
@@ -178,11 +185,7 @@ function SubscriptionSearchApp() {
     <Thead>
       <Tr>
         {COLUMNS.map((col) => (
-          <Th 
-            key={col.id} 
-            width={col.width} 
-            textAlign={col.align}
-          >
+          <Th key={col.id} width={col.width} textAlign={col.align}>
             {col.label}
           </Th>
         ))}
@@ -206,6 +209,15 @@ function SubscriptionSearchApp() {
           isDisabled={subscriptionQuery.isLoading}
         />
 
+        {subscriptionQuery.data && (
+          <DnsInfoBar
+            finalSearchTerm={finalSearchTerm}
+            aRecord={aRecord}
+            mxRecord={mxRecord}
+            zoneMaster={zoneMaster}
+            isLoading={subscriptionQuery.isLoading}
+          />
+        )}
         {subscriptionQuery.isLoading && <Text>Loading...</Text>}
         {subscriptionQuery.error && (
           <Text color="red.500">Error: {subscriptionQuery.error.message}</Text>
@@ -221,9 +233,7 @@ function SubscriptionSearchApp() {
               style={{ tableLayout: "auto" }}
             >
               {renderTableHeader()}
-              <Tbody>
-                {subscriptionQuery.data.map(renderTableRow)}
-              </Tbody>
+              <Tbody>{subscriptionQuery.data.map(renderTableRow)}</Tbody>
             </Table>
           </Box>
         )}
@@ -233,21 +243,17 @@ function SubscriptionSearchApp() {
 }
 
 // Extract action buttons to a separate component
-const ActionButtons = ({ 
-  item, 
-  currentUser, 
-  onLoginClick, 
-  onTestMailClick, 
-  onSetZoneMasterClick 
+const ActionButtons = ({
+  item,
+  currentUser,
+  onLoginClick,
+  onTestMailClick,
+  onSetZoneMasterClick,
 }) => {
   return (
     <VStack spacing={2}>
       {currentUser?.ssh_username !== null && (
-        <Button
-          colorScheme="blue"
-          size="xs"
-          onClick={() => onLoginClick(item)}
-        >
+        <Button colorScheme="blue" size="xs" onClick={() => onLoginClick(item)}>
           Get Login Link
         </Button>
       )}
@@ -268,5 +274,41 @@ const ActionButtons = ({
     </VStack>
   );
 };
+// Create a new component for DNS information display
+const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
+  if (isLoading) return null;
 
+  return (
+    <Box
+      width="100%"
+      p={4}
+      borderRadius="md"
+      borderWidth="1px"
+      boxShadow="sm"
+    >
+      <HStack spacing={8} justify="space" flexWrap="wrap">
+        <HStack>
+          <Text fontSize="md" fontWeight="bold" >
+            ZoneMaster:
+          </Text>
+          <Text fontSize="md">{zoneMaster.ip || "Not configured"}</Text>
+        </HStack>
+
+        <HStack>
+          <Text fontSize="md" fontWeight="bold" >
+            A :
+          </Text>
+          <Text fontSize="md">{aRecord.ip || "Not configured"}</Text>
+        </HStack>
+
+        <HStack>
+          <Text fontSize="md" fontWeight="bold" >
+            MX :
+          </Text>
+          <Text fontSize="md">{mxRecord.ip || "Not configured"}</Text>
+        </HStack>
+      </HStack>
+    </Box>
+  );
+};
 export default SubscriptionSearchApp;
