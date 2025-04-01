@@ -40,19 +40,11 @@ export function useBulkAResolution(domains = []) {
     }
   }, [hostQueries]);
 
-  useEffect(() => {
-    if (shouldFetch) {
-      hostQueries.forEach((query) => query.refetch()); // Force re-fetching all queries
-      setShouldFetch(false); // Reset to prevent unnecessary re-fetches
-    }
-  }, [shouldFetch]);
-
   return {
     records: domainsRecords,
     isLoading: hostQueries.some((q) => q.isLoading),
     isError: hostQueries.some((q) => q.isError),
     refetch: () => {
-      console.log("refetching");
       setShouldFetch(true);
     },
   };

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   ChakraProvider,
@@ -77,10 +77,15 @@ function SubscriptionSearchApp() {
     if (e.key === "Enter" && searchTerm.trim()) {
       setFinalSearchTerm(searchTerm.trim());
       fetchSubscription();
-      refetchDnsRecords();
-      refetchHostRecords();
     }
   };
+
+  useEffect(() => {
+    if (finalSearchTerm && subscriptionQuery.data) {
+      refetchHostRecords();
+      refetchDnsRecords();
+    }
+  }, [finalSearchTerm, subscriptionQuery.data]);
 
   const handleLoginLinkClick = (item) => {
     setClickedItem(item);
