@@ -9,7 +9,6 @@ const DomainsList = ({ domains }) => {
       label={
         <VStack
           align="start"
-          maxHeight="300px"
           overflowY="auto"
           spacing={1}
           p={1}
