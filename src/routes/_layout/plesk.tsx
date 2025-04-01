@@ -288,24 +288,24 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
     >
       <HStack spacing={8} justify="space" flexWrap="wrap">
         <HStack>
-          <Text fontSize="md" fontWeight="bold" >
+          <Text fontSize="xs" fontWeight="bold" >
             ZoneMaster:
           </Text>
-          <Text fontSize="md">{zoneMaster.ip || "Not configured"}</Text>
+          <Text fontSize="xs">{zoneMaster.ip || "Not configured"}</Text>
         </HStack>
 
         <HStack>
-          <Text fontSize="md" fontWeight="bold" >
+          <Text fontSize="xs" fontWeight="bold" >
             A :
           </Text>
-          <Text fontSize="md">{aRecord.ip || "Not configured"}</Text>
+          <Text fontSize="xs">{aRecord.ip || "Not configured"}</Text>
         </HStack>
 
         <HStack>
-          <Text fontSize="md" fontWeight="bold" >
+          <Text fontSize="xs" fontWeight="bold" >
             MX :
           </Text>
-          <Text fontSize="md">{mxRecord.ip || "Not configured"}</Text>
+          <Text fontSize="xs">{mxRecord.ip || "Not configured"}</Text>
         </HStack>
       </HStack>
     </Box>
