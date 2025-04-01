@@ -15,6 +15,7 @@ import {
   HStack,
   Badge,
   Tooltip,
+  useToast,
 } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import SearchInput from "../../components/SubscriptionSearch/SearchInput";
@@ -78,11 +79,38 @@ function SubscriptionSearchApp() {
   const { aRecord, mxRecord, zoneMaster, refetchDnsRecords } =
     useDnsRecords(finalSearchTerm);
   const { fetch: fetchLoginLink } = useSubscriptionLoginLink(clickedItem);
-  const { mutateZoneMaster } = useSetZoneMaster();
+  const { mutateZoneMaster, isSuccess, isError, error } = useSetZoneMaster();
   const { fetch: fetchTestMailCredentials } = useCreateTestMail(
     clickedItem,
     finalSearchTerm
   );
+
+  const toast = useToast();
+  useEffect(() => {
+    if (isSuccess) {
+      toast({
+        title: "Success",
+        description: `Zonemaster successfully set to ${clickedItem?.host}`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+    }
+  }, [isSuccess, clickedItem, toast]);
+
+  useEffect(() => {
+    if (isError && error) {
+      toast({
+        title: "Error",
+        description: `Failed to set zonemaster: ${error.message || "Unknown error"}`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+    }
+  }, [isError, error, toast]);
 
   // Extract hosts for bulk resolution
   const hosts = useMemo(() => {
@@ -279,30 +307,24 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
   if (isLoading) return null;
 
   return (
-    <Box
-      width="100%"
-      p={4}
-      borderRadius="md"
-      borderWidth="1px"
-      boxShadow="sm"
-    >
+    <Box width="100%" p={4} borderRadius="md" borderWidth="1px" boxShadow="sm">
       <HStack spacing={8} justify="space" flexWrap="wrap">
         <HStack>
-          <Text fontSize="xs" fontWeight="bold" >
+          <Text fontSize="xs" fontWeight="bold">
             ZoneMaster:
           </Text>
           <Text fontSize="xs">{zoneMaster.ip || "Not configured"}</Text>
         </HStack>
 
         <HStack>
-          <Text fontSize="xs" fontWeight="bold" >
+          <Text fontSize="xs" fontWeight="bold">
             A :
           </Text>
           <Text fontSize="xs">{aRecord.ip || "Not configured"}</Text>
         </HStack>
 
         <HStack>
-          <Text fontSize="xs" fontWeight="bold" >
+          <Text fontSize="xs" fontWeight="bold">
             MX :
           </Text>
           <Text fontSize="xs">{mxRecord.ip || "Not configured"}</Text>
