@@ -7,6 +7,7 @@ import {
   Text,
   HStack,
   Icon,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import SearchInput from "../../components/SubscriptionSearch/SearchInput";
@@ -104,6 +105,13 @@ function SubscriptionSearchApp() {
 const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
   if (isLoading) return null;
 
+  // Color values that will change depending on the color mode
+  const bgColor = useColorModeValue("gray.50", "gray.700"); // Light: gray.50, Dark: gray.700
+  const textColor = useColorModeValue("gray.700", "gray.200"); // Light: gray.700, Dark: gray.200
+  const iconColorA = useColorModeValue("green.500", "green.300");
+  const iconColorB = useColorModeValue("blue.500", "blue.300");
+  const iconColorC = useColorModeValue("yellow.500", "yellow.300");
+
   return (
     <Box
       width="100%"
@@ -111,34 +119,35 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
       borderRadius="md"
       borderWidth="1px"
       boxShadow="sm"
-      bg="gray.50"
+      bg={bgColor} // Use color mode-aware bg color
     >
       <HStack spacing={6} justify="flex-start" flexWrap="wrap">
         <HStack spacing={2}>
-          <Icon as={FaGlobe} color="green.500" />
-          <Text fontSize="sm" fontWeight="bold">
+          <Icon as={FaGlobe} color={iconColorA} />
+          <Text fontSize="sm" fontWeight="bold" color={textColor}>
             A Record:
           </Text>
-          <Text fontSize="sm" color="gray.700">
+          <Text fontSize="sm" color={textColor}>
             {aRecord?.ip || "Empty"}
           </Text>
         </HStack>
 
         <HStack spacing={2}>
-          <Icon as={FaEnvelope} color="blue.500" />
-          <Text fontSize="sm" fontWeight="bold">
+          <Icon as={FaEnvelope} color={iconColorB} />
+          <Text fontSize="sm" fontWeight="bold" color={textColor}>
             MX Record:
           </Text>
-          <Text fontSize="sm" color="gray.700">
+          <Text fontSize="sm" color={textColor}>
             {mxRecord?.ip || "Empty"}
           </Text>
         </HStack>
+        
         <HStack spacing={2}>
-          <Icon as={FaServer} color="yellow.500" />
-          <Text fontSize="sm" fontWeight="bold">
+          <Icon as={FaServer} color={iconColorC} />
+          <Text fontSize="sm" fontWeight="bold" color={textColor}>
             ZoneMaster:
           </Text>
-          <Text fontSize="sm" color="gray.700">
+          <Text fontSize="sm" color={textColor}>
             {zoneMaster?.ip || "Empty"}
           </Text>
         </HStack>
