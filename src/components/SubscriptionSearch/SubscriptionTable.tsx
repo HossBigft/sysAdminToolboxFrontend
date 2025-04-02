@@ -22,7 +22,7 @@ import {
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import HostCell from "./HostCell";
 import DomainsList from "./DomainsList";
 import useSubscriptionLoginLink from "../../hooks/plesk/useSubscriptionLoginLink";
@@ -142,7 +142,7 @@ const SubscriptionTable = ({
       </Thead>
       <Tbody>
         {subscriptionData.map((item) => (
-          <>
+          <Fragment key={item.id}>
             <SubscriptionRow
               key={item.id}
               item={item}
@@ -156,13 +156,13 @@ const SubscriptionTable = ({
               onToggleExpand={() => toggleRowExpansion(item.id)}
             />
             {expandedRows[item.id] && (
-              <Tr>
+              <Tr key={`expanded-${item.id}`}>
                 <Td colSpan={9} padding={0}>
                   <ExpandedDetails item={item} />
                 </Td>
               </Tr>
             )}
-          </>
+          </Fragment>
         ))}
       </Tbody>
     </Table>
@@ -184,7 +184,7 @@ const SubscriptionRow = ({
   const { aRecord, mxRecord, zoneMaster } = dnsData;
 
   return (
-    <Tr>
+    <Tr key={item.id}>
       <Td>
         <HostCell
           host={item.host}
