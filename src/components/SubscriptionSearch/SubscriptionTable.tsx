@@ -34,7 +34,7 @@ import { useZoneMaster } from "../../hooks/dns/useZoneMaster";
 // Status color and display mapping
 const STATUS_COLOR_MAPPING = {
   online: "green",
-  subscription_is_disabled: "yellow",
+  subscription_is_disabled: "red",
   domain_disabled_by_admin: "red",
   domain_disabled_by_client: "orange",
 };
