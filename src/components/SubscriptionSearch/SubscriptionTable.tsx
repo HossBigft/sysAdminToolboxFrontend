@@ -29,6 +29,7 @@ import useSubscriptionLoginLink from "../../hooks/plesk/useSubscriptionLoginLink
 import useCreateTestMail from "../../hooks/plesk/useCreateTestMail";
 import useSetZoneMaster from "../../hooks/plesk/useSetZoneMaster";
 import { useQueryClient } from "@tanstack/react-query";
+import { useZoneMaster } from "../../hooks/dns/useZoneMaster";
 
 // Status color and display mapping
 const STATUS_COLOR_MAPPING = {
@@ -62,19 +63,22 @@ const SubscriptionTable = ({
     searchTerm
   );
 
+  const { fetch: refetchZoneMaster } = useZoneMaster(searchTerm);
+
   const toast = useToast();
   useEffect(() => {
     if (isSuccess) {
       toast({
         title: "Success",
-        description: `Zonemaster successfully set to ${null?.host}`,
+        description: `Zonemaster successfully set to ${clickedItem?.host}`,
         status: "success",
         duration: 5000,
         isClosable: true,
         position: "top",
       });
+      refetchZoneMaster();
     }
-  }, [isSuccess, null, toast]);
+  }, [isSuccess, clickedItem, toast]);
 
   useEffect(() => {
     if (isError && error) {
@@ -137,7 +141,7 @@ const SubscriptionTable = ({
           <Th width={["15%", "18%", "15%"]} textAlign="center">
             Actions
           </Th>
-          <Th width="3%"></Th> 
+          <Th width="3%"></Th>
         </Tr>
       </Thead>
       <Tbody>
