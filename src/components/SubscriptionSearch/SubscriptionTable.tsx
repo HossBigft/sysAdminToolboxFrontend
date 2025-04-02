@@ -137,7 +137,7 @@ const SubscriptionTable = ({
           <Th width={["15%", "18%", "15%"]} textAlign="center">
             Actions
           </Th>
-          <Th width="3%"></Th> {/* Column for expand/collapse button */}
+          <Th width="3%"></Th> 
         </Tr>
       </Thead>
       <Tbody>
