@@ -63,7 +63,7 @@ const SubscriptionTable = ({
     searchTerm
   );
 
-  const { fetch: refetchZoneMaster } = useZoneMaster(searchTerm);
+  const { refetch: refetchZoneMaster } = useZoneMaster(searchTerm);
 
   const toast = useToast();
   useEffect(() => {
