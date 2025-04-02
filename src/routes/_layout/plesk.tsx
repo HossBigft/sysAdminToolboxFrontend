@@ -1,12 +1,20 @@
 import { useState, useMemo, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { ChakraProvider, Box, VStack, Text, HStack } from "@chakra-ui/react";
+import {
+  ChakraProvider,
+  Box,
+  VStack,
+  Text,
+  HStack,
+  Icon,
+} from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import SearchInput from "../../components/SubscriptionSearch/SearchInput";
 import { useSubscriptionSearch } from "../../hooks/plesk/useSubscriptionSearch";
 import { useDnsRecords } from "../../hooks/dns/useDnsRecords";
 import { useBulkAResolution } from "../../hooks/dns/useBulkAResolution";
 import SubscriptionTable from "../../components/SubscriptionSearch/SubscriptionTable";
+import { FaServer, FaGlobe, FaEnvelope } from "react-icons/fa";
 
 export const Route = createFileRoute("/_layout/")({
   component: SubscriptionSearchApp,
@@ -93,32 +101,46 @@ function SubscriptionSearchApp() {
   );
 }
 
-// Create a new component for DNS information display
 const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
   if (isLoading) return null;
 
   return (
-    <Box width="100%" p={4} borderRadius="md" borderWidth="1px" boxShadow="sm">
-      <HStack spacing={8} justify="space" flexWrap="wrap">
-        <HStack>
-          <Text fontSize="xs" fontWeight="bold">
+    <Box
+      width="100%"
+      p={4}
+      borderRadius="md"
+      borderWidth="1px"
+      boxShadow="sm"
+      bg="gray.50"
+    >
+      <HStack spacing={6} justify="flex-start" flexWrap="wrap">
+        <HStack spacing={2}>
+          <Icon as={FaGlobe} color="green.500" />
+          <Text fontSize="sm" fontWeight="bold">
+            A Record:
+          </Text>
+          <Text fontSize="sm" color="gray.700">
+            {aRecord?.ip || "Empty"}
+          </Text>
+        </HStack>
+
+        <HStack spacing={2}>
+          <Icon as={FaEnvelope} color="blue.500" />
+          <Text fontSize="sm" fontWeight="bold">
+            MX Record:
+          </Text>
+          <Text fontSize="sm" color="gray.700">
+            {mxRecord?.ip || "Empty"}
+          </Text>
+        </HStack>
+        <HStack spacing={2}>
+          <Icon as={FaServer} color="yellow.500" />
+          <Text fontSize="sm" fontWeight="bold">
             ZoneMaster:
           </Text>
-          <Text fontSize="xs">{zoneMaster.ip || "Not configured"}</Text>
-        </HStack>
-
-        <HStack>
-          <Text fontSize="xs" fontWeight="bold">
-            A :
+          <Text fontSize="sm" color="gray.700">
+            {zoneMaster?.ip || "Empty"}
           </Text>
-          <Text fontSize="xs">{aRecord.ip || "Not configured"}</Text>
-        </HStack>
-
-        <HStack>
-          <Text fontSize="xs" fontWeight="bold">
-            MX :
-          </Text>
-          <Text fontSize="xs">{mxRecord.ip || "Not configured"}</Text>
         </HStack>
       </HStack>
     </Box>
