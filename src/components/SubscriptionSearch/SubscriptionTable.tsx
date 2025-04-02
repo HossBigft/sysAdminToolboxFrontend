@@ -259,16 +259,28 @@ const ExpandedDetails = ({ item }) => {
   return (
     <Box bg="gray.50" p={4} w="100%">
       <Text fontWeight="bold" mb={2}>
-        Domain Details
+        Subscription Details
       </Text>
       <Divider mb={3} />
 
       <VStack align="start" spacing={2} mb={4}>
         <HStack>
           <Text fontWeight="semibold" width="200px">
+            Subscription Name:
+          </Text>
+          <Text>{item.name || "N/A"}</Text>
+        </HStack>
+        <HStack>
+          <Text fontWeight="semibold" width="200px">
             User Login:
           </Text>
           <Text>{item.userlogin || "N/A"}</Text>
+        </HStack>
+        <HStack>
+          <Text fontWeight="semibold" width="200px">
+            User Name:
+          </Text>
+          <Text>{item.username || "N/A"}</Text>
         </HStack>
         <HStack>
           <Text fontWeight="semibold" width="200px">
@@ -278,12 +290,6 @@ const ExpandedDetails = ({ item }) => {
             {item.subscription_size_mb} MB (
             {(item.subscription_size_mb / 1024).toFixed(2)} GB)
           </Text>
-        </HStack>
-        <HStack>
-          <Text fontWeight="semibold" width="200px">
-            Space Overused:
-          </Text>
-          <Text>{item.is_space_overused ? "Yes" : "No"}</Text>
         </HStack>
       </VStack>
 
