@@ -1,74 +1,19 @@
 import { useState, useMemo, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  ChakraProvider,
-  Box,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  VStack,
-  Text,
-  Button,
-  HStack,
-  Badge,
-  Tooltip,
-  useToast,
-} from "@chakra-ui/react";
+import { ChakraProvider, Box, VStack, Text, HStack } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import SearchInput from "../../components/SubscriptionSearch/SearchInput";
-import HostCell from "../../components/SubscriptionSearch/HostCell";
-import DomainsList from "../../components/SubscriptionSearch/DomainsList";
 import { useSubscriptionSearch } from "../../hooks/plesk/useSubscriptionSearch";
 import { useDnsRecords } from "../../hooks/dns/useDnsRecords";
 import { useBulkAResolution } from "../../hooks/dns/useBulkAResolution";
-import useSubscriptionLoginLink from "../../hooks/plesk/useSubscriptionLoginLink";
-import useCreateTestMail from "../../hooks/plesk/useCreateTestMail";
-import useSetZoneMaster from "../../hooks/plesk/useSetZoneMaster";
-import { FaExclamationTriangle } from "react-icons/fa";
 import SubscriptionTable from "../../components/SubscriptionSearch/SubscriptionTable";
 
 export const Route = createFileRoute("/_layout/")({
   component: SubscriptionSearchApp,
 });
 
-// Constants extracted for better maintainability
-const STATUS_COLOR_MAPPING = {
-  online: "green",
-  subscription_is_disabled: "yellow",
-  domain_disabled_by_admin: "red",
-  domain_disabled_by_client: "orange",
-};
-
-const STATUS_DISPLAY_MAPPING = {
-  online: "Online",
-  subscription_is_disabled: "Subscription Disabled",
-  domain_disabled_by_admin: "Disabled by Admin",
-  domain_disabled_by_client: "Disabled by Client",
-};
-
-// Table columns configuration for better readability and maintenance
-const COLUMNS = [
-  { id: "host", label: "Host", width: "15%" },
-  { id: "name", label: "Name", width: ["10%", "7%", "5%"] },
-  { id: "status", label: "Status", width: ["10%", "7%", "5%"] },
-  { id: "id", label: "ID", width: ["10%", "7%", "5%"] },
-  { id: "username", label: "Username", width: ["10%", "7%", "5%"] },
-  { id: "domains", label: "Domains", width: "5%" },
-  { id: "size", label: "Size", width: ["10%", "8%", "8%"] },
-  {
-    id: "actions",
-    label: "Actions",
-    width: ["15%", "18%", "15%"],
-    align: "center",
-  },
-];
-
 function SubscriptionSearchApp() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [clickedItem, setClickedItem] = useState(null);
   const [finalSearchTerm, setFinalSearchTerm] = useState("");
 
   const queryClient = useQueryClient();
@@ -79,39 +24,6 @@ function SubscriptionSearchApp() {
     useSubscriptionSearch(finalSearchTerm);
   const { aRecord, mxRecord, zoneMaster, refetchDnsRecords } =
     useDnsRecords(finalSearchTerm);
-  const { fetch: fetchLoginLink } = useSubscriptionLoginLink(clickedItem);
-  const { mutateZoneMaster, isSuccess, isError, error } = useSetZoneMaster();
-  const { fetch: fetchTestMailCredentials } = useCreateTestMail(
-    clickedItem,
-    finalSearchTerm
-  );
-
-  const toast = useToast();
-  useEffect(() => {
-    if (isSuccess) {
-      toast({
-        title: "Success",
-        description: `Zonemaster successfully set to ${clickedItem?.host}`,
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        position: "top",
-      });
-    }
-  }, [isSuccess, clickedItem, toast]);
-
-  useEffect(() => {
-    if (isError && error) {
-      toast({
-        title: "Error",
-        description: `Failed to set zonemaster: ${error.message || "Unknown error"}`,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "top",
-      });
-    }
-  }, [isError, error, toast]);
 
   // Extract hosts for bulk resolution
   const hosts = useMemo(() => {
@@ -135,11 +47,6 @@ function SubscriptionSearchApp() {
       refetchDnsRecords();
     }
   }, [finalSearchTerm, subscriptionQuery.data]);
-
-  // Set clicked item for action hooks
-  const handleItemAction = (item) => {
-    setClickedItem(item);
-  };
 
   return (
     <ChakraProvider>
@@ -178,7 +85,6 @@ function SubscriptionSearchApp() {
               hostRecords={records}
               searchTerm={finalSearchTerm}
               currentUser={currentUser}
-              onItemAction={handleItemAction}
             />
           </Box>
         )}

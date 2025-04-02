@@ -11,18 +11,18 @@ import {
   HStack,
   Badge,
   Tooltip,
-  Collapse,
   Box,
   Divider,
   Icon,
   SimpleGrid,
+  useToast,
 } from "@chakra-ui/react";
 import {
   FaExclamationTriangle,
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import HostCell from "./HostCell";
 import DomainsList from "./DomainsList";
 import useSubscriptionLoginLink from "../../hooks/plesk/useSubscriptionLoginLink";
@@ -51,15 +51,43 @@ const SubscriptionTable = ({
   hostRecords,
   searchTerm,
   currentUser,
-  onItemAction,
 }) => {
   const queryClient = useQueryClient();
-  const { fetch: fetchLoginLink } = useSubscriptionLoginLink(null);
-  const { mutateZoneMaster } = useSetZoneMaster();
+  const [clickedItem, setClickedItem] = useState(null);
+  const { fetch: fetchLoginLink } = useSubscriptionLoginLink(clickedItem);
+
+  const { mutateZoneMaster, isSuccess, isError, error } = useSetZoneMaster();
   const { fetch: fetchTestMailCredentials } = useCreateTestMail(
-    null,
+    clickedItem,
     searchTerm
   );
+
+  const toast = useToast();
+  useEffect(() => {
+    if (isSuccess) {
+      toast({
+        title: "Success",
+        description: `Zonemaster successfully set to ${null?.host}`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+    }
+  }, [isSuccess, null, toast]);
+
+  useEffect(() => {
+    if (isError && error) {
+      toast({
+        title: "Error",
+        description: `Failed to set zonemaster: ${error.message || "Unknown error"}`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+    }
+  }, [isError, error, toast]);
 
   // State to track which rows are expanded
   const [expandedRows, setExpandedRows] = useState({});
@@ -72,20 +100,20 @@ const SubscriptionTable = ({
   };
 
   const handleLoginLinkClick = (item) => {
-    onItemAction(item);
+    setClickedItem(item);
     queryClient.invalidateQueries({ queryKey: ["subscriptionLoginLink"] });
     fetchLoginLink();
   };
 
   const handleSetZoneMasterClick = (item) => {
-    onItemAction(item);
+    setClickedItem(item);
     mutateZoneMaster({
       body: { target_plesk_server: item.host, domain: searchTerm },
     });
   };
 
   const handleTestMailClick = (item) => {
-    onItemAction(item);
+    setClickedItem(item);
     fetchTestMailCredentials();
   };
 
