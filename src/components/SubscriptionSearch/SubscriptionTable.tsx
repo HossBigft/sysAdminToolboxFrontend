@@ -74,7 +74,7 @@ const SubscriptionTable = ({
         status: "success",
         duration: 5000,
         isClosable: true,
-        position: "top",
+        position: "bottom",
       });
       refetchZoneMaster();
     }
@@ -88,7 +88,7 @@ const SubscriptionTable = ({
         status: "error",
         duration: 5000,
         isClosable: true,
-        position: "top",
+        position: "bottom",
       });
     }
   }, [isError, error, toast]);
