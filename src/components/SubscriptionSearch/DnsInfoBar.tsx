@@ -36,6 +36,22 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
   const copyIconColor = useColorModeValue("gray.400", "gray.500");
   const copyHoverBg = useColorModeValue("gray.100", "gray.600");
 
+  // Helper function to handle tooltip content
+  const getTooltipContent = (ptr, mx, ip) => {
+    let tooltipContent = "";
+    if (ptr || mx || ip) {
+      tooltipContent = `${ptr || ""} [${mx || ""} ${ip || ""}]`.trim();
+      // Remove brackets if both mx and ip are empty
+      if (tooltipContent.endsWith("]")) {
+        tooltipContent = tooltipContent.slice(0, -2); // Remove trailing space and bracket
+      }
+      if (tooltipContent.startsWith("[")) {
+        tooltipContent = tooltipContent.slice(1); // Remove leading bracket
+      }
+    }
+    return tooltipContent;
+  };
+
   // Record display component with copy functionality
   const RecordDisplay = ({
     icon,
@@ -50,7 +66,6 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
 
     const handleCopy = () => {
       const valueToCopy = tooltipContent.replace(/[\[\]]/g, "");
-
       setCopyValue(valueToCopy);
       setLastCopied(id);
     };
@@ -132,8 +147,8 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
           icon={FaGlobe}
           iconColor={iconColorA}
           label="A Record"
-          value={aRecord?.ptr || aRecord?.ip}
-          tooltipContent={`${aRecord?.ptr} [${aRecord?.ip}]`}
+          value={aRecord?.ptr || aRecord?.ip || ""}
+          tooltipContent={getTooltipContent(aRecord?.ptr, "", aRecord?.ip)}
         />
 
         <RecordDisplay
@@ -141,8 +156,12 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
           icon={FaEnvelope}
           iconColor={iconColorB}
           label="MX Record"
-          value={mxRecord?.ptr || mxRecord?.ip}
-          tooltipContent={`${mxRecord?.ptr} [${mxRecord?.mx} ${mxRecord?.ip}]`}
+          value={mxRecord?.ptr || mxRecord?.ip || ""}
+          tooltipContent={getTooltipContent(
+            mxRecord?.ptr,
+            mxRecord?.mx,
+            mxRecord?.ip
+          )}
         />
 
         <RecordDisplay
@@ -150,8 +169,12 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
           icon={FaServer}
           iconColor={iconColorC}
           label="ZoneMaster"
-          value={zoneMaster?.ptr || zoneMaster?.ip}
-          tooltipContent={`${zoneMaster?.ptr} [${zoneMaster?.ip}]`}
+          value={zoneMaster?.ptr || zoneMaster?.ip || ""}
+          tooltipContent={getTooltipContent(
+            zoneMaster?.ptr,
+            "",
+            zoneMaster?.ip
+          )}
         />
       </HStack>
     </Box>
