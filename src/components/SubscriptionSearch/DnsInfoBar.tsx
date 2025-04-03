@@ -1,4 +1,11 @@
-import { Box, Text, HStack, Icon, useColorModeValue } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  HStack,
+  Icon,
+  useColorModeValue,
+  Tooltip,
+} from "@chakra-ui/react";
 import { FaServer, FaGlobe, FaEnvelope } from "react-icons/fa";
 
 const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
@@ -21,35 +28,51 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
       bg={bgColor} // Use color mode-aware bg color
     >
       <HStack spacing={6} justify="flex-start" flexWrap="wrap">
-        <HStack spacing={2}>
-          <Icon as={FaGlobe} color={iconColorA} />
-          <Text fontSize="sm" fontWeight="bold" color={textColor}>
-            A Record:
-          </Text>
-          <Text fontSize="sm" color={textColor}>
-            {aRecord?.ptr || aRecord?.ip || "Empty"}
-          </Text>
-        </HStack>
-
-        <HStack spacing={2}>
-          <Icon as={FaEnvelope} color={iconColorB} />
-          <Text fontSize="sm" fontWeight="bold" color={textColor}>
-            MX Record:
-          </Text>
-          <Text fontSize="sm" color={textColor}>
-            {mxRecord?.ptr || mxRecord?.ip || "Empty"}
-          </Text>
-        </HStack>
-
-        <HStack spacing={2}>
-          <Icon as={FaServer} color={iconColorC} />
-          <Text fontSize="sm" fontWeight="bold" color={textColor}>
-            ZoneMaster:
-          </Text>
-          <Text fontSize="sm" color={textColor}>
-            {zoneMaster?.ptr || zoneMaster?.ip || "Empty"}
-          </Text>
-        </HStack>
+        <Tooltip
+          hasArrow
+          label={`${aRecord?.ptr} [${aRecord?.ip}]`}
+          placement="bottom"
+        >
+          <HStack spacing={2}>
+            <Icon as={FaGlobe} color={iconColorA} />
+            <Text fontSize="sm" fontWeight="bold" color={textColor}>
+              A Record:
+            </Text>
+            <Text fontSize="sm" color={textColor}>
+              {aRecord?.ptr || aRecord?.ip || "Empty"}
+            </Text>
+          </HStack>
+        </Tooltip>
+        <Tooltip
+          hasArrow
+          label={`${mxRecord?.ptr} [${mxRecord?.ip}]`}
+          placement="bottom"
+        >
+          <HStack spacing={2}>
+            <Icon as={FaEnvelope} color={iconColorB} />
+            <Text fontSize="sm" fontWeight="bold" color={textColor}>
+              MX Record:
+            </Text>
+            <Text fontSize="sm" color={textColor}>
+              {mxRecord?.ptr || mxRecord?.ip || "Empty"}
+            </Text>
+          </HStack>
+        </Tooltip>
+        <Tooltip
+          hasArrow
+          label={`${zoneMaster?.ptr} [${zoneMaster?.ip}]`}
+          placement="bottom"
+        >
+          <HStack spacing={2}>
+            <Icon as={FaServer} color={iconColorC} />
+            <Text fontSize="sm" fontWeight="bold" color={textColor}>
+              ZoneMaster:
+            </Text>
+            <Text fontSize="sm" color={textColor}>
+              {zoneMaster?.ptr || zoneMaster?.ip || "Empty"}
+            </Text>
+          </HStack>
+        </Tooltip>
       </HStack>
     </Box>
   );
