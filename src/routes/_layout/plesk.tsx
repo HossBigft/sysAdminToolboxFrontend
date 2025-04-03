@@ -128,7 +128,7 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
             A Record:
           </Text>
           <Text fontSize="sm" color={textColor}>
-            {aRecord?.ip || "Empty"}
+            {aRecord?.ptr || aRecord?.ip || "Empty"}
           </Text>
         </HStack>
 
@@ -141,7 +141,7 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
             {mxRecord?.ip || "Empty"}
           </Text>
         </HStack>
-        
+
         <HStack spacing={2}>
           <Icon as={FaServer} color={iconColorC} />
           <Text fontSize="sm" fontWeight="bold" color={textColor}>

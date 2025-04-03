@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-import { getARecordOptions } from "../../client/@tanstack/react-query.gen";
-import { createQuery, getFirstRecord } from "./utils";
+import { getARecordOptions, getPtrRecordOptions } from "../../client/@tanstack/react-query.gen";
+import { createQuery, getFirstRecord, hasExactlyOneRecord } from "./utils";
 
 export const useARecord = (domain) => {
   const [shouldFetch, setShouldFetch] = useState(false);
@@ -17,6 +17,9 @@ export const useARecord = (domain) => {
     )
   );
 
+
+
+
   useEffect(() => {
     if (aRecordQuery.isError || aRecordQuery.isSuccess) {
       setShouldFetch(false);
@@ -25,10 +28,23 @@ export const useARecord = (domain) => {
 
   const aRecord = getFirstRecord(aRecordQuery.data);
 
+  
+  const ptrQuery = useQuery(
+    createQuery(
+      {
+        ...getPtrRecordOptions({ query: { ip: aRecord } }),
+        queryKey: ["ptrQuery", aRecord],
+      },
+      !!aRecord && hasExactlyOneRecord(aRecordQuery.data)
+    )
+  )
+
+
   return {
     ip: aRecord,
-    isLoading: aRecordQuery.isLoading,
-    error: aRecordQuery.error,
+    ptr: ptrQuery.data?.records?.[0],
+    isLoading: aRecordQuery.isLoading || ptrQuery.isLoading,
+    error: aRecordQuery.error || ptrQuery.error,
     fetch: () => setShouldFetch(true),
   };
 };
