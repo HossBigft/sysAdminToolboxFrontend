@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-import { getZoneMasterFromDnsServersOptions } from "../../client/@tanstack/react-query.gen";
+import { getZoneMasterFromDnsServersOptions, getPtrRecordOptions } from "../../client/@tanstack/react-query.gen";
 import { createQuery, getFirstRecord } from "./utils";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -30,10 +30,21 @@ export const useZoneMaster = (domain) => {
     new Set(zoneMasterQuery.data?.answers?.map((answer) => answer.zone_master))
   );
 
+  const ptrQuery = useQuery(
+    createQuery(
+      {
+        ...getPtrRecordOptions({ query: { ip: zoneMasterIp[0] } }),
+        queryKey: ["ptrQuery", zoneMasterIp[0]],
+      },
+      !!zoneMasterIp && zoneMasterIp.length === 1
+    )
+  );
+
   return {
     ip: zoneMasterIp,
-    isLoading: zoneMasterQuery.isLoading,
-    error: zoneMasterQuery.error,
+    ptr: ptrQuery.data?.records?.[0],
+    isLoading: zoneMasterQuery.isLoading || ptrQuery.isLoading,
+    error: zoneMasterQuery.error || ptrQuery.error,
     fetch: () => setShouldFetch(true),
     refetch: () => {
       queryClient.invalidateQueries({ queryKey: queryKey });
