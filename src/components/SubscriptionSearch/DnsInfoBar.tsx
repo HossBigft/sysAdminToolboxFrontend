@@ -5,18 +5,113 @@ import {
   Icon,
   useColorModeValue,
   Tooltip,
+  useClipboard,
+  Flex,
 } from "@chakra-ui/react";
-import { FaServer, FaGlobe, FaEnvelope } from "react-icons/fa";
+import { FaServer, FaGlobe, FaEnvelope, FaCopy } from "react-icons/fa";
+import { useState, useEffect } from "react";
 
 const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
+  const [copyValue, setCopyValue] = useState("");
+  const [lastCopied, setLastCopied] = useState("");
+  const { onCopy } = useClipboard(copyValue);
+
+  // Reset "Copied!" state after a delay
+  useEffect(() => {
+    if (lastCopied) {
+      const timer = setTimeout(() => {
+        setLastCopied("");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [lastCopied]);
+
   if (isLoading) return null;
 
   // Color values that will change depending on the color mode
-  const bgColor = useColorModeValue("gray.50", "gray.700"); // Light: gray.50, Dark: gray.700
-  const textColor = useColorModeValue("gray.700", "gray.200"); // Light: gray.700, Dark: gray.200
+  const bgColor = useColorModeValue("gray.50", "gray.700");
+  const textColor = useColorModeValue("gray.700", "gray.200");
   const iconColorA = useColorModeValue("green.500", "green.300");
   const iconColorB = useColorModeValue("blue.500", "blue.300");
   const iconColorC = useColorModeValue("yellow.500", "yellow.300");
+  const copyIconColor = useColorModeValue("gray.400", "gray.500");
+  const copyHoverBg = useColorModeValue("gray.100", "gray.600");
+
+  // Record display component with copy functionality
+  const RecordDisplay = ({
+    icon,
+    iconColor,
+    label,
+    value,
+    tooltipContent,
+    id,
+  }) => {
+    const isCopied = lastCopied === id;
+
+    const handleCopy = () => {
+      setCopyValue(tooltipContent.replace(/[\[\]]/g, ""));
+      // Use setTimeout to ensure state is updated before onCopy is called
+      setTimeout(() => {
+        onCopy();
+        setLastCopied(id);
+      }, 0);
+    };
+
+    return (
+      <Tooltip
+        hasArrow
+        label={isCopied ? "Copied!" : tooltipContent}
+        placement="bottom"
+        closeOnClick={false}
+      >
+        <HStack
+          spacing={2}
+          cursor="pointer"
+          onClick={handleCopy}
+          _hover={{ bg: copyHoverBg }}
+          p={2}
+          borderRadius="md"
+          transition="all 0.2s"
+          position="relative"
+          role="group"
+        >
+          <Icon as={icon} color={iconColor} />
+          <Text fontSize="sm" fontWeight="bold" color={textColor}>
+            {label}:
+          </Text>
+          <Flex align="center">
+            <Text fontSize="sm">{value || "Empty"}</Text>
+            <Icon
+              as={FaCopy}
+              color={copyIconColor}
+              ml={2}
+              fontSize="xs"
+              opacity="0"
+              _groupHover={{ opacity: "1" }}
+              transition="opacity 0.2s"
+            />
+          </Flex>
+          {isCopied && (
+            <Text
+              position="absolute"
+              right="0"
+              top="-20px"
+              color="green.500"
+              fontSize="xs"
+              fontWeight="bold"
+              px={2}
+              py={1}
+              borderRadius="md"
+              bg={useColorModeValue("white", "gray.800")}
+              boxShadow="sm"
+            >
+              Copied!
+            </Text>
+          )}
+        </HStack>
+      </Tooltip>
+    );
+  };
 
   return (
     <Box
@@ -25,54 +120,35 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
       borderRadius="md"
       borderWidth="1px"
       boxShadow="sm"
-      bg={bgColor} // Use color mode-aware bg color
+      bg={bgColor}
     >
       <HStack spacing={6} justify="flex-start" flexWrap="wrap">
-        <Tooltip
-          hasArrow
-          label={`${aRecord?.ptr} [${aRecord?.ip}]`}
-          placement="bottom"
-        >
-          <HStack spacing={2}>
-            <Icon as={FaGlobe} color={iconColorA} />
-            <Text fontSize="sm" fontWeight="bold" color={textColor}>
-              A Record:
-            </Text>
-            <Text fontSize="sm" color={textColor}>
-              {aRecord?.ptr || aRecord?.ip || "Empty"}
-            </Text>
-          </HStack>
-        </Tooltip>
-        <Tooltip
-          hasArrow
-          label={`${mxRecord?.ptr} [${mxRecord?.ip}]`}
-          placement="bottom"
-        >
-          <HStack spacing={2}>
-            <Icon as={FaEnvelope} color={iconColorB} />
-            <Text fontSize="sm" fontWeight="bold" color={textColor}>
-              MX Record:
-            </Text>
-            <Text fontSize="sm" color={textColor}>
-              {mxRecord?.ptr || mxRecord?.ip || "Empty"}
-            </Text>
-          </HStack>
-        </Tooltip>
-        <Tooltip
-          hasArrow
-          label={`${zoneMaster?.ptr} [${zoneMaster?.ip}]`}
-          placement="bottom"
-        >
-          <HStack spacing={2}>
-            <Icon as={FaServer} color={iconColorC} />
-            <Text fontSize="sm" fontWeight="bold" color={textColor}>
-              ZoneMaster:
-            </Text>
-            <Text fontSize="sm" color={textColor}>
-              {zoneMaster?.ptr || zoneMaster?.ip || "Empty"}
-            </Text>
-          </HStack>
-        </Tooltip>
+        <RecordDisplay
+          id="aRecord"
+          icon={FaGlobe}
+          iconColor={iconColorA}
+          label="A Record"
+          value={aRecord?.ptr || aRecord?.ip}
+          tooltipContent={`${aRecord?.ptr} [${aRecord?.ip}]`}
+        />
+
+        <RecordDisplay
+          id="mxRecord"
+          icon={FaEnvelope}
+          iconColor={iconColorB}
+          label="MX Record"
+          value={mxRecord?.ptr || mxRecord?.ip}
+          tooltipContent={`${mxRecord?.ptr} [${mxRecord?.ip}]`}
+        />
+
+        <RecordDisplay
+          id="zoneMaster"
+          icon={FaServer}
+          iconColor={iconColorC}
+          label="ZoneMaster"
+          value={zoneMaster?.ptr || zoneMaster?.ip}
+          tooltipContent={`${zoneMaster?.ptr} [${zoneMaster?.ip}]`}
+        />
       </HStack>
     </Box>
   );
