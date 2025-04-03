@@ -142,7 +142,7 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
           iconColor={iconColorB}
           label="MX Record"
           value={mxRecord?.ptr || mxRecord?.ip}
-          tooltipContent={`${mxRecord?.ptr} [${mxRecord?.ip}]`}
+          tooltipContent={`${mxRecord?.ptr} [${mxRecord?.mx} ${mxRecord?.ip}]`}
         />
 
         <RecordDisplay

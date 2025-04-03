@@ -51,9 +51,11 @@ export const useMxRecord = (domain) => {
 
   return {
     record: mxRecord,
+    mx: mxRecord,
     ip: aRecord,
     ptr: ptrQuery?.data?.records?.[0],
-    isLoading: mxRecordQuery.isLoading || aRecordQuery.isLoading || ptrQuery.isLoading,
+    isLoading:
+      mxRecordQuery.isLoading || aRecordQuery.isLoading || ptrQuery.isLoading,
     error: mxRecordQuery.error || aRecordQuery.error || ptrQuery.error,
     fetch: () => setShouldFetch(true),
   };
