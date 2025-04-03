@@ -138,7 +138,7 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
             MX Record:
           </Text>
           <Text fontSize="sm" color={textColor}>
-            {mxRecord?.ip || "Empty"}
+            {mxRecord?.ptr ||mxRecord?.ip || "Empty"}
           </Text>
         </HStack>
 
