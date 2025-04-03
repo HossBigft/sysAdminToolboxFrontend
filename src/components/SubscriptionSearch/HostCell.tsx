@@ -4,9 +4,10 @@ import { FaStar, FaGlobe } from "react-icons/fa";
 
 const HostCell = ({ host, hostIp, zoneMaster, aRecord, mxRecord }) => {
   // Determine which roles this host serves
-  const isDnsZoneMaster = hostIp === zoneMaster.ip[0];
-  const isDomainHost = hostIp === aRecord.ip;
-  const isMailServer = hostIp === mxRecord.ip;
+  const isDnsZoneMaster =
+    hostIp === zoneMaster.ip[0] || host === zoneMaster.ptr;
+  const isDomainHost = hostIp === aRecord.ip || host === aRecord.ptr;
+  const isMailServer = hostIp === mxRecord.ip || host === mxRecord.ptr;
 
   // Color scheme for better visual categorization
   const tagColors = {
