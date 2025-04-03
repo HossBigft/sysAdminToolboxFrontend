@@ -14,7 +14,6 @@ import { useState, useEffect } from "react";
 const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
   const [copyValue, setCopyValue] = useState("");
   const [lastCopied, setLastCopied] = useState("");
-  const { onCopy } = useClipboard(copyValue);
 
   // Reset "Copied!" state after a delay
   useEffect(() => {
@@ -46,16 +45,21 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
     tooltipContent,
     id,
   }) => {
+    const { onCopy } = useClipboard(copyValue);
     const isCopied = lastCopied === id;
 
     const handleCopy = () => {
-      setCopyValue(tooltipContent.replace(/[\[\]]/g, ""));
-      // Use setTimeout to ensure state is updated before onCopy is called
-      setTimeout(() => {
-        onCopy();
-        setLastCopied(id);
-      }, 0);
+      const valueToCopy = tooltipContent.replace(/[\[\]]/g, "");
+
+      setCopyValue(valueToCopy);
+      setLastCopied(id);
     };
+
+    useEffect(() => {
+      if (copyValue) {
+        onCopy();
+      }
+    }, [copyValue]);
 
     return (
       <Tooltip
