@@ -2,12 +2,15 @@ import { Tooltip, Box, HStack, Tag, Icon, VStack } from "@chakra-ui/react";
 import { EmailIcon } from "@chakra-ui/icons";
 import { FaStar, FaGlobe } from "react-icons/fa";
 
-const HostCell = ({ host, hostIp, zoneMaster, aRecord, mxRecord }) => {
+const HostCell = ({ host, zoneMaster, aRecord, mxRecord }) => {
   // Determine which roles this host serves
+  const hostName = host.name;
+  const hostIps = host.ips;
   const isDnsZoneMaster =
-    hostIp === zoneMaster.ip[0] || host === zoneMaster.ptr;
-  const isDomainHost = hostIp === aRecord.ip || host === aRecord.ptr;
-  const isMailServer = hostIp === mxRecord.ip || host === mxRecord.ptr;
+    hostIps.includes(zoneMaster.ip[0]) || hostName === zoneMaster.ptr;
+  const isDomainHost = hostIps.includes(aRecord.ip) || hostName === aRecord.ptr;
+  const isMailServer =
+    hostIps.includes(mxRecord.ip) || hostName === mxRecord.ptr;
 
   // Color scheme for better visual categorization
   const tagColors = {
@@ -18,7 +21,7 @@ const HostCell = ({ host, hostIp, zoneMaster, aRecord, mxRecord }) => {
 
   return (
     <VStack spacing={2} align="left">
-      <Box fontWeight="medium">{host}</Box>
+      <Box fontWeight="medium">{hostName}</Box>
 
       <HStack spacing={2} justify="left">
         {/* Role indicators with consistent styling */}

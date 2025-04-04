@@ -112,7 +112,7 @@ const SubscriptionTable = ({
   const handleSetZoneMasterClick = (item) => {
     setClickedItem(item);
     mutateZoneMaster({
-      body: { target_plesk_server: item.host, domain: searchTerm },
+      body: { target_plesk_server: item.host.name, domain: searchTerm },
     });
   };
 
@@ -151,7 +151,7 @@ const SubscriptionTable = ({
               key={item.id}
               item={item}
               dnsData={dnsData}
-              hostIp={hostRecords[item.host]}
+              hostIp={hostRecords[item.host.ips]}
               currentUser={currentUser}
               onLoginLink={() => handleLoginLinkClick(item)}
               onTestMail={() => handleTestMailClick(item)}
@@ -192,7 +192,6 @@ const SubscriptionRow = ({
       <Td>
         <HostCell
           host={item.host}
-          hostIp={hostIp}
           zoneMaster={zoneMaster}
           aRecord={aRecord}
           mxRecord={mxRecord}
