@@ -15,10 +15,9 @@ import { Route as SignupImport } from "./routes/signup";
 import { Route as ResetPasswordImport } from "./routes/reset-password";
 import { Route as LoginImport } from "./routes/login";
 import { Route as LayoutImport } from "./routes/_layout";
-import { Route as LayoutIndexImport } from "./routes/_layout/index";
+import { Route as LayoutIndexImport } from "./routes/_layout/plesk";
 import { Route as LayoutSettingsImport } from "./routes/_layout/settings";
 import { Route as LayoutAdminImport } from "./routes/_layout/admin";
-import { Route as LayoutPleskImport } from "./routes/_layout/plesk";
 
 // Create/Update Routes
 const SignupRoute = SignupImport.update({
@@ -51,11 +50,6 @@ const LayoutAdminRoute = LayoutAdminImport.update({
   getParentRoute: () => LayoutRoute,
 } as any);
 
-const LayoutPleskRoute = LayoutPleskImport.update({
-  path: "/plesk",
-  getParentRoute: () => LayoutRoute,
-} as any);
-// Populate the FileRoutesByPath interface
 
 declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
@@ -97,7 +91,6 @@ export const routeTree = rootRoute.addChildren([
     LayoutAdminRoute,
     LayoutSettingsRoute,
     LayoutIndexRoute,
-    LayoutPleskRoute,
   ]),
   LoginRoute,
   SignupRoute,
