@@ -47,7 +47,11 @@ const EditUser = ({ user, isOpen, onClose }: EditUserProps) => {
   } = useForm<UserUpdateForm>({
     mode: "onBlur",
     criteriaMode: "all",
-    defaultValues: user,
+    defaultValues: {
+      ...user,
+      is_admin: user.role === "admin",
+      is_superuser: user.role === "superuser",
+    },
   });
 
   const mutation = useMutation({
