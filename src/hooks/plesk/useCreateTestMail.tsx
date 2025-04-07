@@ -37,9 +37,9 @@ const useCreateTestMail = (clickedItem, domain) => {
     refetch
   } = useQuery({
     ...createTestmailForDomainOptions({
-      query: { server: clickedItem?.host, maildomain: domain },
+      query: { server: clickedItem?.host?.name, maildomain: domain },
     }),
-    queryKey: ["testMailLoginLink", domain],
+    queryKey: ["testMailLoginLink", domain, clickedItem?.host?.name],
     enabled: shouldTriggerQuery && !!domain && !!clickedItem,
     refetchOnWindowFocus: false,
     staleTime: 5 * (60 * 1000), // 5 mins

@@ -14,7 +14,7 @@ const useSubscriptionLoginLink = (clickedItem) => {
     error: errorLogin,
   } = useQuery({
     ...getSubscriptionLoginLinkOptions({
-      body: { host: clickedItem?.host, subscription_id: clickedItem?.id },
+      body: { host: clickedItem?.host?.name, subscription_id: clickedItem?.id },
     }),
     queryKey: ["subscriptionLoginLink", clickedItem?.id],
     enabled: shouldFetch && !!clickedItem,
