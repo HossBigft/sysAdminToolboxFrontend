@@ -28,7 +28,7 @@ function SubscriptionSearchApp() {
 
   // Extract hosts for bulk resolution
   const hosts = useMemo(() => {
-    return subscriptionQuery.data?.map((item) => item.host) || [];
+    return subscriptionQuery.data?.map((item) => item.host?.name) || [];
   }, [subscriptionQuery.data]);
 
   const { records, refetch: refetchHostRecords } = useBulkAResolution(hosts);
