@@ -36,31 +36,25 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
   const copyIconColor = useColorModeValue("gray.400", "gray.500");
   const copyHoverBg = useColorModeValue("gray.100", "gray.600");
 
-  // Helper function to handle tooltip content
   const getTooltipContent = (dnsRecord) => {
     if (!dnsRecord) return "";
-
+  
+    const { ptr, mx, ip } = dnsRecord;
     const parts = [];
-
-    if (dnsRecord.ptr) {
-      parts.push(dnsRecord.ptr);
+  
+    // Add ptr if it exists
+    if (ptr) parts.push(ptr);
+  
+    // Add mx and ip if they exist
+    if (mx || ip) {
+      const mxIpPart = [mx, ip].filter(Boolean).join(" ");
+      parts.push(mxIpPart ? `[${mxIpPart}]` : "");
     }
-
-    const subParts = [];
-    if (dnsRecord.mx) {
-      subParts.push(dnsRecord.mx);
-    }
-    if (dnsRecord.ip) {
-      subParts.push(dnsRecord.ip);
-    }
-
-    if (subParts.length) {
-      parts.push(`[${subParts.join(" ")}]`);
-    }
-
-    return parts.join(" ");
+  
+    // If no parts were added, return an empty string
+    return parts.join(" ").trim();
   };
-
+  
   // Record display component with copy functionality
   const RecordDisplay = ({
     icon,
