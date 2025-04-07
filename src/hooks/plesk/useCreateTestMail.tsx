@@ -27,28 +27,28 @@ async function copyToClipboard(textToCopy) {
 }
 
 const useCreateTestMail = (clickedItem, domain) => {
-  const [shouldTriggerQuery, setShouldTriggerQuery] = useState(false);
+  const [shouldTrigger, setShouldTriggerQuery] = useState(false);
 
   const {
     data,
     isSuccess,
     isError,
     error: errorLogin,
-    refetch
+    refetch,
   } = useQuery({
     ...createTestmailForDomainOptions({
       query: { server: clickedItem?.host?.name, maildomain: domain },
     }),
     queryKey: ["testMailLoginLink", domain, clickedItem?.host?.name],
-    enabled: shouldTriggerQuery && !!domain && !!clickedItem,
+    enabled: shouldTrigger && !!domain && !!clickedItem,
     refetchOnWindowFocus: false,
     staleTime: 5 * (60 * 1000), // 5 mins
   });
-  
+
   const toast = useToast();
 
   useEffect(() => {
-    if (isSuccess && data) {
+    if (isSuccess && data && shouldTrigger) {
       const toastId = toast({
         title: `Mailbox is ready. Password is ${data.password}`,
         description: (
@@ -73,7 +73,7 @@ const useCreateTestMail = (clickedItem, domain) => {
       });
       setShouldTriggerQuery(false);
     }
-  }, [isSuccess, data, toast]);
+  }, [isSuccess, data, toast, shouldTrigger]);
 
   useEffect(() => {
     if (isError) {
