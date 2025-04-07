@@ -42,18 +42,29 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
     const { ptr, mx, ip } = dnsRecord;
     const parts = [];
   
-    // Add ptr if it exists
-    if (ptr) parts.push(ptr);
-  
-    // Add mx and ip if they exist
-    if (mx || ip) {
-      const mxIpPart = [mx, ip].filter(Boolean).join(" ");
-      parts.push(mxIpPart ? `[${mxIpPart}]` : "");
+    // If ptr exists, start by adding it
+    if (ptr) {
+      if (mx && ip) {
+        parts.push(`${ptr} [${mx} ${ip}]`);
+      } else if (ip) {
+        parts.push(`${ptr} [${ip}]`);
+      } else {
+        parts.push(ptr);
+      }
+    } 
+    // If only mx and ip exist, handle them separately
+    else if (mx && ip) {
+      parts.push(`${mx} [${ip}]`);
+    } else if (mx) {
+      parts.push(`${mx} []`);
+    } else if (ip) {
+      parts.push(ip);
     }
   
-    // If no parts were added, return an empty string
     return parts.join(" ").trim();
   };
+  
+  
   
   // Record display component with copy functionality
   const RecordDisplay = ({
@@ -159,7 +170,7 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
           icon={FaEnvelope}
           iconColor={iconColorB}
           label="MX Record"
-          value={mxRecord?.ptr || mxRecord?.ip || ""}
+          value={mxRecord?.ptr || mxRecord?.mx || mxRecord?.ip || ""}
           tooltipContent={getTooltipContent(mxRecord)}
         />
 
