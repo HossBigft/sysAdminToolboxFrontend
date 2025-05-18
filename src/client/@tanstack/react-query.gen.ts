@@ -2,8 +2,8 @@
 
 import type { OptionsLegacyParser } from '@hey-api/client-axios';
 import { queryOptions, type UseMutationOptions, infiniteQueryOptions, type InfiniteData } from '@tanstack/react-query';
-import type { GetARecordData, GetPtrRecordData, GetZoneMasterFromDnsServersData, DeleteZoneFileForDomainData, DeleteZoneFileForDomainError, DeleteZoneFileForDomainResponse, GetMxRecordData, GetNsRecordsData, ReadUsersData, CreateUserData, CreateUserError, CreateUserResponse, DeleteUserMeError, DeleteUserMeResponse, UpdateUserMeData, UpdateUserMeError, UpdateUserMeResponse, UpdatePasswordMeData, UpdatePasswordMeError, UpdatePasswordMeResponse, RegisterUserData, RegisterUserError, RegisterUserResponse, ReadUserByIdData, UpdateUserData, UpdateUserError, UpdateUserResponse, DeleteUserData, DeleteUserError, DeleteUserResponse, GetOwnActionsData, GetOwnActionsError, GetOwnActionsResponse, GetUserActionsData, UpdateSuperuserMeData, UpdateSuperuserMeError, UpdateSuperuserMeResponse, FindPleskSubscriptionByDomainData, GetSubscriptionLoginLinkData, GetSubscriptionLoginLinkError, GetSubscriptionLoginLinkResponse, SetZonemasterData, SetZonemasterError, SetZonemasterResponse, CreateTestmailForDomainData, GetTokenData, RecoverPasswordData, RecoverPasswordError, RecoverPasswordResponse, ResetPasswordData, ResetPasswordError, ResetPasswordResponse, RecoverPasswordHtmlContentData, RecoverPasswordHtmlContentError, RecoverPasswordHtmlContentResponse, LoginAccessTokenData, LoginAccessTokenError, LoginAccessTokenResponse, TestTokenError, TestTokenResponse } from '../types.gen';
-import { client, getARecord, getPtrRecord, getZoneMasterFromDnsServers, deleteZoneFileForDomain, getMxRecord, getNsRecords, readUsers, createUser, readUserMe, deleteUserMe, updateUserMe, updatePasswordMe, registerUser, readUserById, updateUser, deleteUser, getOwnActions, getUserActions, updateSuperuserMe, findPleskSubscriptionByDomain, getSubscriptionLoginLink, setZonemaster, createTestmailForDomain, sharePublicKey, getToken, healthCheck, recoverPassword, resetPassword, recoverPasswordHtmlContent, loginAccessToken, testToken } from '../sdk.gen';
+import type { GetARecordData, GetPtrRecordData, GetZoneMasterFromDnsServersData, DeleteZoneFileForDomainData, DeleteZoneFileForDomainError, DeleteZoneFileForDomainResponse, GetMxRecordData, GetNsRecordsData, ResolveHostByDomainData, ResolveHostByIpData, ReadUsersData, CreateUserData, CreateUserError, CreateUserResponse, DeleteUserMeError, DeleteUserMeResponse, UpdateUserMeData, UpdateUserMeError, UpdateUserMeResponse, UpdatePasswordMeData, UpdatePasswordMeError, UpdatePasswordMeResponse, RegisterUserData, RegisterUserError, RegisterUserResponse, ReadUserByIdData, UpdateUserData, UpdateUserError, UpdateUserResponse, DeleteUserData, DeleteUserError, DeleteUserResponse, GetOwnActionsData, GetOwnActionsError, GetOwnActionsResponse, GetUserActionsData, UpdateSuperuserMeData, UpdateSuperuserMeError, UpdateSuperuserMeResponse, FindPleskSubscriptionByDomainData, GetSubscriptionLoginLinkData, GetSubscriptionLoginLinkError, GetSubscriptionLoginLinkResponse, SetZonemasterData, SetZonemasterError, SetZonemasterResponse, CreateTestmailForDomainData, GetTokenData, RecoverPasswordData, RecoverPasswordError, RecoverPasswordResponse, ResetPasswordData, ResetPasswordError, ResetPasswordResponse, RecoverPasswordHtmlContentData, RecoverPasswordHtmlContentError, RecoverPasswordHtmlContentResponse, LoginAccessTokenData, LoginAccessTokenError, LoginAccessTokenResponse, TestTokenError, TestTokenResponse } from '../types.gen';
+import { client, getARecord, getPtrRecord, getZoneMasterFromDnsServers, deleteZoneFileForDomain, getMxRecord, getNsRecords, resolveHostByDomain, resolveHostByIp, readUsers, createUser, readUserMe, deleteUserMe, updateUserMe, updatePasswordMe, registerUser, readUserById, updateUser, deleteUser, getOwnActions, getUserActions, updateSuperuserMe, findPleskSubscriptionByDomain, getSubscriptionLoginLink, setZonemaster, createTestmailForDomain, sharePublicKey, getToken, healthCheck, recoverPassword, resetPassword, recoverPasswordHtmlContent, loginAccessToken, testToken } from '../sdk.gen';
 import type { AxiosError } from 'axios';
 
 type QueryKey<TOptions extends OptionsLegacyParser> = [
@@ -139,6 +139,44 @@ export const getNsRecordsOptions = (options: OptionsLegacyParser<GetNsRecordsDat
             return data;
         },
         queryKey: getNsRecordsQueryKey(options)
+    });
+};
+
+export const resolveHostByDomainQueryKey = (options: OptionsLegacyParser<ResolveHostByDomainData>) => [
+    createQueryKey('resolveHostByDomain', options)
+];
+
+export const resolveHostByDomainOptions = (options: OptionsLegacyParser<ResolveHostByDomainData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await resolveHostByDomain({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: resolveHostByDomainQueryKey(options)
+    });
+};
+
+export const resolveHostByIpQueryKey = (options: OptionsLegacyParser<ResolveHostByIpData>) => [
+    createQueryKey('resolveHostByIp', options)
+];
+
+export const resolveHostByIpOptions = (options: OptionsLegacyParser<ResolveHostByIpData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await resolveHostByIp({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: resolveHostByIpQueryKey(options)
     });
 };
 

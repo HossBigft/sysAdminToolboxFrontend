@@ -58,6 +58,11 @@ export type GetZoneMasterLogSchema = {
 
 export type log_type3 = 'GET_ZONE_MASTER';
 
+export type HostIpData = {
+    name: string;
+    ips: Array<IPv4Address>;
+};
+
 export type HTTPValidationError = {
     detail?: Array<ValidationError>;
 };
@@ -106,7 +111,7 @@ export type SetZoneMasterLogSchema = {
 export type log_type4 = 'SET_ZONE_MASTER';
 
 export type SubscriptionDetailsModel = {
-    host: DomainName;
+    host: HostIpData;
     id: string;
     name: string;
     username: string;
@@ -140,6 +145,7 @@ export type SuperUserUpdateMe = {
 export type TestMailCredentials = {
     login_link: string;
     password: string;
+    email: string;
 };
 
 export type Token = {
@@ -288,6 +294,26 @@ export type GetNsRecordsData = {
 export type GetNsRecordsResponse = (DomainNsRecordResponse);
 
 export type GetNsRecordsError = (HTTPValidationError);
+
+export type ResolveHostByDomainData = {
+    query: {
+        name: string;
+    };
+};
+
+export type ResolveHostByDomainResponse = (HostIpData);
+
+export type ResolveHostByDomainError = (HTTPValidationError);
+
+export type ResolveHostByIpData = {
+    query: {
+        ip: string;
+    };
+};
+
+export type ResolveHostByIpResponse = (HostIpData);
+
+export type ResolveHostByIpError = (HTTPValidationError);
 
 export type ReadUsersData = {
     query?: {
