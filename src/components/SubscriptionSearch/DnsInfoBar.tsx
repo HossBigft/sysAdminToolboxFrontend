@@ -38,10 +38,10 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
 
   const getTooltipContent = (dnsRecord) => {
     if (!dnsRecord) return "";
-  
+
     const { ptr, mx, ip } = dnsRecord;
     const parts = [];
-  
+
     // If ptr exists, start by adding it
     if (ptr) {
       if (mx && ip) {
@@ -51,7 +51,7 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
       } else {
         parts.push(ptr);
       }
-    } 
+    }
     // If only mx and ip exist, handle them separately
     else if (mx && ip) {
       parts.push(`${mx} [${ip}]`);
@@ -60,12 +60,10 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
     } else if (ip) {
       parts.push(ip);
     }
-  
+
     return parts.join(" ").trim();
   };
-  
-  
-  
+
   // Record display component with copy functionality
   const RecordDisplay = ({
     icon,
@@ -113,7 +111,13 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
             {label}:
           </Text>
           <Flex align="center">
-            <Text fontSize="sm">{value || "Empty"}</Text>
+            <Text fontSize="sm">
+              {Array.isArray(value)
+                ? value.length > 0
+                  ? value.join(", ")
+                  : "Empty"
+                : value || "Empty"}
+            </Text>
             <Icon
               as={FaCopy}
               color={copyIconColor}
