@@ -27,7 +27,7 @@ export const useZoneMaster = (domain) => {
   }, [zoneMasterQuery.error, zoneMasterQuery.isSuccess]);
 
   const zoneMasterIp = Array.from(
-    new Set(zoneMasterQuery.data?.answers?.map((answer) => answer.zone_master))
+    new Set(zoneMasterQuery.data?.zone_masters?.map((answer) => answer.ip))
   );
 
   const ptrQuery = useQuery(
