@@ -7,6 +7,7 @@ import {
   Tooltip,
   useClipboard,
   Flex,
+  Tag,
 } from "@chakra-ui/react";
 import { FaServer, FaGlobe, FaEnvelope, FaCopy } from "react-icons/fa";
 import { useState, useEffect } from "react";
@@ -110,14 +111,21 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
           <Text fontSize="sm" fontWeight="bold" color={textColor}>
             {label}:
           </Text>
-          <Flex align="center">
-            <Text fontSize="sm">
-              {Array.isArray(value)
-                ? value.length > 0
-                  ? value.join(", ")
-                  : "Empty"
-                : value || "Empty"}
-            </Text>
+          <Flex align="center" wrap="wrap" gap={1}>
+            {Array.isArray(value) ? (
+              value.length > 0 ? (
+                value.map((v, i) => (
+                  <Tag key={i} size="sm" colorScheme="red">
+                    {v}
+                  </Tag>
+                ))
+              ) : (
+                <Text fontSize="sm">Empty</Text>
+              )
+            ) : (
+              <Text fontSize="sm">{value || "Empty"}</Text>
+            )}
+
             <Icon
               as={FaCopy}
               color={copyIconColor}
