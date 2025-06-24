@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 import { getZoneMasterFromDnsServersOptions, getPtrRecordOptions } from "../../client/@tanstack/react-query.gen";
-import { createQuery, getFirstRecord } from "./utils";
+import { createQuery } from "./utils";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const useZoneMaster = (domain) => {

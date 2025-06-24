@@ -1,10 +1,10 @@
-import { useARecord } from "./useARecord";
-import { useMxRecord } from "./useMxRecord";
+import { useInternalARecord } from "./useInternalARecord";
+import { useInternalMxRecord } from "./useInternalMxRecord";
 import { useZoneMaster } from "./useZoneMaster";
 
 export const useDnsRecords = (searchTerm) => {
-  const aRecord = useARecord(searchTerm);
-  const mxRecord = useMxRecord(searchTerm);
+  const aRecord = useInternalARecord(searchTerm);
+  const mxRecord = useInternalMxRecord(searchTerm);
   const zoneMaster = useZoneMaster(searchTerm);
 
   const refetch = () => {
@@ -21,6 +21,6 @@ export const useDnsRecords = (searchTerm) => {
   };
 };
 
-export * from "./useARecord";
-export * from "./useMxRecord";
+export * from "./useInternalARecord";
+export * from "./useInternalMxRecord";
 export * from "./useZoneMaster";

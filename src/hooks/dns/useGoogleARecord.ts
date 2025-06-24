@@ -1,16 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-import { getARecordOptions, getPtrRecordOptions } from "../../client/@tanstack/react-query.gen";
+import { getARecordGoogleOptions, getPtrRecordOptions } from "../../client/@tanstack/react-query.gen";
 import { createQuery, getFirstRecord, hasExactlyOneRecord } from "./utils";
 
-export const useARecord = (domain) => {
+export const useGoogleARecord = (domain) => {
   const [shouldFetch, setShouldFetch] = useState(false);
 
   const aRecordQuery = useQuery(
     createQuery(
       {
-        ...getARecordOptions({ query: { name: domain } }),
+        ...getARecordGoogleOptions({ query: { name: domain } }),
         queryKey: ["aRecordQuery", domain],
       },
       !!domain && shouldFetch

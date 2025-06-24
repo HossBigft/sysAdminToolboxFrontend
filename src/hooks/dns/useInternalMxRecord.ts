@@ -7,7 +7,7 @@ import {
 } from "../../client/@tanstack/react-query.gen";
 import { createQuery, getFirstRecord, hasExactlyOneRecord } from "./utils";
 
-export const useMxRecord = (domain) => {
+export const useInternalMxRecord = (domain) => {
   const [shouldFetch, setShouldFetch] = useState(false);
   const mxRecordQuery = useQuery(
     createQuery(
