@@ -23,7 +23,7 @@ function SubscriptionSearchApp() {
   // API hooks
   const { subscriptionQuery, fetchSubscription } =
     useSubscriptionSearch(finalSearchTerm);
-  const { aRecord, mxRecord, zoneMaster, refetchDnsRecords } =
+  const { internalARecord, internalMxRecord, googleARecord, googleMxRecord, zoneMaster, refetchDnsRecords } =
     useDnsRecords(finalSearchTerm);
 
   // Extract hosts for bulk resolution
@@ -68,8 +68,10 @@ function SubscriptionSearchApp() {
         {subscriptionQuery.data && (
           <DnsInfoBar
             finalSearchTerm={finalSearchTerm}
-            aRecord={aRecord}
-            mxRecord={mxRecord}
+            internalARecord={internalARecord}
+            internalMxRecord={internalMxRecord}
+            googleARecord={googleARecord}
+            googleMxRecord={googleMxRecord}
             zoneMaster={zoneMaster}
             isLoading={subscriptionQuery.isLoading}
           />
@@ -82,7 +84,7 @@ function SubscriptionSearchApp() {
           <Box overflowX="auto" width="100%" maxWidth="100%">
             <SubscriptionTable
               subscriptionData={subscriptionQuery.data}
-              dnsData={{ aRecord, mxRecord, zoneMaster }}
+              dnsData={{ internalARecord, internalMxRecord, zoneMaster }}
               hostRecords={records}
               searchTerm={finalSearchTerm}
               currentUser={currentUser}

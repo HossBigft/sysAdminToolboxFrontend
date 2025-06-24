@@ -1,22 +1,30 @@
 import { useInternalARecord } from "./useInternalARecord";
 import { useInternalMxRecord } from "./useInternalMxRecord";
 import { useZoneMaster } from "./useZoneMaster";
+import { useGoogleARecord } from "./useGoogleARecord";
+import { useGoogleMxRecord } from "./useGoogleMxRecord";
 
 export const useDnsRecords = (searchTerm) => {
-  const aRecord = useInternalARecord(searchTerm);
-  const mxRecord = useInternalMxRecord(searchTerm);
+  const internalARecord = useInternalARecord(searchTerm);
+  const internalMxRecord = useInternalMxRecord(searchTerm);
   const zoneMaster = useZoneMaster(searchTerm);
+  const googleARecord = useGoogleARecord(searchTerm);
+  const googleMxRecord = useGoogleMxRecord(searchTerm);
 
   const refetch = () => {
-    aRecord.fetch();
-    mxRecord.fetch();
+    internalARecord.fetch();
+    internalMxRecord.fetch();
     zoneMaster.fetch();
+    googleARecord.fetch();
+    googleMxRecord.fetch();
   };
 
   return {
-    aRecord,
-    mxRecord,
+    internalARecord,
+    internalMxRecord,
     zoneMaster,
+    googleARecord,
+    googleMxRecord,
     refetchDnsRecords: refetch,
   };
 };

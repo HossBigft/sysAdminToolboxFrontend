@@ -11,7 +11,7 @@ import {
 import { FaServer, FaGlobe, FaEnvelope, FaCopy } from "react-icons/fa";
 import { useState, useEffect } from "react";
 
-const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
+const DnsInfoBar = ({ internalARecord, internalMxRecord, googleARecord, googleMxRecord, zoneMaster, isLoading }) => {
   const [copyValue, setCopyValue] = useState("");
   const [lastCopied, setLastCopied] = useState("");
 
@@ -157,21 +157,21 @@ const DnsInfoBar = ({ aRecord, mxRecord, zoneMaster, isLoading }) => {
     >
       <HStack spacing={6} justify="flex-start" flexWrap="wrap">
         <RecordDisplay
-          id="aRecord"
+          id="internalARecord"
           icon={FaGlobe}
           iconColor={iconColorA}
           label="A Record"
-          value={aRecord?.ptr || aRecord?.ip || ""}
-          tooltipContent={getTooltipContent(aRecord)}
+          value={internalARecord?.ptr || internalARecord?.ip || ""}
+          tooltipContent={getTooltipContent(internalARecord)}
         />
 
         <RecordDisplay
-          id="mxRecord"
+          id="internalMxRecord"
           icon={FaEnvelope}
           iconColor={iconColorB}
           label="MX Record"
-          value={mxRecord?.ptr || mxRecord?.mx || mxRecord?.ip || ""}
-          tooltipContent={getTooltipContent(mxRecord)}
+          value={internalMxRecord?.ptr || internalMxRecord?.mx || internalMxRecord?.ip || ""}
+          tooltipContent={getTooltipContent(internalMxRecord)}
         />
 
         <RecordDisplay
