@@ -1,11 +1,11 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "SysAdminToolbox",
+    "title": "ServerKit",
     "version": "0.1.0"
   },
   "paths": {
-    "/api/v1/dns/internal/resolve/a/": {
+    "/api/v1/dns/resolve/internal/a/": {
       "get": {
         "tags": [
           "dns"
@@ -122,7 +122,7 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 253,
-              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,8}$",
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,9}$",
               "title": "Name"
             }
           }
@@ -195,7 +195,7 @@
         }
       }
     },
-    "/api/v1/dns/internal/resolve/mx/": {
+    "/api/v1/dns/resolve/internal/mx/": {
       "get": {
         "tags": [
           "dns"
@@ -245,13 +245,261 @@
         }
       }
     },
-    "/api/v1/dns/resolve/ns/": {
+    "/api/v1/dns/resolve/google/ns/": {
       "get": {
         "tags": [
           "dns"
         ],
-        "summary": "Get Ns Records",
-        "operationId": "get_ns_records",
+        "summary": "Get Ns Records Google",
+        "operationId": "get_ns_records_google",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 253,
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainNsRecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dns/internal/hostbydomain": {
+      "get": {
+        "tags": [
+          "dns"
+        ],
+        "summary": "Resolve Host By Domain",
+        "operationId": "resolve_host_by_domain",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 253,
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HostIpData"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dns/internal/hostbyip": {
+      "get": {
+        "tags": [
+          "dns"
+        ],
+        "summary": "Resolve Host By Ip",
+        "operationId": "resolve_host_by_ip",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ip",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ipvanyaddress",
+              "title": "Ip"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HostIpData"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dns/resolve/google/a/": {
+      "get": {
+        "tags": [
+          "dns"
+        ],
+        "summary": "Get A Record Google",
+        "operationId": "get_a_record_google",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 253,
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainARecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dns/resolve/google/mx/": {
+      "get": {
+        "tags": [
+          "dns"
+        ],
+        "summary": "Get Mx Record Google",
+        "operationId": "get_mx_record_google",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 253,
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}\\.?$",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainMxRecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dns/resolve/authoritative/ns/": {
+      "get": {
+        "tags": [
+          "dns"
+        ],
+        "summary": "Get Authoritative Ns Records",
+        "operationId": "get_authoritative_ns_records",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -831,7 +1079,7 @@
           "users"
         ],
         "summary": "Update Superuser Me",
-        "description": "Update own user.",
+        "description": "Update own superuser.",
         "operationId": "update_superuser_me",
         "requestBody": {
           "content": {
@@ -888,7 +1136,7 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 253,
-              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,8}$",
+              "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,9}$",
               "title": "Name"
             }
           }
@@ -1088,50 +1336,10 @@
         }
       }
     },
-    "/api/v1/plesk/token": {
+    "/api/v1/core_utils/health-check/": {
       "get": {
         "tags": [
-          "plesk"
-        ],
-        "summary": "Get Token",
-        "operationId": "get_token",
-        "parameters": [
-          {
-            "name": "command",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Command"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/utils/health-check/": {
-      "get": {
-        "tags": [
-          "utils"
+          "core_utils"
         ],
         "summary": "Health Check",
         "operationId": "health_check",
@@ -1142,7 +1350,7 @@
               "application/json": {
                 "schema": {
                   "type": "boolean",
-                  "title": "Response Utils-Health Check"
+                  "title": "Response Core Utils-Health Check"
                 }
               }
             }
@@ -1361,7 +1569,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "pattern": "password"
+                "pattern": "^password$"
               },
               {
                 "type": "null"
@@ -1431,9 +1639,6 @@
           },
           "log_type": {
             "type": "string",
-            "enum": [
-              "DELETE_ZONE_MASTER"
-            ],
             "const": "DELETE_ZONE_MASTER",
             "title": "Log Type"
           }
@@ -1546,9 +1751,6 @@
           },
           "log_type": {
             "type": "string",
-            "enum": [
-              "GET_SUBSCRIPTION_LOGIN_LINK"
-            ],
             "const": "GET_SUBSCRIPTION_LOGIN_LINK",
             "title": "Log Type"
           },
@@ -1582,9 +1784,6 @@
           },
           "log_type": {
             "type": "string",
-            "enum": [
-              "GET_ZONE_MASTER"
-            ],
             "const": "GET_ZONE_MASTER",
             "title": "Log Type"
           }
@@ -1611,6 +1810,27 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "HostIpData": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "ips": {
+            "items": {
+              "$ref": "#/components/schemas/IPv4Address"
+            },
+            "type": "array",
+            "title": "Ips"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "ips"
+        ],
+        "title": "HostIpData"
+      },
       "IPv4Address": {
         "properties": {
           "ip": {
@@ -1625,7 +1845,10 @@
         ],
         "title": "IPv4Address",
         "examples": [
-          "249.44.166.171"
+          [
+            "93.115.14.2",
+            "93.115.14.3"
+          ]
         ]
       },
       "LinuxUsername": {
@@ -1722,7 +1945,7 @@
         ],
         "title": "PleskServerDomain",
         "examples": [
-          "pkztest.hoster.kz."
+          "acloud-1.hoster.kz"
         ]
       },
       "SetZoneMasterLogSchema": {
@@ -1753,9 +1976,6 @@
           },
           "log_type": {
             "type": "string",
-            "enum": [
-              "SET_ZONE_MASTER"
-            ],
             "const": "SET_ZONE_MASTER",
             "title": "Log Type"
           }
@@ -1784,7 +2004,7 @@
             "type": "string",
             "maxLength": 253,
             "minLength": 3,
-            "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,8}$",
+            "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,9}$",
             "title": "Domain"
           }
         },
@@ -1797,14 +2017,14 @@
         "examples": [
           {
             "domain": "domain.kz",
-            "target_plesk_server": "pkztest.hoster.kz."
+            "target_plesk_server": "acloud-1.hoster.kz"
           }
         ]
       },
       "SubscriptionDetailsModel": {
         "properties": {
           "host": {
-            "$ref": "#/components/schemas/DomainName"
+            "$ref": "#/components/schemas/HostIpData"
           },
           "id": {
             "type": "string",
@@ -1896,7 +2116,7 @@
         "title": "SubscriptionLoginLinkInput",
         "examples": [
           {
-            "host": "pkztest.hoster.kz.",
+            "host": "acloud-1.hoster.kz",
             "subscription_id": 1124
           }
         ]
@@ -1907,7 +2127,7 @@
             "type": "string",
             "maxLength": 253,
             "minLength": 3,
-            "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,8}$",
+            "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,9}$",
             "title": "Name"
           }
         },
@@ -1974,14 +2194,19 @@
             "type": "string",
             "maxLength": 255,
             "minLength": 5,
-            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!\"\\#\\$%\\&'\\(\\)\\*\\+,\\-\\./:;<=>\\?@\\[\\\\\\]\\^_`\\{\\|\\}\\~])[A-Za-z\\d!\"\\#\\$%\\&'\\(\\)\\*\\+,\\-\\./:;<=>\\?@\\[\\\\\\]\\^_`\\{\\|\\}\\~]*$",
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d!\"\\#\\$%\\&'\\(\\)\\*\\+,\\-\\./:;<=>\\?@\\[\\\\\\]\\^_`\\{\\|\\}\\~]*$",
             "title": "Password"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
           }
         },
         "type": "object",
         "required": [
           "login_link",
-          "password"
+          "password",
+          "email"
         ],
         "title": "TestMailCredentials"
       },

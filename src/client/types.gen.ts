@@ -14,10 +14,8 @@ export type DeleteZonemasterLogSchema = {
     timestamp: string;
     domain: DomainName;
     current_zone_master: string;
-    log_type: 'DELETE_ZONE_MASTER';
+    log_type: "DELETE_ZONE_MASTER";
 };
-
-export type log_type = 'DELETE_ZONE_MASTER';
 
 export type DomainARecordResponse = {
     domain: DomainName;
@@ -43,20 +41,21 @@ export type GetPleskLoginLinkLogSchema = {
     timestamp: string;
     plesk_server: PleskServerDomain;
     subscription_id: number;
-    log_type: 'GET_SUBSCRIPTION_LOGIN_LINK';
+    log_type: "GET_SUBSCRIPTION_LOGIN_LINK";
     ssh_username: LinuxUsername;
 };
-
-export type log_type2 = 'GET_SUBSCRIPTION_LOGIN_LINK';
 
 export type GetZoneMasterLogSchema = {
     ip: IPv4Address;
     timestamp: string;
     domain: DomainName;
-    log_type: 'GET_ZONE_MASTER';
+    log_type: "GET_ZONE_MASTER";
 };
 
-export type log_type3 = 'GET_ZONE_MASTER';
+export type HostIpData = {
+    name: string;
+    ips: Array<IPv4Address>;
+};
 
 export type HTTPValidationError = {
     detail?: Array<ValidationError>;
@@ -100,13 +99,11 @@ export type SetZoneMasterLogSchema = {
     domain: DomainName;
     target_zone_master: PleskServerDomain;
     current_zone_master: (PleskServerDomain | null);
-    log_type: 'SET_ZONE_MASTER';
+    log_type: "SET_ZONE_MASTER";
 };
 
-export type log_type4 = 'SET_ZONE_MASTER';
-
 export type SubscriptionDetailsModel = {
-    host: DomainName;
+    host: HostIpData;
     id: string;
     name: string;
     username: string;
@@ -140,6 +137,7 @@ export type SuperUserUpdateMe = {
 export type TestMailCredentials = {
     login_link: string;
     password: string;
+    email: string;
 };
 
 export type Token = {
@@ -279,15 +277,65 @@ export type GetMxRecordResponse = (DomainMxRecordResponse);
 
 export type GetMxRecordError = (HTTPValidationError);
 
-export type GetNsRecordsData = {
+export type GetNsRecordsGoogleData = {
     query: {
         name: string;
     };
 };
 
-export type GetNsRecordsResponse = (DomainNsRecordResponse);
+export type GetNsRecordsGoogleResponse = (DomainNsRecordResponse);
 
-export type GetNsRecordsError = (HTTPValidationError);
+export type GetNsRecordsGoogleError = (HTTPValidationError);
+
+export type ResolveHostByDomainData = {
+    query: {
+        name: string;
+    };
+};
+
+export type ResolveHostByDomainResponse = (HostIpData);
+
+export type ResolveHostByDomainError = (HTTPValidationError);
+
+export type ResolveHostByIpData = {
+    query: {
+        ip: string;
+    };
+};
+
+export type ResolveHostByIpResponse = (HostIpData);
+
+export type ResolveHostByIpError = (HTTPValidationError);
+
+export type GetARecordGoogleData = {
+    query: {
+        name: string;
+    };
+};
+
+export type GetARecordGoogleResponse = (DomainARecordResponse);
+
+export type GetARecordGoogleError = (HTTPValidationError);
+
+export type GetMxRecordGoogleData = {
+    query: {
+        name: string;
+    };
+};
+
+export type GetMxRecordGoogleResponse = (DomainMxRecordResponse);
+
+export type GetMxRecordGoogleError = (HTTPValidationError);
+
+export type GetAuthoritativeNsRecordsData = {
+    query: {
+        name: string;
+    };
+};
+
+export type GetAuthoritativeNsRecordsResponse = (DomainNsRecordResponse);
+
+export type GetAuthoritativeNsRecordsError = (HTTPValidationError);
 
 export type ReadUsersData = {
     query?: {
@@ -437,16 +485,6 @@ export type CreateTestmailForDomainError = (HTTPValidationError);
 export type SharePublicKeyResponse = (unknown);
 
 export type SharePublicKeyError = unknown;
-
-export type GetTokenData = {
-    query: {
-        command: string;
-    };
-};
-
-export type GetTokenResponse = (unknown);
-
-export type GetTokenError = (HTTPValidationError);
 
 export type HealthCheckResponse = (boolean);
 

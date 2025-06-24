@@ -2,8 +2,8 @@
 
 import type { OptionsLegacyParser } from '@hey-api/client-axios';
 import { queryOptions, type UseMutationOptions, infiniteQueryOptions, type InfiniteData } from '@tanstack/react-query';
-import type { GetARecordData, GetPtrRecordData, GetZoneMasterFromDnsServersData, DeleteZoneFileForDomainData, DeleteZoneFileForDomainError, DeleteZoneFileForDomainResponse, GetMxRecordData, GetNsRecordsData, ReadUsersData, CreateUserData, CreateUserError, CreateUserResponse, DeleteUserMeError, DeleteUserMeResponse, UpdateUserMeData, UpdateUserMeError, UpdateUserMeResponse, UpdatePasswordMeData, UpdatePasswordMeError, UpdatePasswordMeResponse, RegisterUserData, RegisterUserError, RegisterUserResponse, ReadUserByIdData, UpdateUserData, UpdateUserError, UpdateUserResponse, DeleteUserData, DeleteUserError, DeleteUserResponse, GetOwnActionsData, GetOwnActionsError, GetOwnActionsResponse, GetUserActionsData, UpdateSuperuserMeData, UpdateSuperuserMeError, UpdateSuperuserMeResponse, FindPleskSubscriptionByDomainData, GetSubscriptionLoginLinkData, GetSubscriptionLoginLinkError, GetSubscriptionLoginLinkResponse, SetZonemasterData, SetZonemasterError, SetZonemasterResponse, CreateTestmailForDomainData, GetTokenData, RecoverPasswordData, RecoverPasswordError, RecoverPasswordResponse, ResetPasswordData, ResetPasswordError, ResetPasswordResponse, RecoverPasswordHtmlContentData, RecoverPasswordHtmlContentError, RecoverPasswordHtmlContentResponse, LoginAccessTokenData, LoginAccessTokenError, LoginAccessTokenResponse, TestTokenError, TestTokenResponse } from '../types.gen';
-import { client, getARecord, getPtrRecord, getZoneMasterFromDnsServers, deleteZoneFileForDomain, getMxRecord, getNsRecords, readUsers, createUser, readUserMe, deleteUserMe, updateUserMe, updatePasswordMe, registerUser, readUserById, updateUser, deleteUser, getOwnActions, getUserActions, updateSuperuserMe, findPleskSubscriptionByDomain, getSubscriptionLoginLink, setZonemaster, createTestmailForDomain, sharePublicKey, getToken, healthCheck, recoverPassword, resetPassword, recoverPasswordHtmlContent, loginAccessToken, testToken } from '../sdk.gen';
+import type { GetARecordData, GetPtrRecordData, GetZoneMasterFromDnsServersData, DeleteZoneFileForDomainData, DeleteZoneFileForDomainError, DeleteZoneFileForDomainResponse, GetMxRecordData, GetNsRecordsGoogleData, ResolveHostByDomainData, ResolveHostByIpData, GetARecordGoogleData, GetMxRecordGoogleData, GetAuthoritativeNsRecordsData, ReadUsersData, CreateUserData, CreateUserError, CreateUserResponse, DeleteUserMeError, DeleteUserMeResponse, UpdateUserMeData, UpdateUserMeError, UpdateUserMeResponse, UpdatePasswordMeData, UpdatePasswordMeError, UpdatePasswordMeResponse, RegisterUserData, RegisterUserError, RegisterUserResponse, ReadUserByIdData, UpdateUserData, UpdateUserError, UpdateUserResponse, DeleteUserData, DeleteUserError, DeleteUserResponse, GetOwnActionsData, GetOwnActionsError, GetOwnActionsResponse, GetUserActionsData, UpdateSuperuserMeData, UpdateSuperuserMeError, UpdateSuperuserMeResponse, FindPleskSubscriptionByDomainData, GetSubscriptionLoginLinkData, GetSubscriptionLoginLinkError, GetSubscriptionLoginLinkResponse, SetZonemasterData, SetZonemasterError, SetZonemasterResponse, CreateTestmailForDomainData, RecoverPasswordData, RecoverPasswordError, RecoverPasswordResponse, ResetPasswordData, ResetPasswordError, ResetPasswordResponse, RecoverPasswordHtmlContentData, RecoverPasswordHtmlContentError, RecoverPasswordHtmlContentResponse, LoginAccessTokenData, LoginAccessTokenError, LoginAccessTokenResponse, TestTokenError, TestTokenResponse } from '../types.gen';
+import { client, getARecord, getPtrRecord, getZoneMasterFromDnsServers, deleteZoneFileForDomain, getMxRecord, getNsRecordsGoogle, resolveHostByDomain, resolveHostByIp, getARecordGoogle, getMxRecordGoogle, getAuthoritativeNsRecords, readUsers, createUser, readUserMe, deleteUserMe, updateUserMe, updatePasswordMe, registerUser, readUserById, updateUser, deleteUser, getOwnActions, getUserActions, updateSuperuserMe, findPleskSubscriptionByDomain, getSubscriptionLoginLink, setZonemaster, createTestmailForDomain, sharePublicKey, healthCheck, recoverPassword, resetPassword, recoverPasswordHtmlContent, loginAccessToken, testToken } from '../sdk.gen';
 import type { AxiosError } from 'axios';
 
 type QueryKey<TOptions extends OptionsLegacyParser> = [
@@ -123,14 +123,14 @@ export const getMxRecordOptions = (options: OptionsLegacyParser<GetMxRecordData>
     });
 };
 
-export const getNsRecordsQueryKey = (options: OptionsLegacyParser<GetNsRecordsData>) => [
-    createQueryKey('getNsRecords', options)
+export const getNsRecordsGoogleQueryKey = (options: OptionsLegacyParser<GetNsRecordsGoogleData>) => [
+    createQueryKey('getNsRecordsGoogle', options)
 ];
 
-export const getNsRecordsOptions = (options: OptionsLegacyParser<GetNsRecordsData>) => {
+export const getNsRecordsGoogleOptions = (options: OptionsLegacyParser<GetNsRecordsGoogleData>) => {
     return queryOptions({
         queryFn: async ({ queryKey, signal }) => {
-            const { data } = await getNsRecords({
+            const { data } = await getNsRecordsGoogle({
                 ...options,
                 ...queryKey[0],
                 signal,
@@ -138,7 +138,102 @@ export const getNsRecordsOptions = (options: OptionsLegacyParser<GetNsRecordsDat
             });
             return data;
         },
-        queryKey: getNsRecordsQueryKey(options)
+        queryKey: getNsRecordsGoogleQueryKey(options)
+    });
+};
+
+export const resolveHostByDomainQueryKey = (options: OptionsLegacyParser<ResolveHostByDomainData>) => [
+    createQueryKey('resolveHostByDomain', options)
+];
+
+export const resolveHostByDomainOptions = (options: OptionsLegacyParser<ResolveHostByDomainData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await resolveHostByDomain({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: resolveHostByDomainQueryKey(options)
+    });
+};
+
+export const resolveHostByIpQueryKey = (options: OptionsLegacyParser<ResolveHostByIpData>) => [
+    createQueryKey('resolveHostByIp', options)
+];
+
+export const resolveHostByIpOptions = (options: OptionsLegacyParser<ResolveHostByIpData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await resolveHostByIp({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: resolveHostByIpQueryKey(options)
+    });
+};
+
+export const getARecordGoogleQueryKey = (options: OptionsLegacyParser<GetARecordGoogleData>) => [
+    createQueryKey('getARecordGoogle', options)
+];
+
+export const getARecordGoogleOptions = (options: OptionsLegacyParser<GetARecordGoogleData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await getARecordGoogle({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getARecordGoogleQueryKey(options)
+    });
+};
+
+export const getMxRecordGoogleQueryKey = (options: OptionsLegacyParser<GetMxRecordGoogleData>) => [
+    createQueryKey('getMxRecordGoogle', options)
+];
+
+export const getMxRecordGoogleOptions = (options: OptionsLegacyParser<GetMxRecordGoogleData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await getMxRecordGoogle({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getMxRecordGoogleQueryKey(options)
+    });
+};
+
+export const getAuthoritativeNsRecordsQueryKey = (options: OptionsLegacyParser<GetAuthoritativeNsRecordsData>) => [
+    createQueryKey('getAuthoritativeNsRecords', options)
+];
+
+export const getAuthoritativeNsRecordsOptions = (options: OptionsLegacyParser<GetAuthoritativeNsRecordsData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await getAuthoritativeNsRecords({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getAuthoritativeNsRecordsQueryKey(options)
     });
 };
 
@@ -578,25 +673,6 @@ export const sharePublicKeyOptions = (options?: OptionsLegacyParser) => {
             return data;
         },
         queryKey: sharePublicKeyQueryKey(options)
-    });
-};
-
-export const getTokenQueryKey = (options: OptionsLegacyParser<GetTokenData>) => [
-    createQueryKey('getToken', options)
-];
-
-export const getTokenOptions = (options: OptionsLegacyParser<GetTokenData>) => {
-    return queryOptions({
-        queryFn: async ({ queryKey, signal }) => {
-            const { data } = await getToken({
-                ...options,
-                ...queryKey[0],
-                signal,
-                throwOnError: true
-            });
-            return data;
-        },
-        queryKey: getTokenQueryKey(options)
     });
 };
 
