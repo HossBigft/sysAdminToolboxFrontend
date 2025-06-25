@@ -6,7 +6,7 @@ import {
     useColorModeValue,
     Tooltip,
     useClipboard,
-    Flex,
+    Flex, VStack
 } from "@chakra-ui/react";
 import {FaServer, FaGlobe, FaEnvelope, FaCopy} from "react-icons/fa";
 import {useState, useEffect} from "react";
@@ -24,6 +24,7 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
             return () => clearTimeout(timer);
         }
     }, [lastCopied]);
+
 
 
     // Color values that will change depending on the color mode
@@ -69,7 +70,8 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
                                icon,
                                iconColor,
                                label,
-                               value,
+                               externalRecordValue,
+                               internalRecordValue,
                                tooltipContent,
                                id,
                            }) => {
@@ -87,7 +89,17 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
                 onCopy();
             }
         }, [copyValue]);
+        const normalize = (val) => {
+            if (Array.isArray(val)) {
+                return val.map(v => String(v).trim()).sort().join(",");
+            }
+            return String(val ?? "").trim();
+        };
 
+        const valuesMatch = normalize(externalRecordValue) === normalize(internalRecordValue);
+        console.log("external", externalRecordValue);
+        console.log("internal", internalRecordValue);
+        console.log("equal?", String(externalRecordValue || "") === String(internalRecordValue || ""));
         return (
             <Tooltip
                 hasArrow
@@ -111,7 +123,14 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
                         {label}:
                     </Text>
                     <Flex align="center">
-                        <Text fontSize="sm">{value || "Empty"}</Text>
+                        {String(externalRecordValue || "") === String(internalRecordValue || "") ? (
+                            <Text fontSize="sm">{externalRecordValue || "Empty"}</Text>
+                        ) : (
+                            <VStack align="start" spacing={0}>
+                                <Text fontSize="sm" color="red.400">External: {externalRecordValue || "Empty"}</Text>
+                                <Text fontSize="sm" color="blue.400">Internal: {internalRecordValue || "Empty"}</Text>
+                            </VStack>
+                        )}
                         <Icon
                             as={FaCopy}
                             color={copyIconColor}
@@ -159,7 +178,8 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
                     icon={FaGlobe}
                     iconColor={iconColorA}
                     label="A Record"
-                    value={googleARecord?.ptr || googleARecord?.ip || ""}
+                    externalRecordValue={googleARecord?.ptr || googleARecord?.ip || ""}
+                    internalRecordValue={internalARecord?.ptr || internalARecord?.ip || ""}
                     tooltipContent={getTooltipContent(googleARecord)}
                 />
 
@@ -168,7 +188,8 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
                     icon={FaEnvelope}
                     iconColor={iconColorB}
                     label="MX Record"
-                    value={googleMxRecord?.ptr || googleMxRecord?.mx || googleMxRecord?.ip || ""}
+                    externalRecordValue={googleMxRecord?.ptr || googleMxRecord?.mx || googleMxRecord?.ip}
+                    internalRecordValue={internalMxRecord?.ptr || internalMxRecord?.mx || internalMxRecord?.ip}
                     tooltipContent={getTooltipContent(googleMxRecord)}
                 />
 
@@ -177,7 +198,8 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
                     icon={FaServer}
                     iconColor={iconColorC}
                     label="ZoneMaster"
-                    value={zoneMaster?.ptr || zoneMaster?.ip || ""}
+                    externalRecordValue={zoneMaster?.ptr || zoneMaster?.ip}
+                    internalRecordValue={zoneMaster?.ptr || zoneMaster?.ip}
                     tooltipContent={getTooltipContent(zoneMaster)}
                 />
             </HStack>
