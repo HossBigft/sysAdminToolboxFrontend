@@ -11,7 +11,7 @@ import {
 import { FaServer, FaGlobe, FaEnvelope, FaCopy } from "react-icons/fa";
 import { useState, useEffect } from "react";
 
-const DnsInfoBar = ({ internalARecord, internalMxRecord, googleARecord, googleMxRecord, zoneMaster, isLoading }) => {
+const DnsInfoBar = ({ internalARecord, internalMxRecord, googleARecord, googleMxRecord, zoneMaster}) => {
   const [copyValue, setCopyValue] = useState("");
   const [lastCopied, setLastCopied] = useState("");
 
@@ -25,7 +25,7 @@ const DnsInfoBar = ({ internalARecord, internalMxRecord, googleARecord, googleMx
     }
   }, [lastCopied]);
 
-  if (isLoading) return null;
+
 
   // Color values that will change depending on the color mode
   const bgColor = useColorModeValue("gray.50", "gray.700");

@@ -38,6 +38,8 @@ function SubscriptionSearchApp() {
     if (e.key === "Enter" && searchTerm.trim()) {
       setFinalSearchTerm(searchTerm.trim());
       fetchSubscription();
+      refetchHostRecords();
+      refetchDnsRecords();
     }
   };
 
@@ -65,7 +67,7 @@ function SubscriptionSearchApp() {
           isDisabled={subscriptionQuery.isLoading}
         />
 
-        {subscriptionQuery.data && (
+        {finalSearchTerm && (
           <DnsInfoBar
             finalSearchTerm={finalSearchTerm}
             internalARecord={internalARecord}
@@ -73,7 +75,6 @@ function SubscriptionSearchApp() {
             googleARecord={googleARecord}
             googleMxRecord={googleMxRecord}
             zoneMaster={zoneMaster}
-            isLoading={subscriptionQuery.isLoading}
           />
         )}
         {subscriptionQuery.isLoading && <Text>Loading...</Text>}
