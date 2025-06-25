@@ -157,21 +157,21 @@ const DnsInfoBar = ({ internalARecord, internalMxRecord, googleARecord, googleMx
     >
       <HStack spacing={6} justify="flex-start" flexWrap="wrap">
         <RecordDisplay
-          id="internalARecord"
+          id="googleARecord"
           icon={FaGlobe}
           iconColor={iconColorA}
           label="A Record"
-          value={internalARecord?.ptr || internalARecord?.ip || ""}
-          tooltipContent={getTooltipContent(internalARecord)}
+          value={googleARecord?.ptr || googleARecord?.ip || ""}
+          tooltipContent={getTooltipContent(googleARecord)}
         />
 
         <RecordDisplay
-          id="internalMxRecord"
+          id="googleMxRecord"
           icon={FaEnvelope}
           iconColor={iconColorB}
           label="MX Record"
-          value={internalMxRecord?.ptr || internalMxRecord?.mx || internalMxRecord?.ip || ""}
-          tooltipContent={getTooltipContent(internalMxRecord)}
+          value={googleMxRecord?.ptr || googleMxRecord?.mx || googleMxRecord?.ip || ""}
+          tooltipContent={getTooltipContent(googleMxRecord)}
         />
 
         <RecordDisplay
