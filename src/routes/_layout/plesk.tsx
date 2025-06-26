@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import SearchInput from "../../components/SubscriptionSearch/SearchInput";
 import { useSubscriptionSearch } from "../../hooks/plesk/useSubscriptionSearch";
 import { useDnsRecords } from "../../hooks/dns/useDnsRecords";
-import { useBulkAResolution } from "../../hooks/dns/useBulkAResolution";
+import { useBulkInternalAResolution } from "../../hooks/dns/useBulkInternalAResolution.ts";
 import SubscriptionTable from "../../components/SubscriptionSearch/SubscriptionTable";
 import DnsInfoBar from "../../components/SubscriptionSearch/DnsInfoBar";
 
@@ -31,7 +31,7 @@ function SubscriptionSearchApp() {
     return subscriptionQuery.data?.map((item) => item.host?.name) || [];
   }, [subscriptionQuery.data]);
 
-  const { records, refetch: refetchHostRecords } = useBulkAResolution(hosts);
+  const { records, refetch: refetchHostRecords } = useBulkInternalAResolution(hosts);
 
   // Handle search submission
   const handleSearch = (e) => {

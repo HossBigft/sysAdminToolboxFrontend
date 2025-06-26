@@ -4,7 +4,7 @@ import { useMemo, useEffect, useState } from "react";
 import { getARecordOptions } from "../../client/@tanstack/react-query.gen";
 import { createQuery, getFirstRecord } from "./utils";
 
-export function useBulkAResolution(domains = []) {
+export function useBulkInternalAResolution(domains = []) {
   const [shouldFetch, setShouldFetch] = useState(false);
 
   const hostQueries = useQueries({
