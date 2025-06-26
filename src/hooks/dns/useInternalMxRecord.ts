@@ -13,7 +13,7 @@ export const useInternalMxRecord = (domain) => {
     createQuery(
       {
         ...getMxRecordOptions({ query: { name: domain } }),
-        queryKey: ["mxRecordQuery", domain],
+        queryKey: ["internalMxRecordQuery", domain],
       },
       shouldFetch && !!domain
     )
@@ -31,7 +31,7 @@ export const useInternalMxRecord = (domain) => {
     createQuery(
       {
         ...getARecordOptions({ query: { name: mxRecord } }),
-        queryKey: ["aRecordQuery", mxRecord],
+        queryKey: ["internalARecordQuery", mxRecord],
       },
       !!mxRecord && hasExactlyOneRecord(mxRecordQuery.data)
     )

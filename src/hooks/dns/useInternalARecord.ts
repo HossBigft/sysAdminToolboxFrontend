@@ -11,7 +11,7 @@ export const useInternalARecord = (domain) => {
     createQuery(
       {
         ...getARecordOptions({ query: { name: domain } }),
-        queryKey: ["aRecordQuery", domain],
+        queryKey: ["internalARecordQuery", domain],
       },
       !!domain && shouldFetch
     )

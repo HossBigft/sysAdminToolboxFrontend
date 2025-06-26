@@ -11,7 +11,7 @@ export const useGoogleARecord = (domain) => {
     createQuery(
       {
         ...getARecordGoogleOptions({ query: { name: domain } }),
-        queryKey: ["aRecordQuery", domain],
+        queryKey: ["googleARecordQuery", domain],
       },
       !!domain && shouldFetch
     )

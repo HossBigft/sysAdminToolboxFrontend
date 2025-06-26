@@ -13,7 +13,7 @@ export const useGoogleMxRecord = (domain) => {
     createQuery(
       {
         ...getMxRecordGoogleOptions({ query: { name: domain } }),
-        queryKey: ["mxRecordQuery", domain],
+        queryKey: ["googleMxRecordQuery", domain],
       },
       shouldFetch && !!domain
     )
@@ -31,7 +31,7 @@ export const useGoogleMxRecord = (domain) => {
     createQuery(
       {
         ...getARecordGoogleOptions({ query: { name: mxRecord } }),
-        queryKey: ["aRecordQuery", mxRecord],
+        queryKey: ["googleARecordQuery", mxRecord],
       },
       !!mxRecord && hasExactlyOneRecord(mxRecordQuery.data)
     )
