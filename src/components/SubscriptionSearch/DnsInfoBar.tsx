@@ -191,7 +191,7 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
                     position="relative"
                     role="group"
                     border="2px solid"
-                    borderColor={hasDifference ? "red.300" : "gray.200"}
+                    borderColor={hasDifference ? "red.300" : "transparent"}
                     bg={hasDifference ? "red.50" : "transparent"}
                     _dark={{
                         borderColor: hasDifference ? "red.500" : "gray.600",
