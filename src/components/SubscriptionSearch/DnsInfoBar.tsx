@@ -97,9 +97,6 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
         };
 
         const valuesMatch = normalize(externalRecordValue) === normalize(internalRecordValue);
-        console.log("external", externalRecordValue);
-        console.log("internal", internalRecordValue);
-        console.log("equal?", String(externalRecordValue || "") === String(internalRecordValue || ""));
         return (
             <Tooltip
                 hasArrow
