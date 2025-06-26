@@ -8,7 +8,7 @@ import {
     useClipboard,
     Flex, VStack
 } from "@chakra-ui/react";
-import {FaServer, FaGlobe, FaEnvelope, FaCopy} from "react-icons/fa";
+import {FaServer, FaGlobe, FaEnvelope, FaCopy, FaExclamationTriangle} from "react-icons/fa";
 import {useState, useEffect} from "react";
 
 const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxRecord, zoneMaster}) => {
@@ -24,7 +24,6 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
             return () => clearTimeout(timer);
         }
     }, [lastCopied]);
-
 
 
     // Color values that will change depending on the color mode
@@ -64,8 +63,82 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
         return parts.join(" ").trim();
     };
 
+    const normalize = (val) => {
+        if (!val) return "";
 
-    // Record display component with copy functionality
+        if (typeof val === 'object' && !Array.isArray(val)) {
+            const actualValue = val.ip || val.ptr || val.value || val.target || "";
+            return String(actualValue).trim().toLowerCase();
+        }
+
+        if (Array.isArray(val)) {
+            return val
+                .map(v => {
+                    if (typeof v === 'object') {
+                        return String(v.ip || v.ptr || v.value || v.target || "").trim().toLowerCase();
+                    }
+                    return String(v).trim().toLowerCase();
+                })
+                .filter(v => v !== "")
+                .sort()
+                .join(",");
+        }
+
+        return String(val).trim().toLowerCase();
+    };
+
+    const RecordValue = ({value, isEmpty = false, isHighlighted = false}) => {
+        const getDisplayValue = (val) => {
+            if (!val) return "Empty";
+
+            if (typeof val === 'object' && !Array.isArray(val)) {
+                const actualValue = val.ip || val.ptr || val.value || val.target;
+                return actualValue || "Empty";
+            }
+
+            if (Array.isArray(val)) {
+                const displayValues = val
+                    .map(v => {
+                        if (typeof v === 'object') {
+                            return v.ip || v.ptr || v.value || v.target || "";
+                        }
+                        return String(v);
+                    })
+                    .filter(v => v !== "");
+
+                return displayValues.length > 0 ? displayValues.join(", ") : "Empty";
+            }
+
+            return String(val);
+        };
+
+        return (
+            <Text
+                fontSize="sm"
+                color={isEmpty ? "gray.400" : "gray.700"}
+                fontWeight={isHighlighted ? "semibold" : "normal"}
+                _dark={{
+                    color: isEmpty ? "gray.500" : "gray.200"
+                }}
+            >
+                {getDisplayValue(value)}
+            </Text>
+        );
+    };
+
+
+    const RecordStatus = ({hasMatch, hasValues}) => {
+        if (!hasValues) return null;
+
+        return (
+            <Icon
+                as={hasMatch ? FaCheck : FaExclamationTriangle}
+                color={hasMatch ? "green.500" : "orange.500"}
+            />
+        );
+    };
+
+
     const RecordDisplay = ({
                                icon,
                                iconColor,
@@ -89,14 +162,17 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
                 onCopy();
             }
         }, [copyValue]);
-        const normalize = (val) => {
-            if (Array.isArray(val)) {
-                return val.map(v => String(v).trim()).sort().join(",");
-            }
-            return String(val ?? "").trim();
-        };
 
-        const valuesMatch = normalize(externalRecordValue) === normalize(internalRecordValue);
+
+        const normalizedExternal = normalize(externalRecordValue);
+        const normalizedInternal = normalize(internalRecordValue);
+        const valuesMatch = normalizedExternal === normalizedInternal;
+
+        const hasExternalValue = normalizedExternal !== "";
+        const hasInternalValue = normalizedInternal !== "";
+        const hasAnyValue = hasExternalValue || hasInternalValue;
+        const hasDifference = !valuesMatch && hasAnyValue;
+
         return (
             <Tooltip
                 hasArrow
@@ -105,32 +181,57 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
                 closeOnClick={false}
             >
                 <HStack
-                    spacing={2}
+                    spacing={3}
                     cursor="pointer"
                     onClick={handleCopy}
-                    _hover={{bg: copyHoverBg}}
-                    p={2}
+                    _hover={{bg: useColorModeValue("gray.50", "gray.700")}}
+                    p={3}
                     borderRadius="md"
                     transition="all 0.2s"
                     position="relative"
                     role="group"
+                    border="2px solid"
+                    borderColor={hasDifference ? "red.300" : "gray.200"}
+                    bg={hasDifference ? "red.50" : "transparent"}
+                    _dark={{
+                        borderColor: hasDifference ? "red.500" : "gray.600",
+                        bg: hasDifference ? "red.900" : "transparent"
+                    }}
                 >
-                    <Icon as={icon} color={iconColor}/>
-                    <Text fontSize="sm" fontWeight="bold" color={textColor}>
-                        {label}:
-                    </Text>
-                    <Flex align="center">
-                        {String(externalRecordValue || "") === String(internalRecordValue || "") ? (
-                            <Text fontSize="sm">{externalRecordValue || "Empty"}</Text>
+
+                    <HStack spacing={2} minW="120px">
+                        <Icon as={icon} color={iconColor}/>
+                        <Text fontSize="sm" fontWeight="bold" color="gray.700" _dark={{color: "gray.200"}}>
+                            {label}
+                        </Text>
+                        <RecordStatus hasMatch={valuesMatch} hasValues={hasAnyValue}/>
+                    </HStack>
+
+
+                    <Flex align="center" flex="1">
+                        {valuesMatch ? (
+                            <RecordValue
+                                value={externalRecordValue || internalRecordValue}
+                                isEmpty={!hasAnyValue}
+                            />
                         ) : (
-                            <VStack align="start" spacing={0}>
-                                <Text fontSize="sm" color="red.400">External: {externalRecordValue || "Empty"}</Text>
-                                <Text fontSize="sm" color="blue.400">Internal: {internalRecordValue || "Empty"}</Text>
+                            <VStack align="start" spacing={1} flex="1">
+                                <RecordValue
+                                    value={externalRecordValue}
+                                    isEmpty={!hasExternalValue}
+                                    isHighlighted={hasExternalValue}
+                                />
+                                <RecordValue
+                                    value={internalRecordValue}
+                                    isEmpty={!hasInternalValue}
+                                    isHighlighted={hasInternalValue}
+                                />
                             </VStack>
                         )}
+
                         <Icon
                             as={FaCopy}
-                            color={copyIconColor}
+                            color="gray.400"
                             ml={2}
                             fontSize="xs"
                             opacity="0"
@@ -138,6 +239,7 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
                             transition="opacity 0.2s"
                         />
                     </Flex>
+
                     {isCopied && (
                         <Text
                             position="absolute"
