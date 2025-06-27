@@ -10,8 +10,6 @@ export const useDnsRecords = (searchTerm) => {
   const zoneMaster = useZoneMaster(searchTerm);
   const googleARecord = useGoogleARecord(searchTerm);
   const googleMxRecord = useGoogleMxRecord(searchTerm);
-  console.log("internal recrod", internalARecord);
-  console.log("google record", googleARecord);
   const refetch = () => {
     internalARecord.fetch();
     internalMxRecord.fetch();
