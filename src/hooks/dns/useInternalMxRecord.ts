@@ -5,7 +5,7 @@ import {
   getARecordOptions,
   getPtrRecordOptions,
 } from "../../client/@tanstack/react-query.gen";
-import { createQuery, getFirstRecord, hasExactlyOneRecord } from "./utils";
+import { createQuery, getFirstRecord} from "./utils";
 
 export const useInternalMxRecord = (domain) => {
   const [shouldFetch, setShouldFetch] = useState(false);
@@ -33,19 +33,20 @@ export const useInternalMxRecord = (domain) => {
         ...getARecordOptions({ query: { name: mxRecord } }),
         queryKey: ["internalARecordQuery", mxRecord],
       },
-      !!mxRecord && hasExactlyOneRecord(mxRecordQuery.data)
+      !!mxRecord
     )
   );
 
   const aRecord = getFirstRecord(aRecordQuery.data);
-
+    console.log("A record:", aRecord);
+    console.log("A record data:", aRecordQuery.data);
   const ptrQuery = useQuery(
     createQuery(
       {
         ...getPtrRecordOptions({ query: { ip: aRecord } }),
         queryKey: ["ptrQuery", aRecord],
       },
-      !!aRecord && hasExactlyOneRecord(aRecordQuery.data)
+      !!aRecord
     )
   );
 
