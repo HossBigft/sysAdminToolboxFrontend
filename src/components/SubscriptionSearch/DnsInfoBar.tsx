@@ -201,27 +201,50 @@ const DnsInfoBar = ({
         return (
             <Tooltip
                 hasArrow
+                placement="bottom"
+                bg="gray.900"
+                color="white"
+                maxWidth="md"
                 label={
-                    <VStack align="start" spacing={1}>
-                        <Text fontWeight="bold">⚠️ Nameserver Issues:</Text>
+                    <VStack align="start" spacing={3} p={2}>
+                        <Text fontWeight="bold" color="yellow.300">⚠️ NS Record Mismatch Detected</Text>
+
                         {nsIssues.map((issue, index) => (
-                            <Text key={index} fontSize="sm">• {issue}</Text>
+                            <Text key={index} fontSize="sm" color="red.300">
+                                • {issue}
+                            </Text>
                         ))}
-                        <Box mt={2}>
-                            <Text fontSize="sm" fontWeight="semibold">Internal DNS:</Text>
-                            <Text fontSize="xs">{internalNsRecords.join(', ')}</Text>
+
+                        <Box pt={2} w="100%" borderTop="1px" borderColor="gray.600">
+                            <Text fontSize="sm" fontWeight="semibold" color="blue.300">
+                                Internal DNS:
+                            </Text>
+                            <Text fontSize="xs">{internalNsRecords.join(', ') || 'None'}</Text>
                         </Box>
-                        <Box>
-                            <Text fontSize="sm" fontWeight="semibold">Authoritative DNS:</Text>
+
+                        <Box w="100%">
+                            <Text fontSize="sm" fontWeight="semibold" color="teal.300">
+                                NS records from Authoritative DNS:
+                            </Text>
                             <Text fontSize="xs">{authNsRecords.join(', ') || 'None'}</Text>
                         </Box>
-                        <Box>
-                            <Text fontSize="sm" fontWeight="semibold">NS records from Google NS:</Text>
-                            <Text fontSize="xs" color='red'>{normalizedNsRecords.join(', ') || 'None'}</Text>
+
+                        <Box w="100%">
+                            <Text fontSize="sm" fontWeight="semibold" color="red.400">
+                                NS records from Google DNS:
+                            </Text>
+                            <Text fontSize="xs" color="red.200">
+                                {normalizedNsRecords.length > 0 ? normalizedNsRecords.map((rec, i) => (
+                                    <Box key={i} as="span" mr={1} p={0.5}
+                                         bg={internalNsRecords.includes(rec) ? "green.700" : "red.700"}
+                                         borderRadius="md">
+                                        {rec}
+                                    </Box>
+                                )) : 'None'}
+                            </Text>
                         </Box>
                     </VStack>
                 }
-                placement="bottom"
             >
                 <HStack
                     spacing={2}
