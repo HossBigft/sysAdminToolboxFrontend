@@ -11,7 +11,15 @@ import {
 import {FaServer, FaGlobe, FaEnvelope, FaCopy, FaExclamationTriangle} from "react-icons/fa";
 import {useState, useEffect} from "react";
 
-const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxRecord, zoneMaster , authoritativeNsRecords, googleNsRecords}) => {
+const DnsInfoBar = ({
+                        internalARecord,
+                        internalMxRecord,
+                        googleARecord,
+                        googleMxRecord,
+                        zoneMaster,
+                        authoritativeNsRecords,
+                        nsRecords
+                    }) => {
     const [copyValue, setCopyValue] = useState("");
     const [lastCopied, setLastCopied] = useState("");
     // Reset "Copied!" state after a delay
@@ -138,7 +146,106 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
         );
     };
 
+    const normalizeNsRecords = (records) => {
+        if (!records) return [];
+        if (Array.isArray(records)) {
+            return records.map(record => {
+                if (typeof record === 'string') return record.toLowerCase().trim();
+                return String(record.value || record.target || record).toLowerCase().trim();
+            }).filter(Boolean).sort();
+        }
+        if (typeof records === 'string') return [records.toLowerCase().trim()];
+        return [String(records.value || records.target || records).toLowerCase().trim()].filter(Boolean);
+    };
 
+    const authNsRecords = normalizeNsRecords(authoritativeNsRecords.records);
+    const normalizedNsRecords = normalizeNsRecords(nsRecords.records);
+    const internalNsRecords = internalDnsServers.map(server => server.toLowerCase());
+    let checkSubset = (parentArray, subsetArray) => {
+        return subsetArray.every((el) => {
+            return parentArray.includes(el)
+        })
+    }
+    // Check for NS record issues
+    const checkNsIssues = () => {
+        const issues = [];
+
+        // Check if authoritative NS records match internal DNS servers
+        const authMatchesInternal = checkSubset(internalNsRecords, normalizedNsRecords);
+
+        if (!authMatchesInternal && authNsRecords.length > 0) {
+            issues.push("Domain controlled by thirdparty NS servers. Authoritative NS records don't match internal servers");
+        }
+
+        // Check if Google NS records differ from authoritative NS records
+        if (normalizedNsRecords.length > 0 && authNsRecords.length > 0) {
+            const googleSet = new Set(normalizedNsRecords);
+            const authSet = new Set(authNsRecords);
+
+            const recordsMatch = normalizedNsRecords.length === authNsRecords.length &&
+                normalizedNsRecords.every(ns => authSet.has(ns));
+
+            if (!recordsMatch) {
+                issues.push("Domain servers were changed less than 24 hours ago. NS records from Google NS and Authoritative NS differ. ");
+            }
+        }
+
+        return issues;
+    };
+
+    const nsIssues = checkNsIssues();
+
+    const renderNsStatusBadge = () => {
+        if (nsIssues.length === 0) return null;
+
+        return (
+            <Tooltip
+                hasArrow
+                label={
+                    <VStack align="start" spacing={1}>
+                        <Text fontWeight="bold">⚠️ Nameserver Issues:</Text>
+                        {nsIssues.map((issue, index) => (
+                            <Text key={index} fontSize="sm">• {issue}</Text>
+                        ))}
+                        <Box mt={2}>
+                            <Text fontSize="sm" fontWeight="semibold">Internal DNS:</Text>
+                            <Text fontSize="xs">{internalNsRecords.join(', ')}</Text>
+                        </Box>
+                        <Box>
+                            <Text fontSize="sm" fontWeight="semibold">Authoritative DNS:</Text>
+                            <Text fontSize="xs">{authNsRecords.join(', ') || 'None'}</Text>
+                        </Box>
+                        <Box>
+                            <Text fontSize="sm" fontWeight="semibold">NS records from Google NS:</Text>
+                            <Text fontSize="xs" color='red'>{normalizedNsRecords.join(', ') || 'None'}</Text>
+                        </Box>
+                    </VStack>
+                }
+                placement="bottom"
+            >
+                <HStack
+                    spacing={2}
+                    px={3}
+                    py={3}
+                    bg="orange.100"
+                    _dark={{bg: "orange.900"}}
+                    borderRadius="md"
+                    border="1px solid"
+                    borderColor="orange.300"
+                    _dark={{borderColor: "orange.600"}}
+                    cursor="help"
+                    minW="120px"
+                    transition="all 0.2s"
+                    _hover={{bg: "orange.200", _dark: {bg: "orange.800"}}}
+                >
+                    <Icon as={FaExclamationTriangle} color="orange.500"/>
+                    <Text fontSize="sm" fontWeight="semibold" color="orange.700" _dark={{color: "orange.200"}}>
+                        NS Issues ({nsIssues.length})
+                    </Text>
+                </HStack>
+            </Tooltip>
+        );
+    };
     const RecordDisplay = ({
                                icon,
                                iconColor,
@@ -182,9 +289,9 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
                     ) : hasDifference ? (
                         <Box as="span">
                             ⚠️ <b>DNS records mismatch. Check domain nameservers.</b>
-                            <br />
+                            <br/>
                             <b>Google:</b> {normalizedExternal || "None"}
-                            <br />
+                            <br/>
                             <b>Hoster.kz:</b> {normalizedInternal || "None"}
                         </Box>
                     ) : (
@@ -212,7 +319,6 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
                         bg: hasDifference ? "red.900" : "transparent"
                     }}
                 >
-
                     <HStack spacing={2} minW="120px">
                         <Icon as={icon} color={iconColor}/>
                         <Text fontSize="sm" fontWeight="bold" color="gray.700" _dark={{color: "gray.200"}}>
@@ -286,6 +392,7 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
             bg={bgColor}
         >
             <HStack spacing={6} justify="flex-start" flexWrap="wrap">
+                {renderNsStatusBadge()}
                 <RecordDisplay
                     id="googleARecord"
                     icon={FaGlobe}
