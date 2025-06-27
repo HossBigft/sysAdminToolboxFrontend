@@ -23,9 +23,8 @@ export const useGoogleNsRecords = (domain) => {
         }
     }, [googleNsRecordsQuery.error, googleNsRecordsQuery.isSuccess]);
 
-
     return {
-        nsRecords: googleNsRecordsQuery.data,
+        records: googleNsRecordsQuery.data?.records ?? [],
         isLoading:
         googleNsRecordsQuery.isLoading,
         error: googleNsRecordsQuery.error,

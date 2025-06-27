@@ -25,7 +25,7 @@ export const useAuthoritativeNsRecords = (domain) => {
 
 
     return {
-        authoritativeNsRecords: authoritativeNsRecordsQuery.data,
+        records: authoritativeNsRecordsQuery.data?.records,
         isLoading:
         authoritativeNsRecordsQuery.isLoading,
         error: authoritativeNsRecordsQuery.error,

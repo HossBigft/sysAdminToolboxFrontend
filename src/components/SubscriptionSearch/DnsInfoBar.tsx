@@ -11,7 +11,7 @@ import {
 import {FaServer, FaGlobe, FaEnvelope, FaCopy, FaExclamationTriangle} from "react-icons/fa";
 import {useState, useEffect} from "react";
 
-const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxRecord, zoneMaster}) => {
+const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxRecord, zoneMaster , authoritativeNsRecords, googleNsRecords}) => {
     const [copyValue, setCopyValue] = useState("");
     const [lastCopied, setLastCopied] = useState("");
     // Reset "Copied!" state after a delay
