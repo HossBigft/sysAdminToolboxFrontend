@@ -24,6 +24,7 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
         }
     }, [lastCopied]);
 
+    const internalDnsServers = ["ns1.hoster.kz", "ns2.hoster.kz", "ns3.hoster.kz", "ns4.hoster.kz"]
 
     // Color values that will change depending on the color mode
     const bgColor = useColorModeValue("gray.50", "gray.700");
