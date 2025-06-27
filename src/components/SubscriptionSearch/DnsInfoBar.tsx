@@ -14,7 +14,6 @@ import {useState, useEffect} from "react";
 const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxRecord, zoneMaster}) => {
     const [copyValue, setCopyValue] = useState("");
     const [lastCopied, setLastCopied] = useState("");
-
     // Reset "Copied!" state after a delay
     useEffect(() => {
         if (lastCopied) {
@@ -176,7 +175,21 @@ const DnsInfoBar = ({internalARecord, internalMxRecord, googleARecord, googleMxR
         return (
             <Tooltip
                 hasArrow
-                label={isCopied ? "Copied!" : tooltipContent}
+                label={
+                    isCopied ? (
+                        "Copied!"
+                    ) : hasDifference ? (
+                        <Box as="span">
+                            ⚠️ <b>DNS records mismatch. Check domain nameservers.</b>
+                            <br />
+                            <b>Google:</b> {normalizedExternal || "None"}
+                            <br />
+                            <b>Hoster.kz:</b> {normalizedInternal || "None"}
+                        </Box>
+                    ) : (
+                        tooltipContent
+                    )
+                }
                 placement="bottom"
                 closeOnClick={false}
             >
