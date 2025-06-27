@@ -38,8 +38,6 @@ export const useInternalMxRecord = (domain) => {
   );
 
   const aRecord = getFirstRecord(aRecordQuery.data);
-    console.log("A record:", aRecord);
-    console.log("A record data:", aRecordQuery.data);
   const ptrQuery = useQuery(
     createQuery(
       {
