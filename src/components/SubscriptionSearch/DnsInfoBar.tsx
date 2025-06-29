@@ -8,7 +8,7 @@ import {
     useClipboard,
     Flex, VStack
 } from "@chakra-ui/react";
-import {FaServer, FaGlobe, FaEnvelope, FaCopy, FaExclamationTriangle} from "react-icons/fa";
+import {FaServer, FaGlobe, FaEnvelope, FaCopy, FaExclamationTriangle, FaNotEqual} from "react-icons/fa";
 import {useState, useEffect} from "react";
 
 const DnsInfoBar = ({
@@ -204,44 +204,156 @@ const DnsInfoBar = ({
                 placement="bottom"
                 bg="gray.900"
                 color="white"
-                maxWidth="md"
+                maxWidth="lg"
                 label={
-                    <VStack align="start" spacing={3} p={2}>
-                        <Text fontWeight="bold" color="yellow.300">⚠️ NS Record Mismatch Detected</Text>
+                    <VStack align="start" spacing={4} p={3}>
+                        <Text fontWeight="bold" color="yellow.300" fontSize="md">
+                            ⚠️ NS Record Mismatch Detected
+                        </Text>
 
-                        {nsIssues.map((issue, index) => (
-                            <Text key={index} fontSize="sm" color="red.300">
-                                • {issue}
-                            </Text>
-                        ))}
+                        <VStack align="start" spacing={2} w="100%">
+                            {nsIssues.map((issue, index) => (
+                                <Text key={index} fontSize="sm" color="red.300">
+                                    • {issue}
+                                </Text>
+                            ))}
+                        </VStack>
 
-                        <Box pt={2} w="100%" borderTop="1px" borderColor="gray.600">
-                            <Text fontSize="sm" fontWeight="semibold" color="blue.300">
-                                Internal DNS:
-                            </Text>
-                            <Text fontSize="xs">{internalNsRecords.join(', ') || 'None'}</Text>
-                        </Box>
+                        <Box w="100%" borderTop="2px" borderColor="gray.600" pt={3}>
 
-                        <Box w="100%">
-                            <Text fontSize="sm" fontWeight="semibold" color="teal.300">
-                                NS records from Authoritative DNS:
-                            </Text>
-                            <Text fontSize="xs">{authNsRecords.join(', ') || 'None'}</Text>
-                        </Box>
+                            {/* Side-by-side comparison */}
+                            <HStack spacing={3} align="stretch" w="100%">
+                                {/* Internal NS Servers Section */}
+                                <Box
+                                    flex={1}
+                                    p={3}
+                                    bg="blue.800"
+                                    borderRadius="md"
+                                    border="2px solid"
+                                    borderColor="blue.400"
+                                >
+                                    <VStack align="start" spacing={2} h="100%">
+                                        <HStack>
+                                            <Text fontSize="sm" fontWeight="bold" color="blue.200">
+                                                Internal DNS
+                                            </Text>
+                                        </HStack>
+                                        <Box flex={1} w="100%">
+                                            <VStack
+                                                spacing={1}
+                                                bg="blue.700"
+                                                p={2}
+                                                borderRadius="sm"
+                                                minH="60px"
+                                                align="start"
+                                                justify="start"
+                                            >
+                                                {internalNsRecords.length > 0 ? (
+                                                    internalNsRecords.map((server, index) => (
+                                                        <Text
+                                                            key={index}
+                                                            fontSize="xs"
+                                                            color="white"
+                                                            fontFamily="mono"
+                                                            bg="blue.600"
+                                                            px={2}
+                                                            py={1}
+                                                            borderRadius="sm"
+                                                            w="100%"
+                                                        >
+                                                            {server}
+                                                        </Text>
+                                                    ))
+                                                ) : (
+                                                    <Text fontSize="xs" color="blue.200" fontStyle="italic">
+                                                        None configured
+                                                    </Text>
+                                                )}
+                                            </VStack>
+                                        </Box>
+                                    </VStack>
+                                </Box>
 
-                        <Box w="100%">
-                            <Text fontSize="sm" fontWeight="semibold" color="red.400">
-                                NS records from Google DNS:
-                            </Text>
-                            <Text fontSize="xs" color="red.200">
-                                {normalizedNsRecords.length > 0 ? normalizedNsRecords.map((rec, i) => (
-                                    <Box key={i} as="span" mr={1} p={0.5}
-                                         bg={internalNsRecords.includes(rec) ? "green.700" : "red.700"}
-                                         borderRadius="md">
-                                        {rec}
-                                    </Box>
-                                )) : 'None'}
-                            </Text>
+                                {/* VS Divider */}
+                                <VStack justify="center" spacing={1}>
+                                    <Icon as={FaNotEqual} color="yellow.300"/>
+                                </VStack>
+
+                                {/* Authoritative NS Servers Section */}
+                                <Box
+                                    flex={1}
+                                    p={3}
+                                    bg="teal.800"
+                                    borderRadius="md"
+                                    border="2px solid"
+                                    borderColor="teal.400"
+                                >
+                                    <VStack align="start" spacing={2} h="100%">
+                                        <HStack>
+                                            <Text fontSize="sm" fontWeight="bold" color="teal.200">
+                                                Authoritative DNS
+                                            </Text>
+                                        </HStack>
+                                        <Box flex={1} w="100%">
+                                            <VStack
+                                                spacing={1}
+                                                bg="teal.700"
+                                                p={2}
+                                                borderRadius="sm"
+                                                minH="60px"
+                                                align="start"
+                                                justify="start"
+                                            >
+                                                {authNsRecords.length > 0 ? (
+                                                    authNsRecords.map((server, index) => {
+                                                        const isInInternal = internalNsRecords.includes(server);
+                                                        return (
+                                                            <HStack
+                                                                key={index}
+                                                                w="100%"
+                                                                bg={isInInternal ? "teal.600" : "red.600"}
+                                                                px={2}
+                                                                py={1}
+                                                                borderRadius="sm"
+                                                                border={isInInternal ? "none" : "1px solid"}
+                                                                borderColor={isInInternal ? "transparent" : "red.400"}
+                                                            >
+                                                                {!isInInternal && (
+                                                                    <Icon as={FaExclamationTriangle} color="red.200"
+                                                                          size="xs"/>
+                                                                )}
+                                                                <Text
+                                                                    fontSize="xs"
+                                                                    color="white"
+                                                                    fontFamily="mono"
+                                                                    flex={1}
+                                                                >
+                                                                    {server}
+                                                                </Text>
+                                                                {isInInternal && (
+                                                                    <Icon as={FaCheck} color="green.300" size="xs"/>
+                                                                )}
+                                                            </HStack>
+                                                        );
+                                                    })
+                                                ) : (
+                                                    <Text fontSize="xs" color="teal.200" fontStyle="italic">
+                                                        None found
+                                                    </Text>
+                                                )}
+                                            </VStack>
+                                        </Box>
+                                    </VStack>
+                                </Box>
+                            </HStack>
+
+                            <Box mt={3} p={2} bg="yellow.800" borderRadius="md" border="1px solid"
+                                 borderColor="yellow.600">
+                                <Text fontSize="xs" color="yellow.100">
+                                    💡 <strong>Why this matters:</strong> These should match if client wants to control
+                                    domain via Plesk or DNS hosting.
+                                </Text>
+                            </Box>
                         </Box>
                     </VStack>
                 }
@@ -257,13 +369,13 @@ const DnsInfoBar = ({
                     borderColor="orange.300"
                     _dark={{borderColor: "orange.600"}}
                     cursor="help"
-                    minW="120px"
+                    minW="140px"
                     transition="all 0.2s"
                     _hover={{bg: "orange.200", _dark: {bg: "orange.800"}}}
                 >
                     <Icon as={FaExclamationTriangle} color="orange.500"/>
                     <Text fontSize="sm" fontWeight="semibold" color="orange.700" _dark={{color: "orange.200"}}>
-                        NS Issues ({nsIssues.length})
+                        NS Mismatch ({nsIssues.length})
                     </Text>
                 </HStack>
             </Tooltip>
