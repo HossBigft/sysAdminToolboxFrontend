@@ -32,7 +32,7 @@ const DnsInfoBar = ({
         }
     }, [lastCopied]);
 
-    const internalDnsServers = ["ns1.hoster.kz", "ns2.hoster.kz", "ns3.hoster.kz", "ns4.hoster.kz"]
+    const internalDnsServers = ["ns1.hoster.kz.", "ns2.hoster.kz.", "ns3.hoster.kz.", "ns4.hoster.kz."]
 
     // Color values that will change depending on the color mode
     const bgColor = useColorModeValue("gray.50", "gray.700");
@@ -161,17 +161,20 @@ const DnsInfoBar = ({
     const authNsRecords = normalizeNsRecords(authoritativeNsRecords.records);
     const normalizedNsRecords = normalizeNsRecords(nsRecords.records);
     const internalNsRecords = internalDnsServers.map(server => server.toLowerCase());
-    let checkSubset = (parentArray, subsetArray) => {
-        return subsetArray.every((el) => {
+    let isSubsetArray = (parentArray, subsetArray) => {
+
+        let result = subsetArray.every((el) => {
             return parentArray.includes(el)
         })
+
+        return result
     }
     // Check for NS record issues
     const checkNsIssues = () => {
         const issues = [];
 
         // Check if authoritative NS records match internal DNS servers
-        const authMatchesInternal = checkSubset(internalNsRecords, normalizedNsRecords);
+        const authMatchesInternal = isSubsetArray(internalNsRecords, normalizedNsRecords);
 
         if (!authMatchesInternal && authNsRecords.length > 0) {
             issues.push("NS Mismatch⚠: domain is using third-party nameservers. Authoritative NS records differ from internal NS domains.");
@@ -347,7 +350,8 @@ const DnsInfoBar = ({
                             <Box mt={3} p={2} bg="yellow.800" borderRadius="md" border="1px solid"
                                  borderColor="yellow.600">
                                 <Text fontSize="xs" color="yellow.100">
-                                    💡 <strong>Why this matters:</strong> Authoritative nameservers must match intenal  for domain control via Plesk or hosted DNS. Verify current settings using WHOIS.
+                                    💡 <strong>Why this matters:</strong> Authoritative nameservers must match intenal
+                                    for domain control via Plesk or hosted DNS. Verify current settings using WHOIS.
                                 </Text>
                             </Box>
                         </Box>
