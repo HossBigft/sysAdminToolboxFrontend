@@ -277,15 +277,15 @@ export type GetMxRecordResponse = (DomainMxRecordResponse);
 
 export type GetMxRecordError = (HTTPValidationError);
 
-export type GetNsRecordsFromGlobalDnsData = {
+export type GetPublicNsPropagationData = {
     query: {
         name: string;
     };
 };
 
-export type GetNsRecordsFromGlobalDnsResponse = (unknown);
+export type GetPublicNsPropagationResponse = (unknown);
 
-export type GetNsRecordsFromGlobalDnsError = (HTTPValidationError);
+export type GetPublicNsPropagationError = (HTTPValidationError);
 
 export type ResolveHostByDomainData = {
     query: {

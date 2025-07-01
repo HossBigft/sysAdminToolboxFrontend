@@ -250,8 +250,8 @@
         "tags": [
           "dns"
         ],
-        "summary": "Get Ns Records From Global Dns",
-        "operationId": "get_ns_records_from_global_dns",
+        "summary": "Get Public Ns Propagation",
+        "operationId": "get_public_ns_propagation",
         "security": [
           {
             "OAuth2PasswordBearer": []
