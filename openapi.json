@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "ServerKit",
+    "title": "SysAdminToolbox",
     "version": "0.1.0"
   },
   "paths": {
@@ -245,13 +245,13 @@
         }
       }
     },
-    "/api/v1/dns/resolve/google/ns/": {
+    "/api/v1/dns/resolve/public/ns/propagation": {
       "get": {
         "tags": [
           "dns"
         ],
-        "summary": "Get Ns Records Google",
-        "operationId": "get_ns_records_google",
+        "summary": "Get Ns Records From Global Dns",
+        "operationId": "get_ns_records_from_global_dns",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -276,9 +276,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DomainNsRecordResponse"
-                }
+                "schema": {}
               }
             }
           },
@@ -1846,8 +1844,7 @@
         "title": "IPv4Address",
         "examples": [
           [
-            "93.115.14.2",
-            "93.115.14.3"
+            "174.64.7.4"
           ]
         ]
       },
@@ -1945,7 +1942,7 @@
         ],
         "title": "PleskServerDomain",
         "examples": [
-          "acloud-1.hoster.kz"
+          "plesk.example.com"
         ]
       },
       "SetZoneMasterLogSchema": {
@@ -2017,7 +2014,7 @@
         "examples": [
           {
             "domain": "domain.kz",
-            "target_plesk_server": "acloud-1.hoster.kz"
+            "target_plesk_server": "plesk.example.com"
           }
         ]
       },
@@ -2116,7 +2113,7 @@
         "title": "SubscriptionLoginLinkInput",
         "examples": [
           {
-            "host": "acloud-1.hoster.kz",
+            "host": "plesk.example.com",
             "subscription_id": 1124
           }
         ]
