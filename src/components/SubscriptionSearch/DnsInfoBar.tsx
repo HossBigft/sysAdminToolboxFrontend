@@ -8,7 +8,7 @@ import {
     useClipboard,
     Flex, VStack
 } from "@chakra-ui/react";
-import {FaServer, FaGlobe, FaEnvelope, FaCopy, FaExclamationTriangle, FaNotEqual} from "react-icons/fa";
+import {FaServer, FaGlobe, FaEnvelope, FaCopy, FaExclamationTriangle, FaNotEqual, FaCheck} from "react-icons/fa";
 import {useState, useEffect} from "react";
 
 const DnsInfoBar = ({
