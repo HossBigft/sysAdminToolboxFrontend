@@ -34,6 +34,37 @@ const DnsInfoBar = ({
 
     const internalDnsServers = ["ns1.hoster.kz.", "ns2.hoster.kz.", "ns3.hoster.kz.", "ns4.hoster.kz."]
 
+
+    type NSRecordObject = {
+        name: string;
+        records?: string[];
+    };
+
+    type ResponseShape = {
+        records?: NSRecordObject[]; // what you’ll pass
+    };
+
+    function isNsRecordsMatch(response: ResponseShape): boolean {
+        if (!Array.isArray(response.records)) {
+            return false; // or true if you want to treat "no records" as "no mismatches"
+        }
+
+        const normalize = (arr: string[]): string => [...arr].sort().join('|');
+
+        const nonEmpty = response.records.filter(
+            (obj): obj is NSRecordObject =>
+                Array.isArray(obj.records) && obj.records.length > 0
+        );
+
+        if (nonEmpty.length === 0) {
+            return true; // nothing to compare, treat as OK
+        }
+
+        const base = normalize(nonEmpty[0].records!);
+
+        return nonEmpty.every(obj => normalize(obj.records!) === base);
+    }
+
     // Color values that will change depending on the color mode
     const bgColor = useColorModeValue("gray.50", "gray.700");
     const textColor = useColorModeValue("gray.700", "gray.200");
