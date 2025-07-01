@@ -3,7 +3,7 @@ import {useInternalMxRecord} from "./useInternalMxRecord";
 import {useZoneMaster} from "./useZoneMaster";
 import {useGoogleARecord} from "./useGoogleARecord";
 import {useGoogleMxRecord} from "./useGoogleMxRecord";
-import {useGoogleNsRecords} from "./useGoogleNsRecords";
+import {usePublicNsRecords} from "./usePublicNsRecords.ts";
 import {useAuthoritativeNsRecords} from "./useAuthoritativeNsRecords";
 export const useDnsRecords = (searchTerm) => {
     const internalARecord = useInternalARecord(searchTerm);
@@ -11,7 +11,7 @@ export const useDnsRecords = (searchTerm) => {
     const zoneMaster = useZoneMaster(searchTerm);
     const googleARecord = useGoogleARecord(searchTerm);
     const googleMxRecord = useGoogleMxRecord(searchTerm);
-    const googleNsRecords = useGoogleNsRecords(searchTerm);
+    const publicNsRecords = usePublicNsRecords(searchTerm);
     const authoritativeNsRecords = useAuthoritativeNsRecords(searchTerm);
     const refetch = () => {
         internalARecord.fetch();
@@ -19,7 +19,7 @@ export const useDnsRecords = (searchTerm) => {
         zoneMaster.fetch();
         googleARecord.fetch();
         googleMxRecord.fetch();
-        googleNsRecords.fetch();
+        publicNsRecords.fetch();
         authoritativeNsRecords.fetch();
     };
 
@@ -29,7 +29,7 @@ export const useDnsRecords = (searchTerm) => {
         zoneMaster,
         googleARecord,
         googleMxRecord,
-        googleNsRecords,
+        publicNsRecords,
         authoritativeNsRecords,
         refetchDnsRecords: refetch,
     };

@@ -23,7 +23,7 @@ function SubscriptionSearchApp() {
   // API hooks
   const { subscriptionQuery, fetchSubscription } =
     useSubscriptionSearch(finalSearchTerm);
-  const { internalARecord, internalMxRecord, googleARecord, googleMxRecord, zoneMaster, googleNsRecords, authoritativeNsRecords, refetchDnsRecords } =
+  const { internalARecord, internalMxRecord, googleARecord, googleMxRecord, zoneMaster, publicNsRecords, authoritativeNsRecords, refetchDnsRecords } =
     useDnsRecords(finalSearchTerm);
   // Extract hosts for bulk resolution
   const hosts = useMemo(() => {
@@ -74,7 +74,7 @@ function SubscriptionSearchApp() {
             googleARecord={googleARecord}
             googleMxRecord={googleMxRecord}
             zoneMaster={zoneMaster}
-            nsRecords={googleNsRecords}
+            publicNsRecords={publicNsRecords}
             authoritativeNsRecords={authoritativeNsRecords}
           />
         )}

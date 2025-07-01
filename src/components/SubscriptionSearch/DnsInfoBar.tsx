@@ -18,7 +18,7 @@ const DnsInfoBar = ({
                         googleMxRecord,
                         zoneMaster,
                         authoritativeNsRecords,
-                        nsRecords
+                        publicNsRecords
                     }) => {
     const [copyValue, setCopyValue] = useState("");
     const [lastCopied, setLastCopied] = useState("");
@@ -159,7 +159,7 @@ const DnsInfoBar = ({
     };
 
     const authNsRecords = normalizeNsRecords(authoritativeNsRecords.records);
-    const normalizedNsRecords = normalizeNsRecords(nsRecords.records);
+    const normalizedNsRecords = normalizeNsRecords(publicNsRecords.records);
     const internalNsRecords = internalDnsServers.map(server => server.toLowerCase());
     let isSubsetArray = (parentArray, subsetArray) => {
 
