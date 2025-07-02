@@ -51,18 +51,18 @@ const DnsInfoBar = ({
 
         const normalize = (arr: string[]): string => [...arr].sort().join('|');
 
-        const nonEmpty = response.records.filter(
-            (obj): obj is NSRecordObject =>
-                Array.isArray(obj.records) && obj.records.length > 0
-        );
+        const nonEmpty = response.records
+            .filter((obj): obj is Required<NSRecordObject> =>
+                Array.isArray(obj.records) && obj.records.every(r => typeof r === 'string')
+            );
 
         if (nonEmpty.length === 0) {
             return true; // nothing to compare, treat as OK
         }
 
-        const base = normalize(nonEmpty[0].records!);
+        const base = normalize(nonEmpty[0].records);
 
-        return nonEmpty.every(obj => normalize(obj.records!) === base);
+        return nonEmpty.every(obj => normalize(obj.records) === base)
     }
 
     // Color values that will change depending on the color mode
@@ -190,7 +190,7 @@ const DnsInfoBar = ({
     };
 
     const authNsRecords = normalizeNsRecords(authoritativeNsRecords.records);
-    const normalizedNsRecords = normalizeNsRecords(publicNsRecords.records);
+    const normalizedPublicNsRecords = normalizeNsRecords(publicNsRecords.records);
     const internalNsRecords = internalDnsServers.map(server => server.toLowerCase());
     let isSubsetArray = (parentArray, subsetArray) => {
 
@@ -201,25 +201,23 @@ const DnsInfoBar = ({
         return result
     }
     // Check for NS record issues
-    const checkNsIssues = (publicNsRecords) => {
+    const checkNsIssues = (nsRecordsAuthoritativeNs, nsRecordsPublicNs) => {
         const issues = [];
 
         // Check if authoritative NS records match internal DNS servers
-        const authMatchesInternal = isSubsetArray(internalNsRecords, normalizedNsRecords);
+        const authMatchesInternal = isSubsetArray(internalNsRecords, nsRecordsAuthoritativeNs);
 
         if (!authMatchesInternal && authNsRecords.length > 0) {
             issues.push("NS Mismatch⚠: domain is using third-party nameservers. Authoritative NS records differ from internal NS domains.");
         }
-
-
-        if (publicNsRecords && !isNsRecordsMatch(publicNsRecords)) {
-            issues.push("Public NS Inconsistency ⚠:NS records from publice NS and Authoritative NS differ. Authoritative domain servers were changed less than 24 hours ago. Use dnschecker.org to confirm. ");
+        if (nsRecordsPublicNs && !isNsRecordsMatch(nsRecordsPublicNs)) {
+            issues.push("Public NS Inconsistency ⚠:NS records from public NS and Authoritative NS differ. Authoritative domain servers were changed less than 24 hours ago. Use dnschecker.org to confirm. ");
         }
 
         return issues;
     }
 
-    const nsIssues = checkNsIssues();
+    const nsIssues = checkNsIssues(authNsRecords, normalizedPublicNsRecords);
 
     const renderNsStatusBadge = () => {
         if (nsIssues.length === 0) return null;
