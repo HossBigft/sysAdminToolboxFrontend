@@ -181,7 +181,8 @@ const DnsInfoBar = ({
         if (!records) return [];
         if (Array.isArray(records)) {
             return records.map(record => {
-                if (typeof record === 'string') return record.toLowerCase().trim().replace(/\.$/, '');;
+                if (typeof record === 'string') return record.toLowerCase().trim().replace(/\.$/, '');
+                ;
                 return String(record.value || record.target || record).toLowerCase().trim();
             }).filter(Boolean).sort();
         }
@@ -208,10 +209,16 @@ const DnsInfoBar = ({
         const authMatchesInternal = isSubsetArray(internalNsRecords, nsRecordsAuthoritativeNs);
 
         if (!authMatchesInternal && authNsRecords.length > 0) {
-            issues.push("NS Mismatch⚠: domain is using third-party nameservers. Authoritative NS records differ from internal NS domains.");
+            issues.push({
+                type: 'mismatch',
+                message: "NS Mismatch⚠: domain is using third-party nameservers. Authoritative NS records differ from internal NS domains."
+            });
         }
         if (nsRecordsPublicNs && !isNsRecordsMatch(nsRecordsPublicNs)) {
-            issues.push("Public NS Inconsistency ⚠:NS records from public NS and Authoritative NS differ. Authoritative domain servers were changed less than 24 hours ago. Use dnschecker.org to confirm. ");
+            issues.push({
+                type: 'inconsistency',
+                message: "Public NS Inconsistency ⚠:NS records from public NS and Authoritative NS differ. Authoritative domain servers were changed less than 24 hours ago. Use dnschecker.org to confirm. "
+            });
         }
 
         return issues;
@@ -222,6 +229,9 @@ const DnsInfoBar = ({
     const renderNsStatusBadge = () => {
         if (nsIssues.length === 0) return null;
 
+        // Check if there are any mismatch issues that require showing the comparison
+        const hasMismatchIssues = nsIssues.some(issue => issue.type === 'mismatch');
+
         return (
             <Tooltip
                 hasArrow
@@ -231,151 +241,153 @@ const DnsInfoBar = ({
                 maxWidth="lg"
                 label={
                     <VStack align="start" spacing={4} p={3}>
-
                         <VStack align="start" spacing={2} w="100%">
                             {nsIssues.map((issue, index) => (
                                 <Text key={index} fontSize="sm" color="red.300">
-                                    • {issue}
+                                    • {issue.message}
                                 </Text>
                             ))}
                         </VStack>
 
-                        <Box w="100%" borderTop="2px" borderColor="gray.600" pt={3}>
-
-                            {/* Side-by-side comparison */}
-                            <HStack spacing={3} align="stretch" w="100%">
-                                {/* Internal NS Servers Section */}
-                                <Box
-                                    flex={1}
-                                    p={3}
-                                    bg="blue.800"
-                                    borderRadius="md"
-                                    border="2px solid"
-                                    borderColor="blue.400"
-                                >
-                                    <VStack align="start" spacing={2} h="100%">
-                                        <HStack>
-                                            <Text fontSize="sm" fontWeight="bold" color="blue.200">
-                                                Internal DNS
-                                            </Text>
-                                        </HStack>
-                                        <Box flex={1} w="100%">
-                                            <VStack
-                                                spacing={1}
-                                                bg="blue.700"
-                                                p={2}
-                                                borderRadius="sm"
-                                                minH="60px"
-                                                align="start"
-                                                justify="start"
-                                            >
-                                                {internalNsRecords.length > 0 ? (
-                                                    internalNsRecords.map((server, index) => (
-                                                        <Text
-                                                            key={index}
-                                                            fontSize="xs"
-                                                            color="white"
-                                                            fontFamily="mono"
-                                                            bg="blue.600"
-                                                            px={2}
-                                                            py={1}
-                                                            borderRadius="sm"
-                                                            w="100%"
-                                                        >
-                                                            {server}
-                                                        </Text>
-                                                    ))
-                                                ) : (
-                                                    <Text fontSize="xs" color="blue.200" fontStyle="italic">
-                                                        None configured
-                                                    </Text>
-                                                )}
-                                            </VStack>
-                                        </Box>
-                                    </VStack>
-                                </Box>
-
-                                {/* VS Divider */}
-                                <VStack justify="center" spacing={1}>
-                                    <Icon as={FaNotEqual} color="yellow.300"/>
-                                </VStack>
-
-                                {/* Authoritative NS Servers Section */}
-                                <Box
-                                    flex={1}
-                                    p={3}
-                                    bg="teal.800"
-                                    borderRadius="md"
-                                    border="2px solid"
-                                    borderColor="teal.400"
-                                >
-                                    <VStack align="start" spacing={2} h="100%">
-                                        <HStack>
-                                            <Text fontSize="sm" fontWeight="bold" color="teal.200">
-                                                Authoritative DNS
-                                            </Text>
-                                        </HStack>
-                                        <Box flex={1} w="100%">
-                                            <VStack
-                                                spacing={1}
-                                                bg="teal.700"
-                                                p={2}
-                                                borderRadius="sm"
-                                                minH="60px"
-                                                align="start"
-                                                justify="start"
-                                            >
-                                                {authNsRecords.length > 0 ? (
-                                                    authNsRecords.map((server, index) => {
-                                                        const isInInternal = internalNsRecords.includes(server);
-                                                        return (
-                                                            <HStack
+                        {/* Only show comparison when there are mismatch issues */}
+                        {hasMismatchIssues && (
+                            <Box w="100%" borderTop="2px" borderColor="gray.600" pt={3}>
+                                {/* Side-by-side comparison */}
+                                <HStack spacing={3} align="stretch" w="100%">
+                                    {/* Internal NS Servers Section */}
+                                    <Box
+                                        flex={1}
+                                        p={3}
+                                        bg="blue.800"
+                                        borderRadius="md"
+                                        border="2px solid"
+                                        borderColor="blue.400"
+                                    >
+                                        <VStack align="start" spacing={2} h="100%">
+                                            <HStack>
+                                                <Text fontSize="sm" fontWeight="bold" color="blue.200">
+                                                    Internal DNS
+                                                </Text>
+                                            </HStack>
+                                            <Box flex={1} w="100%">
+                                                <VStack
+                                                    spacing={1}
+                                                    bg="blue.700"
+                                                    p={2}
+                                                    borderRadius="sm"
+                                                    minH="60px"
+                                                    align="start"
+                                                    justify="start"
+                                                >
+                                                    {internalNsRecords.length > 0 ? (
+                                                        internalNsRecords.map((server, index) => (
+                                                            <Text
                                                                 key={index}
-                                                                w="100%"
-                                                                bg={isInInternal ? "teal.600" : "red.600"}
+                                                                fontSize="xs"
+                                                                color="white"
+                                                                fontFamily="mono"
+                                                                bg="blue.600"
                                                                 px={2}
                                                                 py={1}
                                                                 borderRadius="sm"
-                                                                border={isInInternal ? "none" : "1px solid"}
-                                                                borderColor={isInInternal ? "transparent" : "red.400"}
+                                                                w="100%"
                                                             >
-                                                                {!isInInternal && (
-                                                                    <Icon as={FaExclamationTriangle} color="red.200"
-                                                                          size="xs"/>
-                                                                )}
-                                                                <Text
-                                                                    fontSize="xs"
-                                                                    color="white"
-                                                                    fontFamily="mono"
-                                                                    flex={1}
-                                                                >
-                                                                    {server}
-                                                                </Text>
-                                                                {isInInternal && (
-                                                                    <Icon as={FaCheck} color="green.300" size="xs"/>
-                                                                )}
-                                                            </HStack>
-                                                        );
-                                                    })
-                                                ) : (
-                                                    <Text fontSize="xs" color="teal.200" fontStyle="italic">
-                                                        None found
-                                                    </Text>
-                                                )}
-                                            </VStack>
-                                        </Box>
-                                    </VStack>
-                                </Box>
-                            </HStack>
+                                                                {server}
+                                                            </Text>
+                                                        ))
+                                                    ) : (
+                                                        <Text fontSize="xs" color="blue.200" fontStyle="italic">
+                                                            None configured
+                                                        </Text>
+                                                    )}
+                                                </VStack>
+                                            </Box>
+                                        </VStack>
+                                    </Box>
 
-                            <Box mt={3} p={2} bg="yellow.800" borderRadius="md" border="1px solid"
-                                 borderColor="yellow.600">
-                                <Text fontSize="xs" color="yellow.100">
-                                    💡 <strong>Why this matters:</strong> Authoritative nameservers must match intenal
-                                    for domain control via Plesk or hosted DNS. Verify current settings using WHOIS.
-                                </Text>
+                                    {/* VS Divider */}
+                                    <VStack justify="center" spacing={1}>
+                                        <Icon as={FaNotEqual} color="yellow.300"/>
+                                    </VStack>
+
+                                    {/* Authoritative NS Servers Section */}
+                                    <Box
+                                        flex={1}
+                                        p={3}
+                                        bg="teal.800"
+                                        borderRadius="md"
+                                        border="2px solid"
+                                        borderColor="teal.400"
+                                    >
+                                        <VStack align="start" spacing={2} h="100%">
+                                            <HStack>
+                                                <Text fontSize="sm" fontWeight="bold" color="teal.200">
+                                                    Authoritative DNS
+                                                </Text>
+                                            </HStack>
+                                            <Box flex={1} w="100%">
+                                                <VStack
+                                                    spacing={1}
+                                                    bg="teal.700"
+                                                    p={2}
+                                                    borderRadius="sm"
+                                                    minH="60px"
+                                                    align="start"
+                                                    justify="start"
+                                                >
+                                                    {authNsRecords.length > 0 ? (
+                                                        authNsRecords.map((server, index) => {
+                                                            const isInInternal = internalNsRecords.includes(server);
+                                                            return (
+                                                                <HStack
+                                                                    key={index}
+                                                                    w="100%"
+                                                                    bg={isInInternal ? "teal.600" : "red.600"}
+                                                                    px={2}
+                                                                    py={1}
+                                                                    borderRadius="sm"
+                                                                    border={isInInternal ? "none" : "1px solid"}
+                                                                    borderColor={isInInternal ? "transparent" : "red.400"}
+                                                                >
+                                                                    {!isInInternal && (
+                                                                        <Icon as={FaExclamationTriangle} color="red.200"
+                                                                              size="xs"/>
+                                                                    )}
+                                                                    <Text
+                                                                        fontSize="xs"
+                                                                        color="white"
+                                                                        fontFamily="mono"
+                                                                        flex={1}
+                                                                    >
+                                                                        {server}
+                                                                    </Text>
+                                                                    {isInInternal && (
+                                                                        <Icon as={FaCheck} color="green.300" size="xs"/>
+                                                                    )}
+                                                                </HStack>
+                                                            );
+                                                        })
+                                                    ) : (
+                                                        <Text fontSize="xs" color="teal.200" fontStyle="italic">
+                                                            None found
+                                                        </Text>
+                                                    )}
+                                                </VStack>
+                                            </Box>
+                                        </VStack>
+                                    </Box>
+                                </HStack>
+
+                                <Box mt={3} p={2} bg="yellow.800" borderRadius="md" border="1px solid"
+                                     borderColor="yellow.600">
+                                    <Text fontSize="xs" color="yellow.100">
+                                        💡 <strong>Why this matters:</strong> Authoritative nameservers must match
+                                        internal
+                                        for domain control via Plesk or hosted DNS. Verify current settings using WHOIS.
+                                    </Text>
+                                </Box>
                             </Box>
-                        </Box>
+                        )}
                     </VStack>
                 }
             >
@@ -396,7 +408,7 @@ const DnsInfoBar = ({
                 >
                     <Icon as={FaExclamationTriangle} color="orange.500"/>
                     <Text fontSize="sm" fontWeight="semibold" color="orange.700" _dark={{color: "orange.200"}}>
-                        Nameservers issues ({nsIssues.length})
+                        Nameserver issues ({nsIssues.length})
                     </Text>
                 </HStack>
             </Tooltip>
