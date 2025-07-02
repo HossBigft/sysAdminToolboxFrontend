@@ -201,7 +201,7 @@ const DnsInfoBar = ({
         return result
     }
     // Check for NS record issues
-    const checkNsIssues = () => {
+    const checkNsIssues = (publicNsRecords) => {
         const issues = [];
 
         // Check if authoritative NS records match internal DNS servers
@@ -211,21 +211,13 @@ const DnsInfoBar = ({
             issues.push("NS Mismatch⚠: domain is using third-party nameservers. Authoritative NS records differ from internal NS domains.");
         }
 
-        // Check if Google NS records differ from authoritative NS records
-        if (normalizedNsRecords.length > 0 && authNsRecords.length > 0) {
-            const googleSet = new Set(normalizedNsRecords);
-            const authSet = new Set(authNsRecords);
 
-            const recordsMatch = normalizedNsRecords.length === authNsRecords.length &&
-                normalizedNsRecords.every(ns => authSet.has(ns));
-
-            if (!recordsMatch) {
-                issues.push("Domain servers were changed less than 24 hours ago. NS records from Google NS and Authoritative NS differ. ");
-            }
+        if (publicNsRecords && !isNsRecordsMatch(publicNsRecords)) {
+            issues.push("Public NS Inconsistency ⚠:NS records from publice NS and Authoritative NS differ. Authoritative domain servers were changed less than 24 hours ago. Use dnschecker.org to confirm. ");
         }
 
         return issues;
-    };
+    }
 
     const nsIssues = checkNsIssues();
 
