@@ -628,14 +628,33 @@ const DnsInfoBar = ({
             setLastCopied(key);
         };
 
+        const createTooltipContent = (entry) => {
+            // Find the maximum width for each column
+            const maxNameserverWidth = Math.max(10, ...entry.hosts.map(host => host.length));
+            const maxIPWidth = Math.max(9, entry.ip.length);
+
+            // Create header row
+            const header = "Nameserver".padEnd(maxNameserverWidth) + " | " +
+                "Master IP".padEnd(maxIPWidth) + " | " + "Master Host";
+            const separator = "-".repeat(maxNameserverWidth) + "-+-" +
+                "-".repeat(maxIPWidth) + "-+-" + "-".repeat(11);
+
+            // Create data rows
+            const rows = entry.hosts.map(host => {
+                const nameserver = host.padEnd(maxNameserverWidth);
+                const masterIP = entry.ip.padEnd(maxIPWidth);
+                const masterHost = (entry.ptr || 'no PTR');
+                return nameserver + " | " + masterIP + " | " + masterHost;
+            });
+
+            return [header, separator, ...rows].join("\n");
+        };
+
         return (
             <VStack align="stretch" spacing={4}>
                 {summary.map((entry, idx) => {
                     const label = entry.ptr || entry.ip;
-                    const tooltipLines = entry.hosts.map(host =>
-                        `${host} ${entry.ip} [${entry.ptr || 'no PTR'}]`
-                    );
-                    const tooltip = tooltipLines.join("\n");
+                    const tooltip = createTooltipContent(entry);
                     const id = `${entry.ip}-${idx}`;
                     const isCopied = lastCopied === id;
 
@@ -646,6 +665,10 @@ const DnsInfoBar = ({
                             hasArrow
                             placement="bottom"
                             closeOnClick={false}
+                            fontSize="xs"
+                            fontFamily="monospace"
+                            whiteSpace="pre"
+                            maxW="400px"
                         >
                             <HStack
                                 spacing={3}
