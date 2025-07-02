@@ -633,6 +633,11 @@ const DnsInfoBar = ({
 
             setCopyValue(copyContent);
             setLastCopied(key);
+
+            // Clear the "Copied!" state after 2 seconds
+            setTimeout(() => {
+                setLastCopied(null);
+            }, 2000);
         };
 
         const createTooltipContent = (entry) => {
