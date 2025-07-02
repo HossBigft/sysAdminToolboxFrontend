@@ -9,7 +9,7 @@ import {
     Flex, VStack
 } from "@chakra-ui/react";
 import {FaServer, FaGlobe, FaEnvelope, FaCopy, FaExclamationTriangle, FaNotEqual, FaCheck} from "react-icons/fa";
-import {useState, useEffect} from "react";
+import {useState, useEffect, useMemo} from "react";
 
 const DnsInfoBar = ({
                         internalARecord,
@@ -585,7 +585,126 @@ const DnsInfoBar = ({
             </Tooltip>
         );
     };
+    const ZonemasterSummaryDisplay = ({zonemasters, icon, iconColor}) => {
+        const [copyValue, setCopyValue] = useState("");
+        const [lastCopied, setLastCopied] = useState(null);
+        const {onCopy} = useClipboard(copyValue);
 
+        useEffect(() => {
+            if (copyValue) onCopy();
+        }, [copyValue]);
+
+        const summary = useMemo(() => {
+            const grouped = {};
+
+            if (!Array.isArray(zonemasters)) return [];
+
+            for (const z of zonemasters) {
+                if (!z || typeof z !== "object" || !z.ip) continue;
+
+                const ip = z.ip;
+                const host = z.host || "Unknown";
+                const ptr = z.ptr || null;
+
+                if (!grouped[ip]) {
+                    grouped[ip] = {
+                        ip,
+                        ptr,
+                        hosts: [host]
+                    };
+                } else {
+                    grouped[ip].hosts.push(host);
+                    if (!grouped[ip].ptr && ptr) {
+                        grouped[ip].ptr = ptr; // use first non-null ptr
+                    }
+                }
+            }
+
+            return Object.values(grouped);
+        }, [zonemasters]);
+
+        const handleCopy = (key, value) => {
+            setCopyValue(value);
+            setLastCopied(key);
+        };
+
+        return (
+            <VStack align="stretch" spacing={4}>
+                {summary.map((entry, idx) => {
+                    const label = entry.ptr || entry.ip;
+                    const tooltipLines = entry.hosts.map(host =>
+                        `${host} ${entry.ip} [${entry.ptr || 'no PTR'}]`
+                    );
+                    const tooltip = tooltipLines.join("\n");
+                    const id = `${entry.ip}-${idx}`;
+                    const isCopied = lastCopied === id;
+
+                    return (
+                        <Tooltip
+                            key={id}
+                            label={isCopied ? "Copied!" : tooltip}
+                            hasArrow
+                            placement="bottom"
+                            closeOnClick={false}
+                        >
+                            <HStack
+                                spacing={3}
+                                cursor="pointer"
+                                onClick={() => handleCopy(id, label)}
+                                _hover={{bg: useColorModeValue("gray.50", "gray.700")}}
+                                p={3}
+                                borderRadius="md"
+                                border="1px solid"
+                                borderColor="gray.300"
+                                _dark={{borderColor: "gray.600"}}
+                                role="group"
+                                position="relative"
+                            >
+                                <HStack spacing={2} minW="200px">
+                                    {icon && <Icon as={icon} color={iconColor}/>}
+                                    <Text fontSize="sm" fontWeight="bold" color="gray.700" _dark={{color: "gray.200"}}>
+                                        Zonemaster:
+                                    </Text>
+                                    <Text fontSize="sm">
+                                        {label}
+                                    </Text>
+                                </HStack>
+
+                                <Flex flex="1" justify="flex-end">
+                                    <Icon
+                                        as={FaCopy}
+                                        fontSize="sm"
+                                        color="gray.400"
+                                        opacity="0"
+                                        _groupHover={{opacity: 1}}
+                                        transition="opacity 0.2s"
+                                    />
+                                </Flex>
+
+                                {isCopied && (
+                                    <Text
+                                        position="absolute"
+                                        right="0"
+                                        top="-20px"
+                                        color="green.500"
+                                        fontSize="xs"
+                                        fontWeight="bold"
+                                        px={2}
+                                        py={1}
+                                        borderRadius="md"
+                                        bg={useColorModeValue("white", "gray.800")}
+                                        boxShadow="sm"
+                                    >
+                                        Copied!
+                                    </Text>
+                                )}
+                            </HStack>
+                        </Tooltip>
+                    );
+                })}
+            </VStack>
+        );
+    };
     return (
         <Box
             width="100%"
@@ -601,7 +720,7 @@ const DnsInfoBar = ({
                     id="googleARecord"
                     icon={FaGlobe}
                     iconColor={iconColorA}
-                    label="A Record"
+                    label="A Record:"
                     externalRecordValue={googleARecord?.ptr || googleARecord?.ip || ""}
                     internalRecordValue={internalARecord?.ptr || internalARecord?.ip || ""}
                     tooltipContent={getTooltipContent(googleARecord)}
@@ -611,21 +730,17 @@ const DnsInfoBar = ({
                     id="googleMxRecord"
                     icon={FaEnvelope}
                     iconColor={iconColorB}
-                    label="MX Record"
+                    label="MX Record:"
                     externalRecordValue={googleMxRecord?.ptr || googleMxRecord?.mx || googleMxRecord?.ip}
                     internalRecordValue={internalMxRecord?.ptr || internalMxRecord?.mx || internalMxRecord?.ip}
                     tooltipContent={getTooltipContent(googleMxRecord)}
                 />
 
-                {/*<RecordDisplay*/}
-                {/*    id="zoneMaster"*/}
-                {/*    icon={FaServer}*/}
-                {/*    iconColor={iconColorC}*/}
-                {/*    label="ZoneMaster"*/}
-                {/*    externalRecordValue={zoneMaster?.ptr || zoneMaster?.ip}*/}
-                {/*    internalRecordValue={zoneMaster?.ptr || zoneMaster?.ip}*/}
-                {/*    tooltipContent={getTooltipContent(zoneMaster)}*/}
-                {/*/>*/}
+                <ZonemasterSummaryDisplay
+                    zonemasters={zonemasters?.zonemasters || []}
+                    icon={FaServer}
+                    iconColor="yellow.500"
+                />
             </HStack>
         </Box>
     );
