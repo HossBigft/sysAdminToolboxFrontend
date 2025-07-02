@@ -8,7 +8,7 @@ import {useAuthoritativeNsRecords} from "./useAuthoritativeNsRecords";
 export const useDnsRecords = (searchTerm) => {
     const internalARecord = useInternalARecord(searchTerm);
     const internalMxRecord = useInternalMxRecord(searchTerm);
-    const zoneMaster = useZoneMaster(searchTerm);
+    const zonemasters = useZoneMaster(searchTerm);
     const googleARecord = useGoogleARecord(searchTerm);
     const googleMxRecord = useGoogleMxRecord(searchTerm);
     const publicNsRecords = usePublicNsRecords(searchTerm);
@@ -16,17 +16,16 @@ export const useDnsRecords = (searchTerm) => {
     const refetch = () => {
         internalARecord.fetch();
         internalMxRecord.fetch();
-        zoneMaster.fetch();
+        zonemasters.fetch();
         googleARecord.fetch();
         googleMxRecord.fetch();
         publicNsRecords.fetch();
         authoritativeNsRecords.fetch();
     };
-
     return {
         internalARecord,
         internalMxRecord,
-        zoneMaster,
+        zonemasters,
         googleARecord,
         googleMxRecord,
         publicNsRecords,

@@ -16,7 +16,7 @@ const DnsInfoBar = ({
                         internalMxRecord,
                         googleARecord,
                         googleMxRecord,
-                        zoneMaster,
+                        zonemasters,
                         authoritativeNsRecords,
                         publicNsRecords
                     }) => {
@@ -617,15 +617,15 @@ const DnsInfoBar = ({
                     tooltipContent={getTooltipContent(googleMxRecord)}
                 />
 
-                <RecordDisplay
-                    id="zoneMaster"
-                    icon={FaServer}
-                    iconColor={iconColorC}
-                    label="ZoneMaster"
-                    externalRecordValue={zoneMaster?.ptr || zoneMaster?.ip}
-                    internalRecordValue={zoneMaster?.ptr || zoneMaster?.ip}
-                    tooltipContent={getTooltipContent(zoneMaster)}
-                />
+                {/*<RecordDisplay*/}
+                {/*    id="zoneMaster"*/}
+                {/*    icon={FaServer}*/}
+                {/*    iconColor={iconColorC}*/}
+                {/*    label="ZoneMaster"*/}
+                {/*    externalRecordValue={zoneMaster?.ptr || zoneMaster?.ip}*/}
+                {/*    internalRecordValue={zoneMaster?.ptr || zoneMaster?.ip}*/}
+                {/*    tooltipContent={getTooltipContent(zoneMaster)}*/}
+                {/*/>*/}
             </HStack>
         </Box>
     );

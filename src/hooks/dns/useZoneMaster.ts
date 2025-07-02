@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 import { getZoneMasterFromDnsServersOptions, getPtrRecordOptions } from "../../client/@tanstack/react-query.gen";
@@ -19,32 +19,43 @@ export const useZoneMaster = (domain) => {
     )
   );
   const queryClient = useQueryClient();
-
   useEffect(() => {
     if (zoneMasterQuery.isError || zoneMasterQuery.isSuccess) {
       setShouldFetch(false);
     }
   }, [zoneMasterQuery.error, zoneMasterQuery.isSuccess]);
 
-  const zoneMasterIp = Array.from(
-    new Set(zoneMasterQuery.data?.answers?.map((answer) => answer.zone_master))
-  );
+  const zoneMasters = zoneMasterQuery.data?.zone_masters ?? [];
 
-  const ptrQuery = useQuery(
-    createQuery(
-      {
-        ...getPtrRecordOptions({ query: { ip: zoneMasterIp[0] } }),
-        queryKey: ["ptrQuery", zoneMasterIp[0]],
-      },
-      !!zoneMasterIp && zoneMasterIp.length === 1
-    )
-  );
+  // Run parallel PTR queries by IP
+  const ptrQueries = useQueries({
+    queries: zoneMasters.map((master) =>
+        createQuery(
+            {
+              ...getPtrRecordOptions({ query: { ip: master.ip } }),
+              queryKey: ["ptrQuery", master.ip],
+            },
+            !!master.ip
+        )
+    ),
+  });
+
+  const isLoading =
+      zoneMasterQuery.isLoading || ptrQueries.some((q) => q.isLoading);
+
+  const error =
+      zoneMasterQuery.error || ptrQueries.find((q) => q.error)?.error;
+
+  // Combine original objects with ptr results
+  const data = zoneMasters.map((master, idx) => ({
+    ...master,
+    ptr: ptrQueries[idx]?.data?.records?.[0] ?? null,
+  }));
 
   return {
-    ip: zoneMasterIp,
-    ptr: ptrQuery.data?.records?.[0],
-    isLoading: zoneMasterQuery.isLoading || ptrQuery.isLoading,
-    error: zoneMasterQuery.error || ptrQuery.error,
+    zonemasters: data,
+    isLoading: zoneMasterQuery.isLoading || ptrQueries.isLoading,
+    error: zoneMasterQuery.error || ptrQueries.error,
     fetch: () => setShouldFetch(true),
     refetch: () => {
       queryClient.invalidateQueries({ queryKey: queryKey });
