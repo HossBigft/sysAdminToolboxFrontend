@@ -181,7 +181,7 @@ const DnsInfoBar = ({
         if (!records) return [];
         if (Array.isArray(records)) {
             return records.map(record => {
-                if (typeof record === 'string') return record.toLowerCase().trim();
+                if (typeof record === 'string') return record.toLowerCase().trim().replace(/\.$/, '');;
                 return String(record.value || record.target || record).toLowerCase().trim();
             }).filter(Boolean).sort();
         }
@@ -191,7 +191,7 @@ const DnsInfoBar = ({
 
     const authNsRecords = normalizeNsRecords(authoritativeNsRecords.records);
     const normalizedPublicNsRecords = normalizeNsRecords(publicNsRecords.records);
-    const internalNsRecords = internalDnsServers.map(server => server.toLowerCase());
+    const internalNsRecords = normalizeNsRecords(internalDnsServers)
     let isSubsetArray = (parentArray, subsetArray) => {
 
         let result = subsetArray.every((el) => {
