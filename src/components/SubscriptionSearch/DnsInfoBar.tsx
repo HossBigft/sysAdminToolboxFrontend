@@ -591,8 +591,10 @@ const DnsInfoBar = ({
         const {onCopy} = useClipboard(copyValue);
 
         useEffect(() => {
-            if (copyValue) onCopy();
-        }, [copyValue]);
+            if (copyValue) {
+                onCopy();
+            }
+        }, [copyValue, onCopy]);
 
         const summary = useMemo(() => {
             const grouped = {};
@@ -623,8 +625,13 @@ const DnsInfoBar = ({
             return Object.values(grouped);
         }, [zonemasters]);
 
-        const handleCopy = (key, value) => {
-            setCopyValue(value);
+        const handleCopy = (key, entry) => {
+            // Create copy content without separators, just space-separated values
+            const copyContent = entry.hosts.map(host =>
+                `${host} ${entry.ip} ${entry.ptr || 'no-PTR'}`
+            ).join('\n');
+
+            setCopyValue(copyContent);
             setLastCopied(key);
         };
 
@@ -673,7 +680,7 @@ const DnsInfoBar = ({
                             <HStack
                                 spacing={3}
                                 cursor="pointer"
-                                onClick={() => handleCopy(id, label)}
+                                onClick={() => handleCopy(id, entry)}
                                 _hover={{bg: useColorModeValue("gray.50", "gray.700")}}
                                 p={3}
                                 borderRadius="md"
