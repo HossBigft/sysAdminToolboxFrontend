@@ -1,101 +1,127 @@
-import { useState, useMemo, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { ChakraProvider, Box, VStack, Text } from "@chakra-ui/react";
-import { useQueryClient } from "@tanstack/react-query";
+import {useState, useMemo, useEffect} from "react";
+import {createFileRoute} from "@tanstack/react-router";
+import {ChakraProvider, Box, VStack, Text} from "@chakra-ui/react";
+import {useQueryClient} from "@tanstack/react-query";
 import SearchInput from "../../components/SubscriptionSearch/SearchInput";
-import { useSubscriptionSearch } from "../../hooks/plesk/useSubscriptionSearch";
-import { useDnsRecords } from "../../hooks/dns/useDnsRecords";
-import { useBulkInternalAResolution } from "../../hooks/dns/useBulkInternalAResolution.ts";
+import {useSubscriptionSearch} from "../../hooks/plesk/useSubscriptionSearch";
+import {useDnsRecords} from "../../hooks/dns/useDnsRecords";
+import {useBulkInternalAResolution} from "../../hooks/dns/useBulkInternalAResolution.ts";
 import SubscriptionTable from "../../components/SubscriptionSearch/SubscriptionTable";
 import DnsInfoBar from "../../components/SubscriptionSearch/DnsInfoBar";
 
 export const Route = createFileRoute("/_layout/")({
-  component: SubscriptionSearchApp,
+    component: SubscriptionSearchApp,
 });
 
 function SubscriptionSearchApp() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [finalSearchTerm, setFinalSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [finalSearchTerm, setFinalSearchTerm] = useState("");
 
-  const queryClient = useQueryClient();
-  const currentUser = queryClient.getQueryData(["currentUser"]);
+    const queryClient = useQueryClient();
+    const currentUser = queryClient.getQueryData(["currentUser"]);
 
-  // API hooks
-  const { subscriptionQuery, fetchSubscription } =
-    useSubscriptionSearch(finalSearchTerm);
-  const { internalARecord, internalMxRecord, googleARecord, googleMxRecord, zonemasters, publicNsRecords, authoritativeNsRecords, refetchDnsRecords } =
-    useDnsRecords(finalSearchTerm);
-  // Extract hosts for bulk resolution
-  const hosts = useMemo(() => {
-    return subscriptionQuery.data?.map((item) => item.host?.name) || [];
-  }, [subscriptionQuery.data]);
+    // API hooks
+    const {subscriptionQuery, fetchSubscription} =
+        useSubscriptionSearch(finalSearchTerm);
+    const {
+        internalARecord,
+        internalMxRecord,
+        googleARecord,
+        googleMxRecord,
+        zonemasters,
+        publicNsRecords,
+        authoritativeNsRecords,
+        refetchDnsRecords
+    } =
+        useDnsRecords(finalSearchTerm);
+    // Extract hosts for bulk resolution
+    const hosts = useMemo(() => {
+        return subscriptionQuery.data?.map((item) => item.host?.name) || [];
+    }, [subscriptionQuery.data]);
 
-  const { records, refetch: refetchHostRecords } = useBulkInternalAResolution(hosts);
+    const {records, refetch: refetchHostRecords} = useBulkInternalAResolution(hosts);
 
-  // Handle search submission
-  const handleSearch = (e) => {
-    if (e.key === "Enter" && searchTerm.trim()) {
-      setFinalSearchTerm(searchTerm.trim());
-      fetchSubscription();
-      refetchHostRecords();
-      refetchDnsRecords();
+    // Handle search submission
+    const handleSearch = (e) => {
+        if (e.key === "Enter" && searchTerm.trim()) {
+            setFinalSearchTerm(searchTerm.trim());
+            fetchSubscription();
+            refetchHostRecords();
+            refetchDnsRecords();
+        }
+    };
+
+    function reducePtrs(zonemasterData) {
+        if (!Array.isArray(zonemasterData) || zonemasterData.length === 0) return null;
+
+        const valid = zonemasterData.filter(zm => zm.ptr && zm.ip);
+        const ips = valid.map(zm => zm.ip);
+        const ptrs = valid.map(zm => zm.ptr);
+        const uniquePtrs = [...new Set(ptrs)];
+
+        const result = { ip: ips };
+        if (uniquePtrs.length === 1) {
+            result.ptr = uniquePtrs[0];
+        }
+
+        return result;
     }
-  };
 
-  // Refetch data when search term or subscription data changes
-  useEffect(() => {
-    if (finalSearchTerm && subscriptionQuery.data) {
-      refetchHostRecords();
-      refetchDnsRecords();
-    }
-  }, [finalSearchTerm, subscriptionQuery.data]);
+    const zonemaster = reducePtrs(zonemasters.zonemasters)
+    // Refetch data when search term or subscription data changes
+    useEffect(() => {
+        if (finalSearchTerm && subscriptionQuery.data) {
+            refetchHostRecords();
+            refetchDnsRecords();
+        }
+    }, [finalSearchTerm, subscriptionQuery.data]);
 
-  return (
-    <ChakraProvider>
-      <VStack
-        spacing={4}
-        width="100%"
-        margin="50px auto"
-        maxWidth={["80%", "70%", "60%", "1200px"]}
-        px={[2, 4, 6, 0]}
-      >
-        <SearchInput
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyPress={handleSearch}
-          isDisabled={subscriptionQuery.isLoading}
-        />
+    return (
+        <ChakraProvider>
+            <VStack
+                spacing={4}
+                width="100%"
+                margin="50px auto"
+                maxWidth={["80%", "70%", "60%", "1200px"]}
+                px={[2, 4, 6, 0]}
+            >
+                <SearchInput
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyPress={handleSearch}
+                    isDisabled={subscriptionQuery.isLoading}
+                />
 
-        {finalSearchTerm && (
-          <DnsInfoBar
-            finalSearchTerm={finalSearchTerm}
-            internalARecord={internalARecord}
-            internalMxRecord={internalMxRecord}
-            googleARecord={googleARecord}
-            googleMxRecord={googleMxRecord}
-            zonemasters={zonemasters}
-            publicNsRecords={publicNsRecords}
-            authoritativeNsRecords={authoritativeNsRecords}
-          />
-        )}
-        {subscriptionQuery.isLoading && <Text>Loading...</Text>}
-        {subscriptionQuery.error && (
-          <Text color="red.500">Error: {subscriptionQuery.error.message}</Text>
-        )}
-        {subscriptionQuery.data && (
-          <Box overflowX="auto" width="100%" maxWidth="100%">
-            <SubscriptionTable
-              subscriptionData={subscriptionQuery.data}
-              dnsData={{ internalARecord, internalMxRecord, zoneMaster }}
-              hostRecords={records}
-              searchTerm={finalSearchTerm}
-              currentUser={currentUser}
-            />
-          </Box>
-        )}
-      </VStack>
-    </ChakraProvider>
-  );
+                {finalSearchTerm && (
+                    <DnsInfoBar
+                        finalSearchTerm={finalSearchTerm}
+                        internalARecord={internalARecord}
+                        internalMxRecord={internalMxRecord}
+                        googleARecord={googleARecord}
+                        googleMxRecord={googleMxRecord}
+                        zonemasters={zonemasters}
+                        publicNsRecords={publicNsRecords}
+                        authoritativeNsRecords={authoritativeNsRecords}
+                    />
+                )}
+                {subscriptionQuery.isLoading && <Text>Loading...</Text>}
+                {subscriptionQuery.error && (
+                    <Text color="red.500">Error: {subscriptionQuery.error.message}</Text>
+                )}
+                {subscriptionQuery.data && (
+                    <Box overflowX="auto" width="100%" maxWidth="100%">
+                        <SubscriptionTable
+                            subscriptionData={subscriptionQuery.data}
+                            dnsData={{internalARecord, internalMxRecord, zonemaster}}
+                            hostRecords={records}
+                            searchTerm={finalSearchTerm}
+                            currentUser={currentUser}
+                        />
+                    </Box>
+                )}
+            </VStack>
+        </ChakraProvider>
+    );
 }
 
 export default SubscriptionSearchApp;
