@@ -51,7 +51,6 @@ export const useZoneMaster = (domain) => {
     ...master,
     ptr: ptrQueries[idx]?.data?.records?.[0] ?? null,
   }));
-
   return {
     zonemasters: data,
     isLoading: zoneMasterQuery.isLoading || ptrQueries.isLoading,

@@ -177,7 +177,6 @@ const SubscriptionTable = ({
 const SubscriptionRow = ({
   item,
   dnsData,
-  hostIp,
   currentUser,
   onLoginLink,
   onTestMail,
@@ -185,16 +184,16 @@ const SubscriptionRow = ({
   isExpanded,
   onToggleExpand,
 }) => {
-  const { aRecord, mxRecord, zoneMaster } = dnsData;
 
+  const { internalARecord, internalMxRecord, zonemaster } = dnsData;
   return (
     <Tr key={item.id}>
       <Td>
         <HostCell
           host={item.host}
-          zoneMaster={zoneMaster}
-          aRecord={aRecord}
-          mxRecord={mxRecord}
+          zonemaster={zonemaster}
+          aRecord={internalARecord}
+          mxRecord={internalMxRecord}
         />
       </Td>
       <Td>{item.name}</Td>

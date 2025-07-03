@@ -2,12 +2,12 @@ import { Tooltip, Box, HStack, Tag, Icon, VStack } from "@chakra-ui/react";
 import { EmailIcon } from "@chakra-ui/icons";
 import { FaStar, FaGlobe } from "react-icons/fa";
 
-const HostCell = ({ host, zoneMaster, aRecord, mxRecord }) => {
+const HostCell = ({ host, zonemaster, aRecord, mxRecord }) => {
   // Determine which roles this host serves
   const hostName = host.name;
   const hostIps = host.ips;
   const isDnsZoneMaster =
-    hostIps.includes(zoneMaster.ip[0]) || hostName === zoneMaster.ptr;
+      zonemaster?.ip?.some(ip => hostIps.includes(ip)) || hostName === zonemaster?.ptr;
   const isDomainHost = hostIps.includes(aRecord.ip) || hostName === aRecord.ptr;
   const isMailServer =
     hostIps.includes(mxRecord.ip) || hostName === mxRecord.ptr;
@@ -53,7 +53,7 @@ const HostCell = ({ host, zoneMaster, aRecord, mxRecord }) => {
         {isDnsZoneMaster && (
           <Tooltip
             hasArrow
-            label={`DNS Zone Master [${zoneMaster.ip}]`}
+            label={`DNS Zone Master [${zonemaster?.ip?.join(", ") || "unknown"}]`}
             placement="bottom"
           >
             <Tag size="sm" colorScheme={tagColors.dns} variant="subtle">

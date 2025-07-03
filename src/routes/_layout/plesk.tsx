@@ -75,7 +75,6 @@ function SubscriptionSearchApp() {
             refetchDnsRecords();
         }
     }, [finalSearchTerm, subscriptionQuery.data]);
-
     return (
         <ChakraProvider>
             <VStack
