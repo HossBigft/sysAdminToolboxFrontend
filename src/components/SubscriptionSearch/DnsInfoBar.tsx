@@ -44,26 +44,6 @@ const DnsInfoBar = ({
         records?: NSRecordObject[]; // what you’ll pass
     };
 
-    function isNsRecordsMatch(response: ResponseShape): boolean {
-        if (!Array.isArray(response.records)) {
-            return false; // or true if you want to treat "no records" as "no mismatches"
-        }
-
-        const normalize = (arr: string[]): string => [...arr].sort().join('|');
-
-        const nonEmpty = response.records
-            .filter((obj): obj is Required<NSRecordObject> =>
-                Array.isArray(obj.records) && obj.records.every(r => typeof r === 'string')
-            );
-
-        if (nonEmpty.length === 0) {
-            return true; // nothing to compare, treat as OK
-        }
-
-        const base = normalize(nonEmpty[0].records);
-
-        return nonEmpty.every(obj => normalize(obj.records) === base)
-    }
 
     // Color values that will change depending on the color mode
     const bgColor = useColorModeValue("gray.50", "gray.700");
@@ -201,11 +181,29 @@ const DnsInfoBar = ({
 
         return result
     }
+
+    function isNsRecordsMatch(response: { records: Record<string, string[]> }): boolean {
+        const recordGroups = response?.records;
+        if (!recordGroups || typeof recordGroups !== 'object') return false;
+
+        const normalize = (arr: string[]): string =>
+            arr.map(r => r.toLowerCase().trim().replace(/\.$/, '')).sort().join('|');
+
+        const normalizedSets = Object.values(recordGroups)
+            .filter(arr => Array.isArray(arr) && arr.length > 0)
+            .map(normalize);
+
+        if (normalizedSets.length === 0) return true;
+
+        const base = normalizedSets[0];
+        return normalizedSets.every(set => set === base);
+    }
+
     // Check for NS record issues
-    const checkNsIssues = (nsRecordsAuthoritativeNs, nsRecordsPublicNs) => {
+    const checkNsIssues = (nsRecordsAuthoritativeNs, publicNsResponse) => {
         const issues = [];
 
-        // Check if authoritative NS records match internal DNS servers
+        // Compare authoritative vs internal
         const authMatchesInternal = isSubsetArray(internalNsRecords, nsRecordsAuthoritativeNs);
 
         if (!authMatchesInternal && authNsRecords.length > 0) {
@@ -214,17 +212,17 @@ const DnsInfoBar = ({
                 message: "NS Mismatch⚠: domain is using third-party nameservers. Authoritative NS records differ from internal NS domains."
             });
         }
-        if (nsRecordsPublicNs && !isNsRecordsMatch(nsRecordsPublicNs)) {
+        if (publicNsResponse.records && !isNsRecordsMatch(publicNsResponse)) {
             issues.push({
                 type: 'inconsistency',
-                message: "Public NS Inconsistency ⚠:NS records from public NS and Authoritative NS differ. Authoritative domain servers were changed less than 24 hours ago. Use dnschecker.org to confirm. "
+                message: "Public NS Inconsistency ⚠: NS records from public NS and Authoritative NS differ. Authoritative domain servers were changed less than 24 hours ago. Use dnschecker.org to confirm."
             });
         }
 
         return issues;
-    }
+    };
 
-    const nsIssues = checkNsIssues(authNsRecords, normalizedPublicNsRecords);
+    const nsIssues = checkNsIssues(authNsRecords, publicNsRecords);
 
     const renderNsStatusBadge = () => {
         if (nsIssues.length === 0) return null;
