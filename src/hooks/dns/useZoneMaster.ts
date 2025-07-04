@@ -1,7 +1,7 @@
 import { useQuery, useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-import { getZoneMasterFromDnsServersOptions, getPtrRecordOptions } from "../../client/@tanstack/react-query.gen";
+import { getZoneMasterFromDnsServersOptions, resolveHostByIpOptions} from "../../client/@tanstack/react-query.gen";
 import { createQuery } from "./utils";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -28,12 +28,12 @@ export const useZoneMaster = (domain) => {
   const zoneMasters = zoneMasterQuery.data?.zone_masters ?? [];
 
   // Run parallel PTR queries by IP
-  const ptrQueries = useQueries({
+  const resolveHostQueries = useQueries({
     queries: zoneMasters.map((master) =>
         createQuery(
             {
-              ...getPtrRecordOptions({ query: { ip: master.ip } }),
-              queryKey: ["ptrQuery", master.ip],
+              ...resolveHostByIpOptions({ query: { ip: master.ip } }),
+              queryKey: ["resolveHostQuery", master.ip],
             },
             !!master.ip
         )
@@ -41,20 +41,20 @@ export const useZoneMaster = (domain) => {
   });
 
   const isLoading =
-      zoneMasterQuery.isLoading || ptrQueries.some((q) => q.isLoading);
+      zoneMasterQuery.isLoading || resolveHostQueries.some((q) => q.isLoading);
 
   const error =
-      zoneMasterQuery.error || ptrQueries.find((q) => q.error)?.error;
+      zoneMasterQuery.error || resolveHostQueries.find((q) => q.error)?.error;
 
-  // Combine original objects with ptr results
+
   const data = zoneMasters.map((master, idx) => ({
     ...master,
-    ptr: ptrQueries[idx]?.data?.records?.[0] ?? null,
+    ptr: resolveHostQueries[idx]?.data?.name ?? null,
   }));
   return {
     zonemasters: data,
-    isLoading: zoneMasterQuery.isLoading || ptrQueries.isLoading,
-    error: zoneMasterQuery.error || ptrQueries.error,
+    isLoading: zoneMasterQuery.isLoading || resolveHostQueries.isLoading,
+    error: zoneMasterQuery.error || resolveHostQueries.error,
     fetch: () => setShouldFetch(true),
     refetch: () => {
       queryClient.invalidateQueries({ queryKey: queryKey });
