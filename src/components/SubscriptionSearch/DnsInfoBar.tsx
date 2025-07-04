@@ -209,7 +209,7 @@ const DnsInfoBar = ({
         if (!authMatchesInternal && authNsRecords.length > 0) {
             issues.push({
                 type: 'mismatch',
-                message: "NS Mismatch⚠: domain is using third-party nameservers. Authoritative NS records differ from internal NS domains."
+                message: "NS Mismatch⚠: domain is controlled by third-party nameservers. Authoritative NS records differ from internal NS domains."
             });
         }
         if (publicNsResponse.records && !isNsRecordsMatch(publicNsResponse)) {
@@ -386,8 +386,7 @@ const DnsInfoBar = ({
                                         <Box mt={3} p={2} bg="yellow.800" borderRadius="md" border="1px solid"
                                              borderColor="yellow.600">
                                             <Text fontSize="xs" color="yellow.100">
-                                                💡 Authoritative nameservers must match internal for domain control via
-                                                Plesk or hosted DNS. Verify current settings using WHOIS.
+                                                💡 DNS hosting will not work unless the domain’s authoritative nameservers are set to our servers. Please verify via WHOIS.
                                             </Text>
                                         </Box>
                                     </Box>
