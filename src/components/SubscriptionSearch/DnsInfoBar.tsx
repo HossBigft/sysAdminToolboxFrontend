@@ -448,20 +448,55 @@ const DnsInfoBar = ({
             </Tooltip>
         );
     };
+    type RecordType = {
+        ptr?: string;
+        mx?: string;
+        ip?: string;
+        [key: string]: any;
+    };
+
+    type RecordDisplayProps = {
+        id: string;
+        icon: any;
+        iconColor: string;
+        label: string;
+        externalRecord: RecordType;
+        internalRecord: RecordType;
+        tooltipContent: React.ReactNode;
+    };
+
+
     const RecordDisplay = ({
+                               id,
                                icon,
                                iconColor,
                                label,
-                               externalRecordValue,
-                               internalRecordValue,
+                               externalRecord,
+                               internalRecord,
                                tooltipContent,
-                               id,
-                           }) => {
+                           }: RecordDisplayProps) => {
+        const [copyValue, setCopyValue] = useState("");
+        const [lastCopied, setLastCopied] = useState<string | null>(null);
         const {onCopy} = useClipboard(copyValue);
         const isCopied = lastCopied === id;
 
+        const normalize = (value: string | undefined): string =>
+            typeof value === "string" ? value.trim().toLowerCase().replace(/\.$/, "") : "";
+
+        const getComparableValues = (a: RecordType, b: RecordType): [string, string] => {
+            if (a?.ptr && b?.ptr) return [a.ptr, b.ptr];
+            if (a?.mx && b?.mx) return [a.mx, b.mx];
+            if (a?.ip && b?.ip) return [a.ip, b.ip];
+
+            // No matching fields, fall back to first available pair
+            if (a?.ptr || b?.ptr) return [a?.ptr || "", b?.ptr || ""];
+            if (a?.mx || b?.mx) return [a?.mx || "", b?.mx || ""];
+            if (a?.ip || b?.ip) return [a?.ip || "", b?.ip || ""];
+
+            return ["", ""];
+        };
         const handleCopy = () => {
-            const valueToCopy = tooltipContent.replace(/[\[\]]/g, "");
+            const valueToCopy = tooltipContent?.toString().replace(/[\[\]]/g, "") || "";
             setCopyValue(valueToCopy);
             setLastCopied(id);
         };
@@ -472,11 +507,11 @@ const DnsInfoBar = ({
             }
         }, [copyValue]);
 
+        const [externalRaw, internalRaw] = getComparableValues(externalRecord, internalRecord);
+        const normalizedExternal = normalize(externalRaw);
+        const normalizedInternal = normalize(internalRaw);
 
-        const normalizedExternal = normalize(externalRecordValue);
-        const normalizedInternal = normalize(internalRecordValue);
         const valuesMatch = normalizedExternal === normalizedInternal;
-
         const hasExternalValue = normalizedExternal !== "";
         const hasInternalValue = normalizedInternal !== "";
         const hasAnyValue = hasExternalValue || hasInternalValue;
@@ -518,7 +553,7 @@ const DnsInfoBar = ({
                     bg={hasDifference ? "red.50" : "transparent"}
                     _dark={{
                         borderColor: hasDifference ? "red.500" : "gray.600",
-                        bg: hasDifference ? "red.900" : "transparent"
+                        bg: hasDifference ? "red.900" : "transparent",
                     }}
                 >
                     <HStack spacing={2} minW="120px">
@@ -529,22 +564,21 @@ const DnsInfoBar = ({
                         <RecordStatus hasMatch={valuesMatch} hasValues={hasAnyValue}/>
                     </HStack>
 
-
                     <Flex align="center" flex="1">
                         {valuesMatch ? (
                             <RecordValue
-                                value={externalRecordValue || internalRecordValue}
+                                value={externalRaw || internalRaw}
                                 isEmpty={!hasAnyValue}
                             />
                         ) : (
                             <VStack align="start" spacing={1} flex="1">
                                 <RecordValue
-                                    value={externalRecordValue}
+                                    value={externalRaw}
                                     isEmpty={!hasExternalValue}
                                     isHighlighted={hasExternalValue}
                                 />
                                 <RecordValue
-                                    value={internalRecordValue}
+                                    value={internalRaw}
                                     isEmpty={!hasInternalValue}
                                     isHighlighted={hasInternalValue}
                                 />
@@ -738,6 +772,7 @@ const DnsInfoBar = ({
             </VStack>
         );
     };
+
     return (
         <Box
             width="100%"
@@ -754,8 +789,8 @@ const DnsInfoBar = ({
                     icon={FaGlobe}
                     iconColor={iconColorA}
                     label="A Record:"
-                    externalRecordValue={googleARecord?.ptr || googleARecord?.ip || ""}
-                    internalRecordValue={internalARecord?.ptr || internalARecord?.ip || ""}
+                    externalRecord={googleARecord}
+                    internalRecord={internalARecord}
                     tooltipContent={getTooltipContent(googleARecord)}
                 />
 
@@ -764,8 +799,8 @@ const DnsInfoBar = ({
                     icon={FaEnvelope}
                     iconColor={iconColorB}
                     label="MX Record:"
-                    externalRecordValue={googleMxRecord?.ptr || googleMxRecord?.mx || googleMxRecord?.ip}
-                    internalRecordValue={internalMxRecord?.ptr || internalMxRecord?.mx || internalMxRecord?.ip}
+                    externalRecord={googleMxRecord}
+                    internalRecord={internalMxRecord}
                     tooltipContent={getTooltipContent(googleMxRecord)}
                 />
 
